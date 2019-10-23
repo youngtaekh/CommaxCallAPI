@@ -1,0 +1,2 @@
+//include ':app', ':android', ':p2p', ':signaling'
+include ':app', ':android'

@@ -1,0 +1,272 @@
+{
+  "project_info": {
+    "project_number": "980385837727",
+    "firebase_url": "https://typhoneb2b.firebaseio.com",
+    "project_id": "typhoneb2b",
+    "storage_bucket": "typhoneb2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:df343dca56027a53",
+        "android_client_info": {
+          "package_name": "com.lotte.arah"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:ce1e75ac314d8483",
+        "android_client_info": {
+          "package_name": "com.sejong.smartbiz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:439aebf6e0a9a99b",
+        "android_client_info": {
+          "package_name": "com.voiceloco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:020c27bf7532f3a1",
+        "android_client_info": {
+          "package_name": "com.voiceloco.ciao"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:9e8f9f85de499d24",
+        "android_client_info": {
+          "package_name": "com.voiceloco.typhone_b2b"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:e6bdf45f3695c077",
+        "android_client_info": {
+          "package_name": "com.voiceloco.typhonepro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:62f0463e6a2dae4b",
+        "android_client_info": {
+          "package_name": "com.voiceloco.voice.sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:255d5d28b8bcb9a6a3e8aa",
+        "android_client_info": {
+          "package_name": "io.dotconnect.callapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980385837727:android:41bca818954a74b8",
+        "android_client_info": {
+          "package_name": "network.vanta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980385837727-pibe7a8adgun6fepsic0mg4m8thf78t8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO7aQDg6sw63qltEditxlXkrG6wRLkl-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980385837727-cqoag7rtno30hmrr4qtamou68patca8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
