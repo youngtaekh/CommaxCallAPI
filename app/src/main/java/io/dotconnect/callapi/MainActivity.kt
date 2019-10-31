@@ -8,30 +8,22 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.FirebaseApp
 import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.android.ConnectManager
-import io.dotconnect.android.Register.DOMAIN
+import io.dotconnect.android.enum_class.CallType
 import io.dotconnect.android.observer.CallInfo
 import io.dotconnect.android.observer.ConnectAction
 import io.dotconnect.android.observer.ConnectObserver
 import io.dotconnect.android.observer.MessageInfo
-import io.dotconnect.android.enum_class.CallType
-import io.dotconnect.android.enum_class.MessageType
-import io.dotconnect.android.util.AuthenticationUtil
 import io.dotconnect.android.util.ConnectServer
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
 
 class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     ConnectObserver.MessageObserver, ConnectObserver.CallObserver {
@@ -104,13 +96,13 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
     override fun onMessageArrival(message: MessageInfo?) {
         LogAndToast("onMessageArrival")
-        val handler = Handler(Looper.getMainLooper())
-        val runnable = Runnable { tvMessage.text = message?.message ?: ""}
-        handler.post(runnable)
-        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, message?.messageSeq.toString(), chatType, chatId, MessageType.read)
+//        val handler = Handler(Looper.getMainLooper())
+//        val runnable = Runnable { tvMessage.text = message?.message ?: ""}
+//        handler.post(runnable)
+//        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, message?.messageSeq.toString(), chatType, chatId, MessageType.read)
     }
 
-    override fun onOutgoingCall(callInfo: CallInfo?) {}
+//    override fun onOutgoingCall(callInfo: CallInfo?) {}
 
     override fun onIncomingCall(callInfo: CallInfo?) {
         LogAndToast("onIncomingCall")
@@ -121,11 +113,11 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         startActivity(intent)
     }
 
-    override fun onUpdate(callInfo: CallInfo?) {}
-
-    override fun onEarlyMedia(callInfo: CallInfo?) {}
-
-    override fun onOutgoingCallConnected(callInfo: CallInfo?) {}
+//    override fun onUpdate(callInfo: CallInfo?) {}
+//
+//    override fun onEarlyMedia(callInfo: CallInfo?) {}
+//
+//    override fun onOutgoingCallConnected(callInfo: CallInfo?) {}
 
     override fun onIncomingCallConnected(callInfo: CallInfo?) {}
 
@@ -133,9 +125,9 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
     override fun onTerminated(callInfo: CallInfo?) {}
 
-    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
-
-    override fun onCancelCallBefore180(callInfo: CallInfo?) {}
+//    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
+//
+//    override fun onCancelCallBefore180(callInfo: CallInfo?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,15 +158,15 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
 
         tvSend.setOnClickListener {
-            val message = etMessage.text.toString()
-            ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, message, chatType, chatId, MessageType.one)
+//            val message = etMessage.text.toString()
+//            ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, message, chatType, chatId, MessageType.one)
         }
 
         tvCall.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", false)
-            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
-            intent.putExtra("target", target)
+//            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
+            intent.putExtra("target", etTarget.text.toString())
             intent.putExtra("teamId", etTeamId.text.toString())
             startActivity(intent)
         }
@@ -182,8 +174,8 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvVideo.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", true)
-            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
-            intent.putExtra("target", target)
+//            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
+            intent.putExtra("target", etTarget.text.toString())
             intent.putExtra("teamId", etTeamId.text.toString())
             startActivity(intent)
         }
@@ -192,8 +184,8 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", true)
             intent.putExtra("screen", true)
-            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
-            intent.putExtra("target", target)
+//            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
+            intent.putExtra("target", etTarget.text.toString())
             intent.putExtra("teamId", etTeamId.text.toString())
             startActivity(intent)
         }

@@ -113,28 +113,28 @@ public class ConnectAction implements ConnectPublisher {
     @Override
     public void onOutgoingCallObserver(CallInfo callInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onOutgoingCall(callInfo);
+//            callObserver.onOutgoingCall(callInfo);
         }
     }
 
     @Override
     public void onUpdateObserver(CallInfo callInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onUpdate(callInfo);
+//            callObserver.onUpdate(callInfo);
         }
     }
 
     @Override
     public void onEarlyMediaObserver(CallInfo callInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onEarlyMedia(callInfo);
+//            callObserver.onEarlyMedia(callInfo);
         }
     }
 
     @Override
     public void onOutgoingCallConnectedObserver(CallInfo callInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onOutgoingCallConnected(callInfo);
+//            callObserver.onOutgoingCallConnected(callInfo);
         }
     }
 
@@ -162,14 +162,14 @@ public class ConnectAction implements ConnectPublisher {
     @Override
     public void onBusyOnIncomingCallObserver(CallInfo callInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onBusyOnIncomingCall(callInfo);
+//            callObserver.onBusyOnIncomingCall(callInfo);
         }
     }
 
     @Override
     public void onCancelCallBefore180Observer(CallInfo callInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onCancelCallBefore180(callInfo);
+//            callObserver.onCancelCallBefore180(callInfo);
         }
     }
 }

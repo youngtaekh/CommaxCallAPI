@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnectServer {
-    public static final String REST_URL = "http://116.122.36.39:3300/api/v1.0";
+    public static final String REST_URL = "https://commax.dot-connect.io:4435/api/v1.0";
 
     private static final int TIMEOUT = 10000;
     private static final String timeout = "timeout";

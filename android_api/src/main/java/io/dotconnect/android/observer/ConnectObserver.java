@@ -16,15 +16,15 @@ public class ConnectObserver {
 
     public interface CallObserver {
         void onIncomingCall(CallInfo callInfo);
-        void onOutgoingCall(CallInfo callInfo);
-        void onUpdate(CallInfo callInfo);
-        void onEarlyMedia(CallInfo callInfo);
-        void onOutgoingCallConnected(CallInfo callInfo);
+//        void onOutgoingCall(CallInfo callInfo);
+//        void onUpdate(CallInfo callInfo);
+//        void onEarlyMedia(CallInfo callInfo);
+//        void onOutgoingCallConnected(CallInfo callInfo);
         void onIncomingCallConnected(CallInfo callInfo);
         void onFailure(CallInfo callInfo);
         void onTerminated(CallInfo callInfo);
-        void onBusyOnIncomingCall(CallInfo callInfo);
-        void onCancelCallBefore180(CallInfo callInfo);
+//        void onBusyOnIncomingCall(CallInfo callInfo);
+//        void onCancelCallBefore180(CallInfo callInfo);
 
 //        void onProvisional(Call callInfo);
 //        void onPrack(Call callInfo);

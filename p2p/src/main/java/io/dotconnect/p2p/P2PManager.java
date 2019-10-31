@@ -154,16 +154,24 @@ public class P2PManager {
         eglBase = EglBase.create();
 
         // Create video renderers.
-        pipRenderer.init(eglBase.getEglBaseContext(), null);
-        pipRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
-        fullscreenRenderer.init(eglBase.getEglBaseContext(), null);
-        fullscreenRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+        if (pipRenderer!=null) {
+            pipRenderer.init(eglBase.getEglBaseContext(), null);
+            pipRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+            pipRenderer.setZOrderMediaOverlay(true);
+            pipRenderer.setEnableHardwareScaler(true /* enabled */);
+        }
 
-        pipRenderer.setZOrderMediaOverlay(true);
-        pipRenderer.setEnableHardwareScaler(true /* enabled */);
-        fullscreenRenderer.setEnableHardwareScaler(false /* enabled */);
+        if (fullscreenRenderer!=null) {
+            try {
+                fullscreenRenderer.init(eglBase.getEglBaseContext(), null);
+            } catch (Exception e) {
+
+            }
+            fullscreenRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+            fullscreenRenderer.setEnableHardwareScaler(false /* enabled */);
+        }
         // Start with local feed in fullscreen and swap it to the pip when the call is connected.
-        setSwappedFeeds(true /* isSwappedFeeds */);
+        setSwappedFeeds(false /* isSwappedFeeds */);
     }
 
     public void setParameters(Context context, boolean isVideoCall, boolean isScreenCall, boolean dataChannel, Intent mediaProjectionPermissionResultData) {
@@ -253,11 +261,22 @@ public class P2PManager {
 
     public void setSwappedFeeds(boolean isSwappedFeeds) {
         Log.d("asd", "setSwappedFeeds: $isSwappedFeeds");
-        localProxyVideoSink.setTarget(isSwappedFeeds? fullscreenRenderer : pipRenderer);
-        remoteProxyRenderer.setTarget(isSwappedFeeds? pipRenderer : fullscreenRenderer);
-        fullscreenRenderer.setMirror(isSwappedFeeds);
-        pipRenderer.setMirror(!isSwappedFeeds);
-        pipRenderer.setZOrderMediaOverlay(true);
+        if (pipRenderer!=null && fullscreenRenderer!=null) {
+            localProxyVideoSink.setTarget(isSwappedFeeds ? fullscreenRenderer : pipRenderer);
+            remoteProxyRenderer.setTarget(isSwappedFeeds ? pipRenderer : fullscreenRenderer);
+            fullscreenRenderer.setMirror(isSwappedFeeds);
+            pipRenderer.setMirror(!isSwappedFeeds);
+            pipRenderer.setZOrderMediaOverlay(true);
+        } else {
+            if (fullscreenRenderer!=null) {
+                remoteProxyRenderer.setTarget(fullscreenRenderer);
+                fullscreenRenderer.setMirror(isSwappedFeeds);
+            } else if (pipRenderer!=null) {
+                remoteProxyRenderer.setTarget(pipRenderer);
+                pipRenderer.setMirror(!isSwappedFeeds);
+                pipRenderer.setZOrderMediaOverlay(true);
+            }
+        }
     }
 
     public void setRemoteDescription(String description) {

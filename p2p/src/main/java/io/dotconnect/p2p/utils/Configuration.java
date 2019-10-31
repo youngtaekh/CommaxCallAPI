@@ -1,10 +1,10 @@
 package io.dotconnect.p2p.utils;
 
 public class Configuration {
-    public static final String stunServerAddress = "smartbiz.sejongtelecom.net";
-    public static final String stunServerPort = "80";
-    public static final String turnServerAddress = "smartbiz.sejongtelecom.net";
-    public static final String turnServerPort = "80";
+    public static final String stunServerAddress = "commax.dot-connect.io";
+    public static final String stunServerPort = "8088";
+    public static final String turnServerAddress = "commax.dot-connect.io";
+    public static final String turnServerPort = "8088";
     public static final String turnUserId = "vloco";
     public static final String turnUserPassword = "locomotion";
     public static final boolean dtlsEncryption = true;

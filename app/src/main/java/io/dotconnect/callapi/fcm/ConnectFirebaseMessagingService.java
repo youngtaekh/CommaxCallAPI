@@ -5,7 +5,8 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import io.dotconnect.android.Register;
+import io.dotconnect.android.ConnectManager;
+import io.dotconnect.android.PushParser;
 import io.dotconnect.callapi.MainActivity;
 
 import java.util.Map;
@@ -20,6 +21,28 @@ public class ConnectFirebaseMessagingService extends FirebaseMessagingService {
 
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
+        PushParser pushParser = new PushParser();
+        if (pushParser.setPushMap(remoteMessage.getData())) {
+            switch (pushParser.getEventType()) {
+                case call:
+                    // Notify Activity of FCM push
+                    if (!ConnectManager.getInstance().isRegistered()) {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.setAction(MainActivity.ACTION_INCOMING_CALL);
+                        StringTokenizer tokenizer = new StringTokenizer(pushParser.getCaller(), "@");
+                        intent.putExtra(MainActivity.COUNTERPART_ACCOUNT, tokenizer.nextToken());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        this.startActivity(intent);
+                    }
+                    break;
+                case cancel:
+                    // Notify Activity of FCM push
+                    Intent intent = new Intent();
+                    intent.setAction(MainActivity.ACTION_CANCEL_CALL);
+                    this.sendBroadcast(intent);
+                    break;
+            }
+        }
         Map<String, String> messageMap = remoteMessage.getData();
         String event = messageMap.get("eventType");
         String title = messageMap.get("title");
@@ -32,29 +55,6 @@ public class ConnectFirebaseMessagingService extends FirebaseMessagingService {
         String fromAccount = messageMap.get("caller");
         Log.d(TAG, "caller - " + fromAccount);
         Log.d(TAG, "callee - " + messageMap.get("callee"));
-
-//        if(title.equals())
-        if (event != null) {
-            switch (event) {
-                case "call" :
-                    // Notify Activity of FCM push
-                    if (!new Register().isRegistered()) {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        intent.setAction(MainActivity.ACTION_INCOMING_CALL);
-                        StringTokenizer tokenizer = new StringTokenizer(fromAccount, "@");
-                        intent.putExtra(MainActivity.COUNTERPART_ACCOUNT, tokenizer.nextToken());
-                        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        this.startActivity(intent);
-                    }
-                    break;
-                case "cancel":
-                    // Notify Activity of FCM push
-                    Intent intent = new Intent();
-                    intent.setAction(MainActivity.ACTION_CANCEL_CALL);
-                    this.sendBroadcast(intent);
-                    break;
-            }
-        }
     }
 
     /**

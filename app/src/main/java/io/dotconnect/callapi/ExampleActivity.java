@@ -56,9 +56,9 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
             if (screen) {
                 startScreenCapture();
             } else if (video) {
-                ConnectManager.getInstance().videoCall(this, target, teamId);
+//                ConnectManager.getInstance().videoCall(this, target, teamId);
             } else {
-                ConnectManager.getInstance().call(this, target, teamId);
+//                ConnectManager.getInstance().call(this, target, teamId);
             }
         }
 
@@ -68,8 +68,8 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
         });
 
         tvCancel.setOnClickListener(view ->  {
-            ConnectManager.getInstance().cancel();
-            finish();
+//            ConnectManager.getInstance().cancel();
+//            finish();
         });
 
         tvHangup.setOnClickListener(view ->  {
@@ -86,7 +86,7 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
             initView();
             if (screen) startScreenCapture();
             else if (video) ConnectManager.getInstance().acceptVideoCall(this);
-            else    ConnectManager.getInstance().accept(this);
+//            else    ConnectManager.getInstance().accept(this);
         });
 
         tvSet.setOnClickListener(view ->  {
@@ -121,10 +121,10 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
             ConnectManager connectManager = ConnectManager.getInstance();
-            if (incoming)
-                connectManager.acceptScreenCall(this, data);
-            else
-                connectManager.screenCall(this, data, target, teamId);
+//            if (incoming)
+//                connectManager.acceptScreenCall(this, data);
+//            else
+//                connectManager.screenCall(this, data, target, teamId);
         }
     }
 
@@ -133,25 +133,25 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
 
     }
 
-    @Override
-    public void onOutgoingCall(CallInfo callInfo) {
-
-    }
-
-    @Override
-    public void onUpdate(CallInfo callInfo) {
-
-    }
-
-    @Override
-    public void onEarlyMedia(CallInfo callInfo) {
-
-    }
-
-    @Override
-    public void onOutgoingCallConnected(CallInfo callInfo) {
-        runOnUiThread(() -> tvStatus.setText("Calling"));
-    }
+//    @Override
+//    public void onOutgoingCall(CallInfo callInfo) {
+//
+//    }
+//
+//    @Override
+//    public void onUpdate(CallInfo callInfo) {
+//
+//    }
+//
+//    @Override
+//    public void onEarlyMedia(CallInfo callInfo) {
+//
+//    }
+//
+//    @Override
+//    public void onOutgoingCallConnected(CallInfo callInfo) {
+//        runOnUiThread(() -> tvStatus.setText("Calling"));
+//    }
 
     @Override
     public void onIncomingCallConnected(CallInfo callInfo) {
@@ -168,15 +168,15 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
         finish();
     }
 
-    @Override
-    public void onBusyOnIncomingCall(CallInfo callInfo) {
-
-    }
-
-    @Override
-    public void onCancelCallBefore180(CallInfo callInfo) {
-
-    }
+//    @Override
+//    public void onBusyOnIncomingCall(CallInfo callInfo) {
+//
+//    }
+//
+//    @Override
+//    public void onCancelCallBefore180(CallInfo callInfo) {
+//
+//    }
 
     @TargetApi(21)
     private void startScreenCapture() {

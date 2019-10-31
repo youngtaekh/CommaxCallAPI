@@ -22,12 +22,12 @@ import static io.dotconnect.signaling.util.CertificationUtil.*;
 
 public class Register {
     //    public static final String REST_URL = "https://www.voiceloco.com/api/v1.0";
-    public static final String DOMAIN = ".api.voiceloco.com";
+    private static final String DOMAIN = ".commax.dot-connect.io";
 
-    private static final int registerDuration = 900;
+    private static final int registerDuration = 350;
     private static final String accessToken = "";
-    private static final String outboundProxyAddress = "modev.voiceloco.com";
-    private static final int outboundProxyPort = 5097;
+    private static final String outboundProxyAddress = "commax.dot-connect.io";
+    private static final int outboundProxyPort = 5071;
     private static final String coreVersion = "1.0";
 
     private static Register instance;
@@ -38,19 +38,21 @@ public class Register {
         return instance;
     }
 
+    private Register() {}
+
 //    static Register getInstance() {
 //        return instance;
 //    }
 
-    public void release() {
+    void release() {
         instance = null;
     }
 
-    public boolean isRegistered() {
+    boolean isRegistered() {
         return CallCore.getInstance().isRegistered();
     }
 
-    public void start(Context context, String userId, String appId, String accessToken, String fcmToken) {
+    void start(Context context, String userId, String appId, String accessToken, String fcmToken) {
         if (isRegistered()) {
             //Observer
             ConnectAction.getInstance().onRegistrationSuccessObserver();

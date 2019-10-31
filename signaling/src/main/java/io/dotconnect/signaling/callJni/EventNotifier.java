@@ -215,6 +215,7 @@ public class EventNotifier
 
     private void onSocketClosure() {
         Log.d(TAG, "onSocketClosure");
+        signalingAction.onSocketClosureObserver();
     }
 
     private void onOutgoingCall(SipMessage message) {

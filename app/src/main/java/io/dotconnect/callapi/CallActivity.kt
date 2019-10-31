@@ -15,9 +15,9 @@ import kotlinx.android.synthetic.main.activity_call.*
 
 class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
-    private var incoming = false
+//    private var incoming = false
     private var target: String? = null
-    private var teamId: String? = null
+//    private var teamId: String? = null
     private var swap = false
     private var speaker = false
 
@@ -31,49 +31,50 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val intent = intent
-        incoming = intent.getBooleanExtra("incoming", false)
-        val video:Boolean = intent.getBooleanExtra("video", false)
-        val screen:Boolean = intent.getBooleanExtra("screen", false)
+//        incoming = intent.getBooleanExtra("incoming", false)
+//        val video:Boolean = intent.getBooleanExtra("video", false)
+//        val screen:Boolean = intent.getBooleanExtra("screen", false)
         target = intent.getStringExtra("target")
-        teamId = intent.getStringExtra("teamId")
+//        teamId = intent.getStringExtra("teamId")
 
-        if (!incoming) {
-            tvStatus.text = "Sending"
-            initView()
-            when {
-                screen -> startScreenCapture()
-                video -> ConnectManager.getInstance().videoCall(this, target, teamId)
-                else -> ConnectManager.getInstance().call(this, target, teamId)
-            }
-        }
+//        if (!incoming) {
+//            tvStatus.text = "Sending"
+//            initView()
+//            when {
+//                screen -> startScreenCapture()
+//                video -> ConnectManager.getInstance().videoCall(this, target, teamId)
+//                else -> ConnectManager.getInstance().call(this, target, teamId)
+//            }
+//        }
 
         tvEnd.setOnClickListener {
             ConnectManager.getInstance().end()
             finish()
         }
 
-        tvCancel.setOnClickListener {
-            ConnectManager.getInstance().cancel()
-            finish()
-        }
+//        tvCancel.setOnClickListener {
+//            ConnectManager.getInstance().cancel()
+//            finish()
+//        }
 
-        tvHangup.setOnClickListener {
-            ConnectManager.getInstance().hangup()
-            finish()
-        }
-
-        tvReject.setOnClickListener {
-            ConnectManager.getInstance().reject()
-            finish()
-        }
+//        tvHangup.setOnClickListener {
+//            ConnectManager.getInstance().hangup()
+//            finish()
+//        }
+//
+//        tvReject.setOnClickListener {
+//            ConnectManager.getInstance().reject()
+//            finish()
+//        }
 
         tvAccept.setOnClickListener {
             initView()
-            when {
-                screen -> startScreenCapture()
-                video -> ConnectManager.getInstance().acceptVideoCall(this)
-                else -> ConnectManager.getInstance().accept(this)
-            }
+            ConnectManager.getInstance().acceptVideoCall(this)
+//            when {
+//                screen -> startScreenCapture()
+//                video -> ConnectManager.getInstance().acceptVideoCall(this)
+//                else -> ConnectManager.getInstance().accept(this)
+//            }
         }
 
         tvSet.setOnClickListener {
@@ -82,22 +83,22 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
 
         tvSpeaker.setOnClickListener {
-            audioManager.isSpeakerphoneOn = speaker
             speaker = !speaker
+            audioManager.isSpeakerphoneOn = speaker
         }
 
-        tvAcceptAudio.setOnClickListener {
-            initView()
-            ConnectManager.getInstance().accept(this)
-        }
-
-        tvAcceptVideo.setOnClickListener {
-            initView()
-            ConnectManager.getInstance().acceptVideoCall(this)
-        }
+//        tvAcceptAudio.setOnClickListener {
+//            initView()
+//            ConnectManager.getInstance().accept(this)
+//        }
+//
+//        tvAcceptVideo.setOnClickListener {
+//            initView()
+//            ConnectManager.getInstance().acceptVideoCall(this)
+//        }
 
         audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-        audioManager.isSpeakerphoneOn = false
+        audioManager.isSpeakerphoneOn = speaker
     }
 
     override fun onDestroy() {
@@ -111,25 +112,25 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 0) {
             mediaProjectionPermissionResultData = data
-            val connectManager = ConnectManager.getInstance()
-            if (incoming)
-                connectManager.acceptScreenCall(this, mediaProjectionPermissionResultData)
-            else
-                connectManager.screenCall(this, mediaProjectionPermissionResultData, target, teamId)
+//            val connectManager = ConnectManager.getInstance()
+//            if (incoming)
+//                connectManager.acceptScreenCall(this, mediaProjectionPermissionResultData)
+//            else
+//                connectManager.screenCall(this, mediaProjectionPermissionResultData, target, teamId)
         }
     }
 
     override fun onIncomingCall(callInfo: CallInfo?) {}
 
-    override fun onOutgoingCall(callInfo: CallInfo?) {}
-
-    override fun onUpdate(callInfo: CallInfo?) {}
-
-    override fun onEarlyMedia(callInfo: CallInfo?) {}
-
-    override fun onOutgoingCallConnected(callInfo: CallInfo?) {
-        runOnUiThread { tvStatus.text = "Calling" }
-    }
+//    override fun onOutgoingCall(callInfo: CallInfo?) {}
+//
+//    override fun onUpdate(callInfo: CallInfo?) {}
+//
+//    override fun onEarlyMedia(callInfo: CallInfo?) {}
+//
+//    override fun onOutgoingCallConnected(callInfo: CallInfo?) {
+//        runOnUiThread { tvStatus.text = "Calling" }
+//    }
 
     override fun onIncomingCallConnected(callInfo: CallInfo?) {
         runOnUiThread { tvStatus.text = "Calling" }
@@ -141,9 +142,9 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         finish()
     }
 
-    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
-
-    override fun onCancelCallBefore180(callInfo: CallInfo?) {}
+//    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
+//
+//    override fun onCancelCallBefore180(callInfo: CallInfo?) {}
 
     @TargetApi(21)
     private fun startScreenCapture() {

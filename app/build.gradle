@@ -33,7 +33,7 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
 //    implementation fileTree(dir: 'libs', include: ['*.aar'])
-    api project(path: ':android')
+    api project(path: ':android_api')
 //    implementation files('libs/android-release.aar')
 //    implementation files('libs/signaling-release.aar')
 //    implementation files('libs/p2p-release.aar')

@@ -42,8 +42,17 @@ public class ConnectManager {
     }
 
     //Register
-    public void startRegistration(Context context, String id, String appId, String accessToken, String fcmToken) {
-        Register.getInstance().start(context, id, appId, accessToken, fcmToken);
+
+    /**
+     *
+     * @param context
+     * @param userId
+     * @param appId
+     * @param accessToken
+     * @param fcmToken Firebase Push Token
+     */
+    public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken) {
+        Register.getInstance().start(context, userId, appId, accessToken, fcmToken);
     }
 
     public void stopRegistration() {
@@ -52,54 +61,70 @@ public class ConnectManager {
             Register.getInstance().stop();
     }
 
+    /**
+     *
+     * @return check app is registered
+     */
+    public boolean isRegistered() {
+        return Register.getInstance().isRegistered();
+    }
+
     //Message
-    public int sendMessage(Context context, String target, String teamId, String message,
+    private int sendMessage(Context context, String target, String teamId, String message,
                            String chatType, String chatId, MessageType messageType) {
         return new Message().sendMessage(target, teamId, message, AuthenticationUtil.getUUID(context), chatType, chatId, messageType);
     }
 
-    public int sendFile(Context context, String target, String teamId, String message, String chatType,
+    private int sendFile(Context context, String target, String teamId, String message, String chatType,
                         String chatId, MessageType messageType, String fileType, String fileUrl) {
         return new Message().sendFile(target, teamId, message, chatType, AuthenticationUtil.getUUID(context), chatId, messageType, fileType, fileUrl);
     }
 
     //Call
-    public void call(Context context, String target, String teamId) {
+    private void call(Context context, String target, String teamId) {
         call.setConfig(target, teamId);
         call.call(context);
     }
 
-    public void videoCall(Context context, String target, String teamId) {
+    private void videoCall(Context context, String target, String teamId) {
         call.setConfig(target, teamId);
         call.videoCall(context);
     }
 
-    public void screenCall(Context context, Intent data, String target, String teamId) {
+    private void screenCall(Context context, Intent data, String target, String teamId) {
         call.setConfig(target, teamId);
         call.screenCall(context, data);
     }
 
-    public void accept(Context context) {
+    private void accept(Context context) {
         call.acceptCall(context, callInfo.getSdp());
     }
 
+    /**
+     * accept call with video
+     * @param context
+     */
     public void acceptVideoCall(Context context) {
         call.acceptVideoCall(context, callInfo.getSdp());
     }
 
-    public void acceptScreenCall(Context context, Intent data) {
+    private void acceptScreenCall(Context context, Intent data) {
         call.acceptScreenCall(context, callInfo.getSdp(), data);
     }
 
+    /**
+     * if call state is calling, hangup the call
+     * else reject the call
+     */
     public void end() {
         if (call!=null) {
-            cancel();
+            hangup();
         } else {
             reject();
         }
     }
 
-    public void cancel() {
+    private void cancel() {
         call.cancel();
     }
 
@@ -115,6 +140,11 @@ public class ConnectManager {
         call.initView();
     }
 
+    /**
+     * set ConnectView for video render
+     * @param cvFullView full size view
+     * @param cvSmallView
+     */
     public void setVideoView(ConnectView cvFullView, ConnectView cvSmallView) {
         if (callInfo == null)
             call = new Call();
@@ -123,6 +153,10 @@ public class ConnectManager {
         call.setVideoView(cvFullView, cvSmallView);
     }
 
+    /**
+     * change video between ConnectView
+     * @param swap
+     */
     public void swapCamera(boolean swap) {
         call.swapCamera(swap);
     }
@@ -152,7 +186,6 @@ public class ConnectManager {
         @Override
         public void onSocketClosure() {
             Log.d(TAG, "onSocketClosure");
-            release();
             ConnectAction.getInstance().onSocketClosureObserver();
         }
     };

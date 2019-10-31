@@ -5,12 +5,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        flatDir {
-            dirs 'libs'
-        }
-        maven {
-            url "https://oss.jfrog.org/oss-snapshot-local"
-        }
         
     }
     dependencies {
@@ -21,9 +15,8 @@ buildscript {
         // in the individual module build.gradle files
 
         // Bintray sample
-        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.4.x-SNAPSHOT')
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+        classpath 'com.novoda:bintray-release:0.9.1'
     }
 }
 
@@ -31,12 +24,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        flatDir {
-            dirs 'libs'
-        }
-        maven {
-            url "https://oss.jfrog.org/oss-snapshot-local"
-        }
         
     }
 }
