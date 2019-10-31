@@ -3,6 +3,7 @@ package io.dotconnect.android;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import io.dotconnect.android.enum_class.CallState;
 import io.dotconnect.android.observer.CallInfo;
 import io.dotconnect.android.observer.ConnectAction;
 import io.dotconnect.android.observer.MessageInfo;
@@ -17,13 +18,16 @@ public class ConnectManager {
     private static final String TAG = "ConnectManager";
     private static ConnectManager instance;
 
+    private CallManager callManager;
     private CallInfo callInfo;
-    private Call call;
+//    private Call call;
 
     private ConnectManager() {
         SignalingAction.getInstance().add(registrationObserver);
         SignalingAction.getInstance().add(messageObserver);
         SignalingAction.getInstance().add(callObserver);
+
+        callManager = CallManager.getInstance();
     }
 
     public static ConnectManager getInstance() {
@@ -65,46 +69,74 @@ public class ConnectManager {
 
     //Call
     public void call(Context context, String target, String teamId) {
-        call.setConfig(target, teamId);
-        call.call(context);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.setConfig(target, teamId);
+            call.call(context);
+        }
     }
 
     public void videoCall(Context context, String target, String teamId) {
-        call.setConfig(target, teamId);
-        call.videoCall(context);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.setConfig(target, teamId);
+            call.videoCall(context);
+        }
     }
 
     public void screenCall(Context context, Intent data, String target, String teamId) {
-        call.setConfig(target, teamId);
-        call.screenCall(context, data);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.setConfig(target, teamId);
+            call.screenCall(context, data);
+        }
     }
 
     public void accept(Context context) {
-        call.acceptCall(context, callInfo.getSdp());
+        Call call = callManager.get();
+        if (call!=null) {
+            call.acceptCall(context, callInfo.getSdp());
+        }
     }
 
     public void acceptVideoCall(Context context) {
-        call.acceptVideoCall(context, callInfo.getSdp());
+        Call call = callManager.get();
+        if (call!=null) {
+            call.acceptVideoCall(context, callInfo.getSdp());
+        }
     }
 
     public void acceptScreenCall(Context context, Intent data) {
-        call.acceptScreenCall(context, callInfo.getSdp(), data);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.acceptScreenCall(context, callInfo.getSdp(), data);
+        }
     }
 
     public void end() {
+        Call call = callManager.get();
         if (call!=null) {
-            cancel();
+            if (call.getCallState() == CallState.calling)
+                hangup();
+            else
+                cancel();
         } else {
             reject();
         }
     }
 
     public void cancel() {
-        call.cancel();
+        Call call = callManager.get();
+        if (call!=null) {
+            call.cancel();
+        }
     }
 
     public void hangup() {
-        call.hangup();
+        Call call = callManager.get();
+        if (call!=null) {
+            call.hangup();
+        }
     }
 
     public void reject() {
@@ -112,18 +144,23 @@ public class ConnectManager {
     }
 
     public void initView() {
-        call.initView();
+        Call call = callManager.get();
+        if (call!=null) {
+            call.initView();
+        }
     }
 
     public void setVideoView(ConnectView cvFullView, ConnectView cvSmallView) {
-        if (callInfo == null)
+        Call call = callManager.get();
+        if (call == null) {
             call = new Call();
-        else
-            call = new Call(callInfo.getCounterpart(), callInfo.getTeamId());
+            callManager.add(call);
+        }
         call.setVideoView(cvFullView, cvSmallView);
     }
 
     public void swapCamera(boolean swap) {
+        Call call = callManager.get();
         call.swapCamera(swap);
     }
 
@@ -183,12 +220,15 @@ public class ConnectManager {
             Log.d(TAG, "onIncomingCall");
             ConnectManager.this.callInfo = new CallInfo(call);
             ConnectAction.getInstance().onIncomingCallObserver(callInfo);
+            callManager.add(new Call(callInfo.getCounterpart(), callInfo.getTeamId()));
+            callManager.get().setCallState(CallState.incoming);
         }
 
         @Override
         public void onOutgoingCall(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onOutgoingCall");
             ConnectAction.getInstance().onOutgoingCallObserver(new CallInfo(call));
+            callManager.get().setCallState(CallState.sending);
         }
 
         @Override
@@ -206,14 +246,16 @@ public class ConnectManager {
         @Override
         public void onOutgoingCallConnected(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onOutgoingCallConnected");
-            ConnectManager.this.call.setRemoteDescription(call.getSdp());
+            callManager.get().setRemoteDescription(call.getSdp());
             ConnectAction.getInstance().onOutgoingCallConnectedObserver(new CallInfo(call));
+            callManager.get().setCallState(CallState.calling);
         }
 
         @Override
         public void onIncomingCallConnected(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onIncomingCallConnected");
             ConnectAction.getInstance().onIncomingCallConnectedObserver(new CallInfo(call));
+            callManager.get().setCallState(CallState.calling);
         }
 
         @Override
@@ -226,8 +268,9 @@ public class ConnectManager {
         public void onTerminated(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onTerminated");
             ConnectAction.getInstance().onTerminatedObserver(new CallInfo(call));
-            if (ConnectManager.this.call!=null)
-                ConnectManager.this.call.disconnect();
+            callManager.get().setCallState(CallState.idle);
+            if (callManager.get()!=null)
+                callManager.get().disconnect();
         }
 
         @Override

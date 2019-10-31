@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     val COUNTERPART_ACCOUNT = "counterpartAccount"
 
     val appId = "testAppId"
-    var mContext:Context = this
+    private var mContext:Context = this
 
     //Note8
     private val email = "note8"

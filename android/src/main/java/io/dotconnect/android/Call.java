@@ -2,6 +2,7 @@ package io.dotconnect.android;
 
 import android.content.Context;
 import android.content.Intent;
+import io.dotconnect.android.enum_class.CallState;
 import io.dotconnect.android.view.ConnectView;
 import io.dotconnect.p2p.P2PManager;
 import io.dotconnect.p2p.SDPListener;
@@ -21,6 +22,7 @@ public class Call {
 
     private String callId;
     private SDPType sdpType;
+    private CallState callState;
     private String target, teamId, reason;
     private int cause;
     private SDPListener listener = new SDPListener() {
@@ -165,5 +167,13 @@ public class Call {
 
     public void setCallId(String callId) {
         this.callId = callId;
+    }
+
+    public CallState getCallState() {
+        return callState;
+    }
+
+    public void setCallState(CallState callState) {
+        this.callState = callState;
     }
 }
