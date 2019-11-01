@@ -37,6 +37,8 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.dotconnect.android.util.Configuration.APP_NAME;
+
 /**
  * Peer connection client implementation.
  *
@@ -73,8 +75,6 @@ public class PeerConnectionClient {
     private static final int HD_VIDEO_HEIGHT = 720;
     private static final int BPS_IN_KBPS = 1000;
     private static final String RTCEVENTLOG_OUTPUT_DIR_NAME = "rtc_event_log";
-
-    public static final String API_TAG = "dot-connect";
 
     // Executor thread is started once in private ctor and is used for all
     // peer connection API calls to ensure new peer connection factory is
@@ -1156,7 +1156,7 @@ public class PeerConnectionClient {
         @Override
         public void onIceCandidate(final IceCandidate candidate) {
             executor.execute(() -> {
-                Log.d(API_TAG, "onIceCandidate: " + candidate.sdp);
+                Log.d(APP_NAME, "onIceCandidate: " + candidate.sdp);
                 events.onIceCandidate(candidate);
             });
         }
@@ -1164,20 +1164,20 @@ public class PeerConnectionClient {
         @Override
         public void onIceCandidatesRemoved(final IceCandidate[] candidates) {
             executor.execute(() -> {
-                Log.d(API_TAG, "onIceCandidatesRemoved");
+                Log.d(APP_NAME, "onIceCandidatesRemoved");
                 events.onIceCandidatesRemoved(candidates);
             });
         }
 
         @Override
         public void onSignalingChange(PeerConnection.SignalingState newState) {
-            Log.d(API_TAG, "SignalingState: " + newState);
+            Log.d(APP_NAME, "SignalingState: " + newState);
         }
 
         @Override
         public void onIceConnectionChange(final PeerConnection.IceConnectionState newState) {
             executor.execute(() -> {
-                Log.d(API_TAG, "IceConnectionState: " + newState);
+                Log.d(APP_NAME, "IceConnectionState: " + newState);
                 if (newState == IceConnectionState.CONNECTED) {
                     events.onIceConnected();
                 } else if (newState == IceConnectionState.DISCONNECTED) {
@@ -1191,7 +1191,7 @@ public class PeerConnectionClient {
         @Override
         public void onConnectionChange(final PeerConnection.PeerConnectionState newState) {
             executor.execute(() -> {
-                Log.d(API_TAG, "PeerConnectionState: " + newState);
+                Log.d(APP_NAME, "PeerConnectionState: " + newState);
                 if (newState == PeerConnectionState.CONNECTED) {
                     events.onConnected();
                 } else if (newState == PeerConnectionState.DISCONNECTED) {
@@ -1204,12 +1204,12 @@ public class PeerConnectionClient {
 
         @Override
         public void onIceGatheringChange(PeerConnection.IceGatheringState newState) {
-            Log.d(API_TAG, "IceGatheringState: " + newState);
+            Log.d(APP_NAME, "IceGatheringState: " + newState);
         }
 
         @Override
         public void onIceConnectionReceivingChange(boolean receiving) {
-            Log.d(API_TAG, "IceConnectionReceiving changed to " + receiving);
+            Log.d(APP_NAME, "IceConnectionReceiving changed to " + receiving);
         }
 
         @Override
@@ -1220,7 +1220,7 @@ public class PeerConnectionClient {
 
         @Override
         public void onDataChannel(final DataChannel dc) {
-            Log.d(API_TAG, "New Data channel " + dc.label());
+            Log.d(APP_NAME, "New Data channel " + dc.label());
 
             if (!dataChannelEnabled)
                 return;

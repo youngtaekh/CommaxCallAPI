@@ -52,7 +52,7 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
 
         if (!incoming) {
             tvStatus.setText("Sending");
-            initView();
+//            initView();
             if (screen) {
 //                startScreenCapture();
             } else if (video) {
@@ -83,8 +83,8 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
 //        });
 
         tvAccept.setOnClickListener(view ->  {
-            initView();
-            ConnectManager.getInstance().acceptVideoCall(this);
+//            initView();
+            ConnectManager.getInstance().acceptVideoCall(this, cvFullView);
 //            if (screen) startScreenCapture();
 //            else if (video) ConnectManager.getInstance().acceptVideoCall(this);
 //            else    ConnectManager.getInstance().accept(this);
@@ -186,8 +186,7 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
             startActivityForResult(manager.createScreenCaptureIntent(), 0);
     }
 
-    private void initView() {
-        ConnectManager.getInstance().setVideoView(cvFullView, cvSmallView);
-        ConnectManager.getInstance().initView();
-    }
+//    private void initView() {
+//        ConnectManager.getInstance().initView(cvFullView, cvSmallView);
+//    }
 }

@@ -5,9 +5,11 @@ public enum CallState {
     sending,
     ringing,
     incoming,
+    incomingConnectTry,
     incomingRTPConnecting,
     outgoingRTPConnecting,
     incomingConnecting,
     outgoingConnecting,
     calling,
+    endTry
 }

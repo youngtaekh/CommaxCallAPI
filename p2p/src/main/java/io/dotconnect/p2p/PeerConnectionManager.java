@@ -14,7 +14,7 @@ import org.webrtc.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.dotconnect.p2p.PeerConnectionClient.API_TAG;
+import static io.dotconnect.android.util.Configuration.APP_NAME;
 import static io.dotconnect.p2p.utils.Configuration.*;
 
 public class PeerConnectionManager implements AppRTCClient.SignalingEvents,
@@ -129,14 +129,10 @@ public class PeerConnectionManager implements AppRTCClient.SignalingEvents,
 
     public void getSDP(boolean initiator, String remoteSDP, SDPListener listener) {
         this.listener = listener;
-        List<PeerConnection.IceServer> iceServers = new ArrayList<>();
         // Request TURN servers.
         List<PeerConnection.IceServer> turnServers =
                 new Ice().getIceServers();
-        for (PeerConnection.IceServer turnServer : turnServers) {
-            Log.d(TAG, "TurnServer: " + turnServer);
-            iceServers.add(turnServer);
-        }
+        List<PeerConnection.IceServer> iceServers = new ArrayList<>(turnServers);
 
         SessionDescription offerSdp=null;
         if (remoteSDP!=null)
@@ -269,7 +265,7 @@ public class PeerConnectionManager implements AppRTCClient.SignalingEvents,
         }
         peerConnectionClient.setRemoteDescription(sdp);
         if (!signalingParameters.initiator) {
-            Log.d(API_TAG, "Creating ANSWER...");
+            Log.d(APP_NAME, "Creating ANSWER...");
             // Create answer. Answer SDP will be sent to offering client in
             // PeerConnectionEvents.onLocalDescription event.
             peerConnectionClient.createAnswer();

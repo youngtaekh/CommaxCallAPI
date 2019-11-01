@@ -8,6 +8,8 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static io.dotconnect.android.util.Configuration.APP_NAME;
+
 public class CertificationUtil {
 
     public static void copyAssets(Context context) {
@@ -16,7 +18,7 @@ public class CertificationUtil {
         try {
             files = assetManager.list("");
         } catch (IOException e) {
-            Log.e("tag", "Failed to get asset file list.");
+            Log.e(APP_NAME, "Failed to get asset file list.");
         }
         if(files != null) {
             for (String filename : files) {
@@ -38,7 +40,7 @@ public class CertificationUtil {
                             outputStream = null;
                         }
                     } catch (IOException e) {
-                        Log.e("tag", "Failed to copy asset file: " + filename);
+                        Log.e(APP_NAME, "Failed to copy asset file: " + filename);
                     }
                 }
             }

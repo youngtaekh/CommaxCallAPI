@@ -3,6 +3,7 @@ package io.dotconnect.android;
 import android.content.Context;
 import android.content.Intent;
 import io.dotconnect.android.enum_class.CallState;
+import io.dotconnect.android.observer.CallInfo;
 import io.dotconnect.android.view.ConnectView;
 import io.dotconnect.p2p.P2PManager;
 import io.dotconnect.p2p.SDPListener;
@@ -24,6 +25,8 @@ public class Call {
     private String callId;
     private SDPType sdpType;
     private CallState callState;
+    private CallInfo callInfo;
+    private P2PManager p2pManager;
     private String target, teamId, reason;
     private int cause;
     private SDPListener listener = new SDPListener() {
@@ -122,48 +125,61 @@ public class Call {
 
     void cancel() {
         CallCore.getInstance().cancelCall();
-        P2PManager.getInstance().disconnect();
+        if (p2pManager!=null)
+            p2pManager.disconnect();
     }
 
     void hangup() {
         CallCore.getInstance().hangupCall();
-        P2PManager.getInstance().disconnect();
+        if (p2pManager!=null)
+            p2pManager.disconnect();
     }
 
     void reject() {
         CallCore.getInstance().rejectCall();
-        P2PManager.getInstance().disconnect();
+        if (p2pManager!=null)
+            p2pManager.disconnect();
     }
 
     void disconnect() {
-        P2PManager.getInstance().disconnect();
+        if (p2pManager!=null) {
+            p2pManager.disconnect();
+            p2pManager = null;
+        }
     }
 
     void initView() {
-        P2PManager.getInstance().initRenderer();
+        if (p2pManager==null)
+            p2pManager = new P2PManager();
+        p2pManager.initRenderer();
     }
 
     void setVideoView(ConnectView cvFullView, ConnectView cvSmallView) {
-        P2PManager.getInstance().setRenderer(cvFullView, cvSmallView);
+        if (p2pManager==null)
+            p2pManager = new P2PManager();
+        p2pManager.setRenderer(cvFullView, cvSmallView);
     }
 
     void setRemoteDescription(String description) {
-        P2PManager.getInstance().setRemoteDescription(description);
+        if (p2pManager!=null)
+            p2pManager.setRemoteDescription(description);
     }
 
     void swapCamera(boolean swap) {
-        P2PManager.getInstance().setSwappedFeeds(swap);
+        if (p2pManager!=null)
+            p2pManager.setSwappedFeeds(swap);
     }
 
     void setScaleType(RendererCommon.ScalingType scaleType) {
-        P2PManager.getInstance().setScaleType(scaleType);
+        if (p2pManager!=null)
+            p2pManager.setScaleType(scaleType);
     }
 
     private void getSDP(Context context, boolean video, boolean dataChannel, String remoteSDP, Intent data) {
         boolean offer = remoteSDP==null;
         boolean screen = data!=null;
-        P2PManager.getInstance().setParameters(context, video, screen, true, dataChannel, data);
-        P2PManager.getInstance().startCall(context, offer, remoteSDP, listener);
+        p2pManager.setParameters(context, video, screen, true, dataChannel, data);
+        p2pManager.startCall(context, offer, remoteSDP, listener);
     }
 
     String getCallId() {
@@ -180,5 +196,13 @@ public class Call {
 
     void setCallState(CallState callState) {
         this.callState = callState;
+    }
+
+    public CallInfo getCallInfo() {
+        return callInfo;
+    }
+
+    public void setCallInfo(CallInfo callInfo) {
+        this.callInfo = callInfo;
     }
 }

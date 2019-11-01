@@ -41,7 +41,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
         if (!incoming) {
             tvStatus.text = "Sending"
-            initView()
+//            initView()
 //            when {
 //                screen -> startScreenCapture()
 //                video -> ConnectManager.getInstance().videoCall(this, target, teamId)
@@ -70,8 +70,8 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 //        }
 
         tvAccept.setOnClickListener {
-            initView()
-            ConnectManager.getInstance().acceptVideoCall(this)
+//            initView()
+            ConnectManager.getInstance().acceptVideoCall(this, cvFullView)
 //            when {
 //                screen -> startScreenCapture()
 //                video -> ConnectManager.getInstance().acceptVideoCall(this)
@@ -164,8 +164,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         )
     }
 
-    private fun initView() {
-        ConnectManager.getInstance().setVideoView(cvFullView, null)
-        ConnectManager.getInstance().initView()
-    }
+//    private fun initView() {
+//        ConnectManager.getInstance().initView(cvFullView)
+//    }
 }

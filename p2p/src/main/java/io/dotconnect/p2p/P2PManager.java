@@ -210,13 +210,9 @@ public class P2PManager {
 
     public void startCall(Context context, boolean isOffer, String description, SDPListener listener) {
         this.listener = listener;
-        List<PeerConnection.IceServer> iceServers = new ArrayList<>();
         // Request TURN servers.
         List<PeerConnection.IceServer> turnServers = new Ice().getIceServers();
-        for (PeerConnection.IceServer turnServer : turnServers) {
-            Log.d("asdf", "TurnServer: " + turnServer);
-            iceServers.add(turnServer);
-        }
+        List<PeerConnection.IceServer> iceServers = new ArrayList<>(turnServers);
 
         SessionDescription offerSDP = null;
         if (!isOffer) {
@@ -258,7 +254,6 @@ public class P2PManager {
     }
 
     public void setSwappedFeeds(boolean isSwappedFeeds) {
-        Log.d("asd", "setSwappedFeeds: $isSwappedFeeds");
         if (pipRenderer!=null && fullscreenRenderer!=null) {
             localProxyVideoSink.setTarget(isSwappedFeeds ? fullscreenRenderer : pipRenderer);
             remoteProxyRenderer.setTarget(isSwappedFeeds ? pipRenderer : fullscreenRenderer);

@@ -5,10 +5,10 @@ import io.dotconnect.signaling.observer.Call;
 import io.dotconnect.signaling.observer.SignalingAction;
 import io.dotconnect.signaling.observer.Message;
 
+import static io.dotconnect.android.util.Configuration.APP_NAME;
+
 public class EventNotifier
 {
-    private final String TAG = "CallAPI";
-
     // Registration Events
     private static final int OnRegistrationSuccess      = 1001;
     private static final int OnRegistrationFailure      = 1002;
@@ -199,189 +199,189 @@ public class EventNotifier
 
     // Registration Events
     private void onRegistrationSuccess() {
-        Log.d(TAG, "onRegistrationSuccess");
+        Log.d(APP_NAME, "onRegistrationSuccess");
         signalingAction.onRegistrationSuccessObserver();
     }
 
     private void onRegistrationFailure() {
-        Log.d(TAG, "onRegistrationFailure");
+        Log.d(APP_NAME, "onRegistrationFailure");
         signalingAction.onRegistrationFailureObserver();
     }
 
     private void onUnRegistrationSuccess() {
-        Log.d(TAG, "onUnRegistrationSuccess");
+        Log.d(APP_NAME, "onUnRegistrationSuccess");
         signalingAction.onUnRegistrationSuccessObserver();
     }
 
     private void onSocketClosure() {
-        Log.d(TAG, "onSocketClosure");
+        Log.d(APP_NAME, "onSocketClosure");
         signalingAction.onSocketClosureObserver();
     }
 
     private void onOutgoingCall(SipMessage message) {
-        Log.d(TAG, "onOutgoingCall");
+        Log.d(APP_NAME, "onOutgoingCall");
         signalingAction.onOutgoingCallObserver(new Call(message));
     }
 
     private void onIncomingCall(SipMessage message) {
-        Log.d(TAG, "onIncomingCall");
+        Log.d(APP_NAME, "onIncomingCall");
         signalingAction.onIncomingCallObserver(new Call(message));
     }
 
     private void onUpdate(SipMessage message) {
-        Log.d(TAG, "onUpdate");
+        Log.d(APP_NAME, "onUpdate");
         signalingAction.onUpdateObserver(new Call(message));
     }
 
     private void onFailure(SipMessage message) {
-        Log.d(TAG, "onFailure");
+        Log.d(APP_NAME, "onFailure");
         signalingAction.onFailureObserver(new Call(message));
     }
 
     private void onEarlyMedia(SipMessage message) {
-        Log.d(TAG, "onEarlyMedia");
+        Log.d(APP_NAME, "onEarlyMedia");
         signalingAction.onEarlyMediaObserver(new Call(message));
     }
 
     private void onProvisional() {
-        Log.d(TAG, "onProvisional");
+        Log.d(APP_NAME, "onProvisional");
     }
 
     private void onPrack() {
-        Log.d(TAG, "onPrack");
+        Log.d(APP_NAME, "onPrack");
     }
 
     private void onOutgoingCallConnected(SipMessage message) {
-        Log.d(TAG, "onOutgoingCallConnected");
+        Log.d(APP_NAME, "onOutgoingCallConnected");
         signalingAction.onOutgoingCallConnectedObserver(new Call(message));
     }
 
     private void onIncomingCallConnected(SipMessage message) {
-        Log.d(TAG, "onIncomingCallConnected");
+        Log.d(APP_NAME, "onIncomingCallConnected");
         signalingAction.onIncomingCallConnectedObserver(new Call(message));
     }
 
     private void onStableCallTimeout() {
-        Log.d(TAG, "onStableCallTimeout");
+        Log.d(APP_NAME, "onStableCallTimeout");
     }
 
     private void onTerminated(SipMessage message) {
-        Log.d(TAG, "onTerminated");
+        Log.d(APP_NAME, "onTerminated");
         signalingAction.onTerminatedObserver(new Call(message));
     }
 
     private void onRedirected(SipMessage message) {
-        Log.d(TAG, "onRedirected");
+        Log.d(APP_NAME, "onRedirected");
     }
 
     private void onAnswer(SipMessage message) {
-        Log.d(TAG, "onAnswer");
+        Log.d(APP_NAME, "onAnswer");
     }
 
     private void onOffer(SipMessage message) {
-        Log.d(TAG, "onOffer");
+        Log.d(APP_NAME, "onOffer");
     }
 
     private void onOfferRequired(SipMessage message) {
-        Log.d(TAG, "onOfferRequired");
+        Log.d(APP_NAME, "onOfferRequired");
     }
 
     private void onOfferRejected(SipMessage message) {
-        Log.d(TAG, "onOfferRejected");
+        Log.d(APP_NAME, "onOfferRejected");
     }
 
     private void onOfferRequestRejected(SipMessage message) {
-        Log.d(TAG, "onOfferRequestRejected");
+        Log.d(APP_NAME, "onOfferRequestRejected");
     }
 
     private void onRemoteSdpChanged(SipMessage message) {
-        Log.d(TAG, "onRemoteSdpChanged");
+        Log.d(APP_NAME, "onRemoteSdpChanged");
     }
 
     private void onInfo(SipMessage message) {
-        Log.d(TAG, "onInfo");
+        Log.d(APP_NAME, "onInfo");
     }
 
     private void onInfoSuccess(SipMessage message) {
-        Log.d(TAG, "onInfoSuccess");
+        Log.d(APP_NAME, "onInfoSuccess");
     }
 
     private void onInfoFailure(SipMessage message) {
-        Log.d(TAG, "onInfoFailure");
+        Log.d(APP_NAME, "onInfoFailure");
     }
 
     private void onRefer(SipMessage message) {
-        Log.d(TAG, "onRefer");
+        Log.d(APP_NAME, "onRefer");
     }
 
     private void onReferAccepted(SipMessage message) {
-        Log.d(TAG, "onReferAccepted");
+        Log.d(APP_NAME, "onReferAccepted");
     }
 
     private void onReferRejected(SipMessage message) {
-        Log.d(TAG, "onReferRejected");
+        Log.d(APP_NAME, "onReferRejected");
     }
 
     private void onReferNoSub(SipMessage message) {
-        Log.d(TAG, "onReferNoSub");
+        Log.d(APP_NAME, "onReferNoSub");
     }
 
     private void onMessage(SipMessage message) {
-        Log.d(TAG, "onMessage");
+        Log.d(APP_NAME, "onMessage");
     }
 
     private void onMessageSuccess(SipMessage message) {
-        Log.d(TAG, "onMessageSuccess");
+        Log.d(APP_NAME, "onMessageSuccess");
     }
 
     private void onMessageFailure(SipMessage message) {
-        Log.d(TAG, "onMessageFailure");
+        Log.d(APP_NAME, "onMessageFailure");
     }
 
     private void onForkDestroyed() {
-        Log.d(TAG, "onForkDestroyed");
+        Log.d(APP_NAME, "onForkDestroyed");
     }
 
     private void onReadyToSend(SipMessage message) {
-        Log.d(TAG, "onReadyToSend");
+        Log.d(APP_NAME, "onReadyToSend");
     }
 
     private void onFlowTerminated() {
-        Log.d(TAG, "onFlowTerminated");
+        Log.d(APP_NAME, "onFlowTerminated");
     }
 
     private void onBusyIncomingCall(SipMessage message) {
-        Log.d(TAG, "onBusyIncomingCall");
+        Log.d(APP_NAME, "onBusyIncomingCall");
         signalingAction.onBusyOnIncomingCallObserver(new Call(message));
     }
 
     private void onCancelCallBefore180(SipMessage message) {
-        Log.d(TAG, "onCancelCallBefore180");
+        Log.d(APP_NAME, "onCancelCallBefore180");
         signalingAction.onCancelCallBefore180Observer(new Call(message));
     }
 
     // DialogSetHandler
     private void onTrying(SipMessage message) {
-        Log.d(TAG, "onTrying");
+        Log.d(APP_NAME, "onTrying");
     }
 
     private void onNonDialogCreatingProvisional(SipMessage message) {
-        Log.d(TAG, "onNonDialogCreatingProvisional");
+        Log.d(APP_NAME, "onNonDialogCreatingProvisional");
     }
 
     //MessageObserver
     private void onMessageSendSuccess(SipMessage message) {
-        Log.d(TAG, "onMessageSendSuccess");
+        Log.d(APP_NAME, "onMessageSendSuccess");
         signalingAction.onMessageSendSuccessObserver(new Message(message));
     }
 
     private void onMessageSendFailure(SipMessage message) {
-        Log.d(TAG, "onMessageSendFailure");
+        Log.d(APP_NAME, "onMessageSendFailure");
         signalingAction.onMessageSendFailureObserver(new Message(message));
     }
 
     private void onMessageArrival(SipMessage message) {
-        Log.d(TAG, "onMessageArrival");
+        Log.d(APP_NAME, "onMessageArrival");
         signalingAction.onMessageArrivalObserver(new Message(message));
     }
 }

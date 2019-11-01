@@ -16,6 +16,8 @@ import io.dotconnect.signaling.observer.SignalingAction;
 import io.dotconnect.signaling.observer.SignalingObserver;
 import org.webrtc.RendererCommon;
 
+import static io.dotconnect.android.util.Configuration.APP_NAME;
+
 public class ConnectManager {
     private static final String TAG = "ConnectManager";
     private static ConnectManager instance;
@@ -132,11 +134,30 @@ public class ConnectManager {
      * accept call with video
      * @param context
      */
-    public void acceptVideoCall(Context context) {
+    public int acceptVideoCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
         Call call = callManager.get();
-        if (call!=null) {
+        if (call!=null && callInfo!=null && call.getCallState()==CallState.incoming) {
+            Log.d(APP_NAME, "acceptVideoCall");
+            call.setCallState(CallState.incomingConnectTry);
+            initView(cvFullView, cvSmallView);
             call.acceptVideoCall(context, callInfo.getSdp());
+            return 0;
         }
+
+        return -1;
+    }
+
+    public int acceptVideoCall(Context context, ConnectView cvFullView) {
+        Call call = callManager.get();
+        if (call!=null && callInfo!=null && call.getCallState()==CallState.incoming) {
+            Log.d(APP_NAME, "acceptVideoCall");
+            call.setCallState(CallState.incomingConnectTry);
+            initView(cvFullView);
+            call.acceptVideoCall(context, callInfo.getSdp());
+            return 0;
+        }
+
+        return -1;
     }
 
     private void acceptScreenCall(Context context, Intent data) {
@@ -152,7 +173,8 @@ public class ConnectManager {
      */
     public void end() {
         Call call = callManager.get();
-        if (call!=null) {
+        if (call!=null && call.getCallState()!=CallState.endTry) {
+            call.setCallState(CallState.endTry);
             if (call.getCallState() == CallState.calling)
                 hangup();
             else if (call.getCallState() == CallState.incoming)
@@ -180,37 +202,20 @@ public class ConnectManager {
         Call call = callManager.get();
         if (call!=null) {
             call.reject();
+            callManager.remove();
         }
     }
 
-    public void initView() {
+    private void initView(ConnectView cvFullView, ConnectView cvSmallView) {
         Call call = callManager.get();
-        if (call!=null) {
-            call.initView();
-        }
-    }
-
-    /**
-     * set ConnectView for video render
-     * @param cvFullView full size view
-     * @param cvSmallView
-     */
-    public void setVideoView(ConnectView cvFullView, ConnectView cvSmallView) {
-        Call call = callManager.get();
-        if (call == null) {
-            call = new Call();
-            callManager.add(call);
-        }
         call.setVideoView(cvFullView, cvSmallView);
+        call.initView();
     }
 
-    public void setVideoView(ConnectView cvFullView) {
+    private void initView(ConnectView cvFullView) {
         Call call = callManager.get();
-        if (call == null) {
-            call = new Call();
-            callManager.add(call);
-        }
         call.setVideoView(cvFullView, null);
+        call.initView();
     }
 
     /**
@@ -336,6 +341,7 @@ public class ConnectManager {
             callManager.get().setCallState(CallState.idle);
             if (callManager.get()!=null)
                 callManager.get().disconnect();
+            callManager.remove();
         }
 
         @Override

@@ -97,7 +97,7 @@ public class Register {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Log.d("asdf", result);
+            Log.d(APP_NAME, result);
             try {
                 deviceCheckJson(mContext, result, userId, appId, accessToken, tlsDomain);
             } catch (JSONException e) {
