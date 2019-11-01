@@ -18,17 +18,10 @@ import org.json.JSONObject;
 import java.util.StringTokenizer;
 
 import static io.dotconnect.android.util.AuthenticationUtil.getUUID;
+import static io.dotconnect.android.util.Configuration.*;
 import static io.dotconnect.signaling.util.CertificationUtil.*;
 
 public class Register {
-    //    public static final String REST_URL = "https://www.voiceloco.com/api/v1.0";
-    private static final String DOMAIN = ".commax.dot-connect.io";
-
-    private static final int registerDuration = 350;
-    private static final String accessToken = "";
-    private static final String outboundProxyAddress = "commax.dot-connect.io";
-    private static final int outboundProxyPort = 5071;
-    private static final String coreVersion = "1.0";
 
     private static Register instance;
 
@@ -52,7 +45,7 @@ public class Register {
         return CallCore.getInstance().isRegistered();
     }
 
-    void start(Context context, String userId, String appId, String accessToken, String fcmToken) {
+    void start(Context context, String userId, String appId, String accessToken, String fcmToken, String tlsDomain) {
         if (isRegistered()) {
             //Observer
             ConnectAction.getInstance().onRegistrationSuccessObserver();
@@ -69,7 +62,7 @@ public class Register {
                 jsonObject.put("osType", Configuration.OsType);
                 jsonObject.put("osVersion", Build.VERSION.RELEASE);
                 jsonObject.put("appVersion", BuildConfig.VERSION_NAME);
-                new DeviceCheck(context, userId, appId, accessToken)
+                new DeviceCheck(context, userId, appId, accessToken, tlsDomain)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Configuration.DEVICE_CHECK,
                                            jsonObject.toString(), accessToken);
 
@@ -86,17 +79,19 @@ public class Register {
         private String userId;
         private String appId;
         private String accessToken;
+        private String tlsDomain;
 
-        DeviceCheck(Context context, String userId, String appId, String accessToken) {
+        DeviceCheck(Context context, String userId, String appId, String accessToken, String tlsDomain) {
             this.mContext = context;
             this.userId = userId;
             this.appId = appId;
             this.accessToken = accessToken;
+            this.tlsDomain = tlsDomain;
         }
 
         @Override
         protected String doInBackground(String... params) {
-            return ConnectServer.POST(params[0], params[1], params[2]);
+            return ConnectServer.POST(params[0], params[1], params[2], null);
         }
 
         @Override
@@ -104,27 +99,27 @@ public class Register {
             super.onPostExecute(result);
             Log.d("asdf", result);
             try {
-                deviceCheckJson(mContext, result, userId, appId, accessToken);
+                deviceCheckJson(mContext, result, userId, appId, accessToken, tlsDomain);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void deviceCheckJson(Context context, String result, String userId, String appId, String accessToken) throws JSONException {
+    private void deviceCheckJson(Context context, String result, String userId, String appId, String accessToken, String tlsDomain) throws JSONException {
 
         JSONObject response = new JSONObject(result);
         JSONObject header = response.getJSONObject("header");
         if(header.getString("status").equals("success")){
             stop();
-            sipStart(context, userId, appId, accessToken);
+            sipStart(context, userId, appId, accessToken, tlsDomain);
         } else if(header.getString("status").equals("error")){
             //errCode check
         }
     }
 
-    private void sipStart(Context context, String userId, String appId, String accessToken) {
-        String domain = appId + DOMAIN;
+    private void sipStart(Context context, String userId, String appId, String accessToken, String tlsDomain) {
+        String domain = appId + "." + tlsDomain;
         generateCertification(context, domain);
         EventNotifier eventNotifier = EventNotifier.getInstance();
 
@@ -137,7 +132,7 @@ public class Register {
                 -1,
                 0,
                 context.getFilesDir().toString(),
-                domain,
+                tlsDomain,
                 registerDuration,
                 getUUID(context),
                 userId,

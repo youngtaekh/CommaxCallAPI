@@ -54,7 +54,7 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
             tvStatus.setText("Sending");
             initView();
             if (screen) {
-                startScreenCapture();
+//                startScreenCapture();
             } else if (video) {
 //                ConnectManager.getInstance().videoCall(this, target, teamId);
             } else {
@@ -67,31 +67,32 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
             finish();
         });
 
-        tvCancel.setOnClickListener(view ->  {
+//        tvCancel.setOnClickListener(view ->  {
 //            ConnectManager.getInstance().cancel();
 //            finish();
-        });
+//        });
 
-        tvHangup.setOnClickListener(view ->  {
-            ConnectManager.getInstance().hangup();
-            finish();
-        });
+//        tvHangup.setOnClickListener(view ->  {
+//            ConnectManager.getInstance().hangup();
+//            finish();
+//        });
 
-        tvReject.setOnClickListener(view ->  {
-            ConnectManager.getInstance().reject();
-            finish();
-        });
+//        tvReject.setOnClickListener(view ->  {
+//            ConnectManager.getInstance().reject();
+//            finish();
+//        });
 
         tvAccept.setOnClickListener(view ->  {
             initView();
-            if (screen) startScreenCapture();
-            else if (video) ConnectManager.getInstance().acceptVideoCall(this);
+            ConnectManager.getInstance().acceptVideoCall(this);
+//            if (screen) startScreenCapture();
+//            else if (video) ConnectManager.getInstance().acceptVideoCall(this);
 //            else    ConnectManager.getInstance().accept(this);
         });
 
         tvSet.setOnClickListener(view ->  {
-            ConnectManager.getInstance().swapCamera(swap);
-            swap = !swap;
+//            ConnectManager.getInstance().swapCamera(swap);
+//            swap = !swap;
         });
 
         tvSpeaker.setOnClickListener(view ->  {

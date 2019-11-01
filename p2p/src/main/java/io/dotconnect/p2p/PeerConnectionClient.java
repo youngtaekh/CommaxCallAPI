@@ -169,6 +169,7 @@ public class PeerConnectionClient {
     public static class PeerConnectionParameters {
         public final boolean videoCallEnabled;
         public final boolean screenCallEnabled;
+        public final boolean videoRecvOnly;
         public final boolean loopback;
         public final boolean tracing;
         public final int videoWidth;
@@ -192,7 +193,7 @@ public class PeerConnectionClient {
         public final Intent data;
         private final DataChannelParameters dataChannelParameters;
 
-        public PeerConnectionParameters(boolean videoCallEnabled, boolean screenCallEnabled, boolean loopback, boolean tracing,
+        public PeerConnectionParameters(boolean videoCallEnabled, boolean screenCallEnabled, boolean videoRecvOnly, boolean loopback, boolean tracing,
                                         int videoWidth, int videoHeight, int videoFps, int videoMaxBitrate, String videoCodec,
                                         boolean videoCodecHwAcceleration, boolean videoFlexfecEnabled, int audioStartBitrate,
                                         String audioCodec, boolean noAudioProcessing, boolean aecDump, boolean saveInputAudioToFile,
@@ -201,6 +202,7 @@ public class PeerConnectionClient {
                                         Intent data, DataChannelParameters dataChannelParameters) {
             this.videoCallEnabled = videoCallEnabled;
             this.screenCallEnabled = screenCallEnabled;
+            this.videoRecvOnly = videoRecvOnly;
             this.loopback = loopback;
             this.tracing = tracing;
             this.videoWidth = videoWidth;
@@ -364,7 +366,8 @@ public class PeerConnectionClient {
     }
 
     private boolean isVideoCallEnabled() {
-        return peerConnectionParameters.videoCallEnabled && videoCapturer != null;
+//        return peerConnectionParameters.videoCallEnabled && videoCapturer != null;
+        return peerConnectionParameters.videoCallEnabled;
     }
 
     private void createPeerConnectionFactoryInternal(PeerConnectionFactory.Options options) {
@@ -895,13 +898,16 @@ public class PeerConnectionClient {
     private VideoTrack createVideoTrack(VideoCapturer capturer) {
         surfaceTextureHelper =
                 SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
-        videoSource = factory.createVideoSource(capturer.isScreencast());
-        capturer.initialize(surfaceTextureHelper, appContext, videoSource.getCapturerObserver());
-        capturer.startCapture(videoWidth, videoHeight, videoFps);
+        videoSource = factory.createVideoSource(capturer != null && capturer.isScreencast());
+        if (capturer!=null) {
+            capturer.initialize(surfaceTextureHelper, appContext, videoSource.getCapturerObserver());
+            capturer.startCapture(videoWidth, videoHeight, videoFps);
+        }
 
         localVideoTrack = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
-        localVideoTrack.setEnabled(renderVideo);
-        localVideoTrack.addSink(localRender);
+        if (capturer!=null)
+            localVideoTrack.addSink(localRender);
+        localVideoTrack.setEnabled(capturer != null && renderVideo);
         return localVideoTrack;
     }
 

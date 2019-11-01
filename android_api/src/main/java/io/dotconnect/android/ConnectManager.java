@@ -2,7 +2,9 @@ package io.dotconnect.android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
+import io.dotconnect.android.enum_class.CallState;
 import io.dotconnect.android.observer.CallInfo;
 import io.dotconnect.android.observer.ConnectAction;
 import io.dotconnect.android.observer.MessageInfo;
@@ -12,18 +14,29 @@ import io.dotconnect.android.view.ConnectView;
 import io.dotconnect.signaling.callJni.CallCore;
 import io.dotconnect.signaling.observer.SignalingAction;
 import io.dotconnect.signaling.observer.SignalingObserver;
+import org.webrtc.RendererCommon;
 
 public class ConnectManager {
     private static final String TAG = "ConnectManager";
     private static ConnectManager instance;
 
+    private CallManager callManager;
     private CallInfo callInfo;
-    private Call call;
+//    private Call call;
+
+    private Handler coreStopHandler;
+    private Runnable coreStopRunnable = () -> {
+        CallCore.getInstance().stop();
+        release();
+        ConnectAction.getInstance().onUnRegistrationSuccessObserver();
+    };
 
     private ConnectManager() {
         SignalingAction.getInstance().add(registrationObserver);
         SignalingAction.getInstance().add(messageObserver);
         SignalingAction.getInstance().add(callObserver);
+
+        callManager = CallManager.getInstance();
     }
 
     public static ConnectManager getInstance() {
@@ -42,7 +55,6 @@ public class ConnectManager {
     }
 
     //Register
-
     /**
      *
      * @param context
@@ -51,14 +63,18 @@ public class ConnectManager {
      * @param accessToken
      * @param fcmToken Firebase Push Token
      */
-    public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken) {
-        Register.getInstance().start(context, userId, appId, accessToken, fcmToken);
+    public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken, String domain) {
+        Register.getInstance().start(context, userId, appId, accessToken, fcmToken, domain);
     }
 
     public void stopRegistration() {
         Register register = Register.getInstance();
         if (register!=null)
             Register.getInstance().stop();
+        if (coreStopHandler==null) {
+            coreStopHandler = new Handler();
+            coreStopHandler.postDelayed(coreStopRunnable, 1000);
+        }
     }
 
     /**
@@ -82,22 +98,34 @@ public class ConnectManager {
 
     //Call
     private void call(Context context, String target, String teamId) {
-        call.setConfig(target, teamId);
-        call.call(context);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.setConfig(target, teamId);
+            call.call(context);
+        }
     }
 
     private void videoCall(Context context, String target, String teamId) {
-        call.setConfig(target, teamId);
-        call.videoCall(context);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.setConfig(target, teamId);
+            call.videoCall(context);
+        }
     }
 
     private void screenCall(Context context, Intent data, String target, String teamId) {
-        call.setConfig(target, teamId);
-        call.screenCall(context, data);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.setConfig(target, teamId);
+            call.screenCall(context, data);
+        }
     }
 
     private void accept(Context context) {
-        call.acceptCall(context, callInfo.getSdp());
+        Call call = callManager.get();
+        if (call!=null) {
+            call.acceptCall(context, callInfo.getSdp());
+        }
     }
 
     /**
@@ -105,11 +133,17 @@ public class ConnectManager {
      * @param context
      */
     public void acceptVideoCall(Context context) {
-        call.acceptVideoCall(context, callInfo.getSdp());
+        Call call = callManager.get();
+        if (call!=null) {
+            call.acceptVideoCall(context, callInfo.getSdp());
+        }
     }
 
     private void acceptScreenCall(Context context, Intent data) {
-        call.acceptScreenCall(context, callInfo.getSdp(), data);
+        Call call = callManager.get();
+        if (call!=null) {
+            call.acceptScreenCall(context, callInfo.getSdp(), data);
+        }
     }
 
     /**
@@ -117,27 +151,43 @@ public class ConnectManager {
      * else reject the call
      */
     public void end() {
+        Call call = callManager.get();
         if (call!=null) {
-            hangup();
-        } else {
-            reject();
+            if (call.getCallState() == CallState.calling)
+                hangup();
+            else if (call.getCallState() == CallState.incoming)
+                reject();
+            else
+                cancel();
         }
     }
 
     private void cancel() {
-        call.cancel();
+        Call call = callManager.get();
+        if (call!=null) {
+            call.cancel();
+        }
     }
 
-    public void hangup() {
-        call.hangup();
+    private void hangup() {
+        Call call = callManager.get();
+        if (call!=null) {
+            call.hangup();
+        }
     }
 
-    public void reject() {
-        CallCore.getInstance().rejectCall();
+    private void reject() {
+        Call call = callManager.get();
+        if (call!=null) {
+            call.reject();
+        }
     }
 
     public void initView() {
-        call.initView();
+        Call call = callManager.get();
+        if (call!=null) {
+            call.initView();
+        }
     }
 
     /**
@@ -146,19 +196,35 @@ public class ConnectManager {
      * @param cvSmallView
      */
     public void setVideoView(ConnectView cvFullView, ConnectView cvSmallView) {
-        if (callInfo == null)
+        Call call = callManager.get();
+        if (call == null) {
             call = new Call();
-        else
-            call = new Call(callInfo.getCounterpart(), callInfo.getTeamId());
+            callManager.add(call);
+        }
         call.setVideoView(cvFullView, cvSmallView);
+    }
+
+    public void setVideoView(ConnectView cvFullView) {
+        Call call = callManager.get();
+        if (call == null) {
+            call = new Call();
+            callManager.add(call);
+        }
+        call.setVideoView(cvFullView, null);
     }
 
     /**
      * change video between ConnectView
      * @param swap
      */
-    public void swapCamera(boolean swap) {
+    private void swapCamera(boolean swap) {
+        Call call = callManager.get();
         call.swapCamera(swap);
+    }
+
+    public void setScaleType(RendererCommon.ScalingType scaleType) {
+        Call call = callManager.get();
+        call.setScaleType(scaleType);
     }
 
     private SignalingObserver.RegistrationObserver registrationObserver = new SignalingObserver.RegistrationObserver() {
@@ -177,8 +243,11 @@ public class ConnectManager {
         @Override
         public void onUnRegistrationSuccess() {
             Log.d(TAG, "onUnRegistrationSuccess");
-            CallCore callCore = CallCore.getInstance();
-            callCore.stop();
+            if (coreStopHandler!=null) {
+                coreStopHandler.removeCallbacks(coreStopRunnable);
+                coreStopHandler = null;
+            }
+            CallCore.getInstance().stop();
             release();
             ConnectAction.getInstance().onUnRegistrationSuccessObserver();
         }
@@ -216,12 +285,15 @@ public class ConnectManager {
             Log.d(TAG, "onIncomingCall");
             ConnectManager.this.callInfo = new CallInfo(call);
             ConnectAction.getInstance().onIncomingCallObserver(callInfo);
+            callManager.add(new Call(callInfo.getCounterpart(), callInfo.getTeamId()));
+            callManager.get().setCallState(CallState.incoming);
         }
 
         @Override
         public void onOutgoingCall(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onOutgoingCall");
             ConnectAction.getInstance().onOutgoingCallObserver(new CallInfo(call));
+            callManager.get().setCallState(CallState.sending);
         }
 
         @Override
@@ -239,14 +311,16 @@ public class ConnectManager {
         @Override
         public void onOutgoingCallConnected(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onOutgoingCallConnected");
-            ConnectManager.this.call.setRemoteDescription(call.getSdp());
+            callManager.get().setRemoteDescription(call.getSdp());
             ConnectAction.getInstance().onOutgoingCallConnectedObserver(new CallInfo(call));
+            callManager.get().setCallState(CallState.calling);
         }
 
         @Override
         public void onIncomingCallConnected(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onIncomingCallConnected");
             ConnectAction.getInstance().onIncomingCallConnectedObserver(new CallInfo(call));
+            callManager.get().setCallState(CallState.calling);
         }
 
         @Override
@@ -259,8 +333,9 @@ public class ConnectManager {
         public void onTerminated(io.dotconnect.signaling.observer.Call call) {
             Log.d(TAG, "onTerminated");
             ConnectAction.getInstance().onTerminatedObserver(new CallInfo(call));
-            if (ConnectManager.this.call!=null)
-                ConnectManager.this.call.disconnect();
+            callManager.get().setCallState(CallState.idle);
+            if (callManager.get()!=null)
+                callManager.get().disconnect();
         }
 
         @Override

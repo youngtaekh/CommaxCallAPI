@@ -162,11 +162,7 @@ public class P2PManager {
         }
 
         if (fullscreenRenderer!=null) {
-            try {
-                fullscreenRenderer.init(eglBase.getEglBaseContext(), null);
-            } catch (Exception e) {
-
-            }
+            fullscreenRenderer.init(eglBase.getEglBaseContext(), null);
             fullscreenRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
             fullscreenRenderer.setEnableHardwareScaler(false /* enabled */);
         }
@@ -174,7 +170,7 @@ public class P2PManager {
         setSwappedFeeds(false /* isSwappedFeeds */);
     }
 
-    public void setParameters(Context context, boolean isVideoCall, boolean isScreenCall, boolean dataChannel, Intent mediaProjectionPermissionResultData) {
+    public void setParameters(Context context, boolean isVideoCall, boolean isScreenCall, boolean videoRecvOnly, boolean dataChannel, Intent mediaProjectionPermissionResultData) {
         boolean loopback = false;
 
         PeerConnectionClient.DataChannelParameters dataChannelParameters = null;
@@ -186,7 +182,7 @@ public class P2PManager {
         }
 
         peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
-                isVideoCall, isScreenCall, false,
+                isVideoCall, isScreenCall, videoRecvOnly, false,
                 TRACING, VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS,
                 VIDEO_MAX_BITRATE, VIDEO_CODEC,
                 VIDEO_CODEC_HW_ACCELERATION,
@@ -230,10 +226,12 @@ public class P2PManager {
         signalingParameters =
                 new AppRTCClient.SignalingParameters(iceServers, isOffer, offerSDP, null);
         VideoCapturer videoCapturer = null;
-        if (peerConnectionParameters.screenCallEnabled) {
-            videoCapturer = new Camera(context).createScreenCapturer(peerConnectionParameters.data);
-        } else if (peerConnectionParameters.videoCallEnabled) {
-            videoCapturer = new Camera(context).createVideoCapturer();
+        if (!peerConnectionParameters.videoRecvOnly) {
+            if (peerConnectionParameters.screenCallEnabled) {
+                videoCapturer = new Camera(context).createScreenCapturer(peerConnectionParameters.data);
+            } else if (peerConnectionParameters.videoCallEnabled) {
+                videoCapturer = new Camera(context).createVideoCapturer();
+            }
         }
         peerConnectionClient.createPeerConnection(
                 localProxyVideoSink, remoteSinks, videoCapturer, signalingParameters
@@ -277,6 +275,10 @@ public class P2PManager {
                 pipRenderer.setZOrderMediaOverlay(true);
             }
         }
+    }
+
+    public void setScaleType(RendererCommon.ScalingType scaleType) {
+        fullscreenRenderer.setScalingType(scaleType);
     }
 
     public void setRemoteDescription(String description) {

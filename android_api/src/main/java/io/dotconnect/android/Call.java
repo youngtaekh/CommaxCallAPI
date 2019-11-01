@@ -2,10 +2,12 @@ package io.dotconnect.android;
 
 import android.content.Context;
 import android.content.Intent;
+import io.dotconnect.android.enum_class.CallState;
 import io.dotconnect.android.view.ConnectView;
 import io.dotconnect.p2p.P2PManager;
 import io.dotconnect.p2p.SDPListener;
 import io.dotconnect.signaling.callJni.CallCore;
+import org.webrtc.RendererCommon;
 
 public class Call {
     enum SDPType {
@@ -21,6 +23,7 @@ public class Call {
 
     private String callId;
     private SDPType sdpType;
+    private CallState callState;
     private String target, teamId, reason;
     private int cause;
     private SDPListener listener = new SDPListener() {
@@ -152,18 +155,30 @@ public class Call {
         P2PManager.getInstance().setSwappedFeeds(swap);
     }
 
+    void setScaleType(RendererCommon.ScalingType scaleType) {
+        P2PManager.getInstance().setScaleType(scaleType);
+    }
+
     private void getSDP(Context context, boolean video, boolean dataChannel, String remoteSDP, Intent data) {
         boolean offer = remoteSDP==null;
         boolean screen = data!=null;
-        P2PManager.getInstance().setParameters(context, video, screen, dataChannel, data);
+        P2PManager.getInstance().setParameters(context, video, screen, true, dataChannel, data);
         P2PManager.getInstance().startCall(context, offer, remoteSDP, listener);
     }
 
-    public String getCallId() {
+    String getCallId() {
         return callId;
     }
 
-    public void setCallId(String callId) {
+    void setCallId(String callId) {
         this.callId = callId;
+    }
+
+    CallState getCallState() {
+        return callState;
+    }
+
+    void setCallState(CallState callState) {
+        this.callState = callState;
     }
 }

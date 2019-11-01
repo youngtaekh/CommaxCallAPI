@@ -15,7 +15,7 @@ public class ConnectServer {
     private static final int TIMEOUT = 10000;
     private static final String timeout = "timeout";
 
-    public static String POST(String subUrl, String body, String accessToken){
+    public static String POST(String subUrl, String body, String accessToken, String apiKey){
 //        CookieSaver cookieSaver = CookieSaver.getInstance();
         String response = "";
         try {
@@ -39,12 +39,10 @@ public class ConnectServer {
 
             http.setRequestProperty("Accept", "application/json");
             http.setRequestProperty("Content-type", "application/json");
-            http.setRequestProperty("Api-Key", "testApiKey");
             if (accessToken!=null)
                 http.setRequestProperty("Authorization", accessToken);
             else {
-//                http.setRequestProperty("Authorization", "");
-//                http.setRequestProperty("Api-Key", "testApiKey");
+                http.setRequestProperty("Api-Key", apiKey);
             }
 
             http.setDoOutput(true);

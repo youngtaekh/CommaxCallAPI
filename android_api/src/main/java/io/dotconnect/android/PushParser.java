@@ -3,16 +3,18 @@ package io.dotconnect.android;
 import java.util.Map;
 
 public class PushParser {
+    private final static String FROM = "From";
     private final static String EVENT_TYPE = "eventType";
     private final static String TITLE = "title";
     private final static String MESSAGE = "message";
     private final static String CALLER = "caller";
     private final static String CALLEE = "callee";
+    private final static String EVENT = "event";
 
     private final static String NAME = "commax";
 
     private EventType eventType;
-    private String title, message, caller, callee;
+    private String title, message, caller, callee, event;
 
     public enum EventType {
         call,
@@ -21,19 +23,18 @@ public class PushParser {
 
     public PushParser() {}
 
-    private boolean check(EventType eventType) {
-        return eventType == EventType.call
-                || eventType == EventType.cancel;
+    private boolean check(String title) {
+        return TITLE.equalsIgnoreCase(title);
     }
 
     public boolean setPushMap(Map<String, String> data) {
-        if (data.containsKey(EVENT_TYPE) &&
-                check(EventType.valueOf(data.get(EVENT_TYPE)))) {
+        if (data.containsKey(TITLE) && check(data.get(TITLE))) {
             eventType = EventType.valueOf(data.get(EVENT_TYPE));
             title = data.get(TITLE);
             message = data.get(MESSAGE);
             caller = data.get(CALLER);
             callee = data.get(CALLEE);
+            event = data.get(EVENT);
             return true;
         } else {
             return false;
@@ -78,5 +79,13 @@ public class PushParser {
 
     public void setCallee(String callee) {
         this.callee = callee;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
     }
 }

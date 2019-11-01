@@ -74,13 +74,13 @@ public class PeerConnectionManager implements AppRTCClient.SignalingEvents,
     public static PeerConnectionManager getInstance(Context context, boolean isDataChannel,
                                                     boolean isVideoCall, boolean isScreenCall, Intent data) {
         if (instance == null)
-            instance = new PeerConnectionManager(context, isDataChannel, isVideoCall, isScreenCall, data);
+            instance = new PeerConnectionManager(context, isDataChannel, isVideoCall, isScreenCall, false, data);
         return instance;
     }
 
     public static PeerConnectionManager getInstance(Context context, boolean isDataChannel, boolean isVideoCall) {
         if (instance == null)
-            instance = new PeerConnectionManager(context, isDataChannel, isVideoCall, false, null);
+            instance = new PeerConnectionManager(context, isDataChannel, isVideoCall, false, false, null);
         return instance;
     }
 
@@ -89,7 +89,7 @@ public class PeerConnectionManager implements AppRTCClient.SignalingEvents,
     }
 
     private PeerConnectionManager(Context context, boolean isDataChannel,
-                                  boolean isVideoCall, boolean isScreenCall, Intent data) {
+                                  boolean isVideoCall, boolean isScreenCall, boolean videoRecvOnly, Intent data) {
         this.context = context;
         remoteSinks.add(remoteProxyRenderer);
 
@@ -102,7 +102,7 @@ public class PeerConnectionManager implements AppRTCClient.SignalingEvents,
                     MAX_RETRANSMITS, PROTOCOL, NEGOTIATED, ID);
         }
         peerConnectionParameters =
-                new PeerConnectionClient.PeerConnectionParameters(isVideoCall, isScreenCall, false,
+                new PeerConnectionClient.PeerConnectionParameters(isVideoCall, isScreenCall, videoRecvOnly, false,
                         TRACING, VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS,
                         VIDEO_MAX_BITRATE, VIDEO_CODEC,
                         VIDEO_CODEC_HW_ACCELERATION,

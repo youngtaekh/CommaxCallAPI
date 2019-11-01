@@ -20,6 +20,7 @@ import io.dotconnect.android.observer.CallInfo
 import io.dotconnect.android.observer.ConnectAction
 import io.dotconnect.android.observer.ConnectObserver
 import io.dotconnect.android.observer.MessageInfo
+import io.dotconnect.android.util.AuthenticationUtil
 import io.dotconnect.android.util.ConnectServer
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONException
@@ -32,11 +33,12 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     val ACTION_FCM_TOKEN = "actionFCMToken"
     val COUNTERPART_ACCOUNT = "counterpartAccount"
 
-    val appId = "testAppId"
-    var mContext:Context = this
+    val appId = "testappid"
+    val DOMAIN = "commax.dot-connect.io"
+    private var mContext:Context = this
 
     //Note8
-    private val email = "note8"
+    private val email = "youngtaek"
     private val password = "aaaaaa"
     private val deviceId = "11E9D7B9-F4D5-4ACF-B6B9-C690775FA272"
     //Note4
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     private val teamId = "vltest"
 
     //Note8
-    private val callTarget = "note4"
+    private val callTarget = "youngtaek"
     //Note4
 //    private val callTarget = "note8"
 
@@ -138,8 +140,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA
+                Manifest.permission.RECORD_AUDIO
             ),
             0
         )
@@ -174,8 +175,8 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvVideo.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", true)
-//            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
-            intent.putExtra("target", etTarget.text.toString())
+            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + "." + DOMAIN
+            intent.putExtra("target", target)
             intent.putExtra("teamId", etTeamId.text.toString())
             startActivity(intent)
         }
@@ -236,7 +237,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
         override fun doInBackground(vararg params: String): String {
             Log.d(TAG, params[0])
-            return ConnectServer.POST("/apps/$appId/users", params[0], null)
+            return ConnectServer.POST("/apps/$appId/users", params[0], null, "testApiKey")
         }
 
         override fun onPostExecute(result: String) {
@@ -257,7 +258,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
                 // Get new Instance ID token
                 Log.d(TAG, task.result?.token)
                 ConnectManager.getInstance()
-                    .startRegistration(mContext, etEmail.text.toString(), appId, accessToken, task.result?.token)
+                    .startRegistration(mContext, etEmail.text.toString(), appId, accessToken, task.result?.token, DOMAIN)
 
             })
     }

@@ -12,14 +12,16 @@ import io.dotconnect.android.observer.CallInfo
 import io.dotconnect.android.observer.ConnectAction
 import io.dotconnect.android.observer.ConnectObserver
 import kotlinx.android.synthetic.main.activity_call.*
+import org.webrtc.RendererCommon
 
 class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
-//    private var incoming = false
+    private var incoming = false
     private var target: String? = null
 //    private var teamId: String? = null
     private var swap = false
     private var speaker = false
+    private var scaleType = RendererCommon.ScalingType.SCALE_ASPECT_FIT
 
     private var mediaProjectionPermissionResultData: Intent? = null
 
@@ -31,21 +33,21 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val intent = intent
-//        incoming = intent.getBooleanExtra("incoming", false)
+        incoming = intent.getBooleanExtra("incoming", false)
 //        val video:Boolean = intent.getBooleanExtra("video", false)
 //        val screen:Boolean = intent.getBooleanExtra("screen", false)
         target = intent.getStringExtra("target")
 //        teamId = intent.getStringExtra("teamId")
 
-//        if (!incoming) {
-//            tvStatus.text = "Sending"
-//            initView()
+        if (!incoming) {
+            tvStatus.text = "Sending"
+            initView()
 //            when {
 //                screen -> startScreenCapture()
 //                video -> ConnectManager.getInstance().videoCall(this, target, teamId)
 //                else -> ConnectManager.getInstance().call(this, target, teamId)
 //            }
-//        }
+        }
 
         tvEnd.setOnClickListener {
             ConnectManager.getInstance().end()
@@ -78,8 +80,14 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
 
         tvSet.setOnClickListener {
-            ConnectManager.getInstance().swapCamera(swap)
-            swap = !swap
+//            ConnectManager.getInstance().swapCamera(swap)
+//            swap = !swap
+            scaleType = when (scaleType) {
+                RendererCommon.ScalingType.SCALE_ASPECT_FIT -> RendererCommon.ScalingType.SCALE_ASPECT_FILL
+                RendererCommon.ScalingType.SCALE_ASPECT_FILL -> RendererCommon.ScalingType.SCALE_ASPECT_BALANCED
+                else -> RendererCommon.ScalingType.SCALE_ASPECT_FIT
+            }
+            ConnectManager.getInstance().setScaleType(scaleType)
         }
 
         tvSpeaker.setOnClickListener {
@@ -157,7 +165,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
     }
 
     private fun initView() {
-        ConnectManager.getInstance().setVideoView(cvFullView, cvSmallView)
+        ConnectManager.getInstance().setVideoView(cvFullView, null)
         ConnectManager.getInstance().initView()
     }
 }
