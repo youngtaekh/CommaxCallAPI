@@ -3,18 +3,19 @@ package io.dotconnect.android;
 import java.util.Map;
 
 public class PushParser {
-    private final static String FROM = "From";
-    private final static String EVENT_TYPE = "eventType";
-    private final static String TITLE = "title";
-    private final static String MESSAGE = "message";
-    private final static String CALLER = "caller";
-    private final static String CALLEE = "callee";
-    private final static String EVENT = "event";
+    public final static String FROM = "From";
+    public final static String EVENT_TYPE = "eventType";
+    public final static String TITLE = "title";
+    public final static String MESSAGE = "message";
+    public final static String CALLER = "caller";
+    public final static String CALLEE = "callee";
+    public final static String EVENT = "event";
+    public final static String PROXY = "outboundProxy";
 
     private final static String NAME = "commax";
 
     private EventType eventType;
-    private String title, message, caller, callee, event;
+    private String title, message, caller, callee, event, outboundProxy;
 
     public enum EventType {
         call,
@@ -24,7 +25,7 @@ public class PushParser {
     public PushParser() {}
 
     private boolean check(String title) {
-        return TITLE.equalsIgnoreCase(title);
+        return NAME.equalsIgnoreCase(title);
     }
 
     public boolean setPushMap(Map<String, String> data) {
@@ -35,6 +36,7 @@ public class PushParser {
             caller = data.get(CALLER);
             callee = data.get(CALLEE);
             event = data.get(EVENT);
+            outboundProxy = data.get(PROXY);
             return true;
         } else {
             return false;
@@ -87,5 +89,13 @@ public class PushParser {
 
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public String getOutboundProxy() {
+        return outboundProxy;
+    }
+
+    public void setOutboundProxy(String outboundProxy) {
+        this.outboundProxy = outboundProxy;
     }
 }

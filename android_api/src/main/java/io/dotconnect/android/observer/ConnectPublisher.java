@@ -10,6 +10,8 @@ public interface ConnectPublisher {
     void add(ConnectObserver.CallObserver observer);
     void delete(ConnectObserver.CallObserver observer);
 
+    void onDeviceRegistrationSuccessObserver();
+    void onDeviceUnRegistrationSuccessObserver();
     void onRegistrationSuccessObserver();
     void onRegistrationFailureObserver();
     void onUnRegistrationSuccessObserver();

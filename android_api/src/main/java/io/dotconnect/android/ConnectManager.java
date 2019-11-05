@@ -57,6 +57,15 @@ public class ConnectManager {
     }
 
     //Register
+    public void deviceRegistration(Context context, String accessToken, String fcmToken) {
+        Register.getInstance().deviceCheck(context, accessToken, fcmToken);
+    }
+
+    //TODO : REST develop
+    public void deviceUnRegistration(Context context, String accessToken) {
+        Register.getInstance().deviceUnRegistration(context, accessToken);
+    }
+
     /**
      *
      * @param context
@@ -65,8 +74,17 @@ public class ConnectManager {
      * @param accessToken
      * @param fcmToken Firebase Push Token
      */
+    public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken) {
+        Register.getInstance().start(context, userId, appId, accessToken, fcmToken);
+    }
+
     public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken, String domain) {
         Register.getInstance().start(context, userId, appId, accessToken, fcmToken, domain);
+    }
+
+    public void startRegistration(Context context, String userId, String appId,
+                                  String accessToken, String fcmToken, String domain, String outboundProxy) {
+        Register.getInstance().start(context, userId, appId, accessToken, fcmToken, domain, outboundProxy);
     }
 
     public void stopRegistration() {
@@ -174,13 +192,16 @@ public class ConnectManager {
     public void end() {
         Call call = callManager.get();
         if (call!=null && call.getCallState()!=CallState.endTry) {
-            call.setCallState(CallState.endTry);
-            if (call.getCallState() == CallState.calling)
+            if (call.getCallState() == CallState.calling) {
+                call.setCallState(CallState.endTry);
                 hangup();
-            else if (call.getCallState() == CallState.incoming)
+            } else if (call.getCallState() == CallState.incoming) {
+                call.setCallState(CallState.endTry);
                 reject();
-            else
+            } else {
+                call.setCallState(CallState.endTry);
                 cancel();
+            }
         }
     }
 

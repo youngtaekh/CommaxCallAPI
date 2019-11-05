@@ -55,6 +55,20 @@ public class ConnectAction implements ConnectPublisher {
     }
 
     @Override
+    public void onDeviceRegistrationSuccessObserver() {
+        for (ConnectObserver.RegistrationObserver registrationObserver : registrationObservers) {
+            registrationObserver.onDeviceRegistrationSuccess();
+        }
+    }
+
+    @Override
+    public void onDeviceUnRegistrationSuccessObserver() {
+        for (ConnectObserver.RegistrationObserver registrationObserver : registrationObservers) {
+            registrationObserver.onDeviceUnRegistrationSuccess();
+        }
+    }
+
+    @Override
     public void onRegistrationSuccessObserver() {
         for (ConnectObserver.RegistrationObserver registrationObserver : registrationObservers) {
             registrationObserver.onRegistrationSuccess();

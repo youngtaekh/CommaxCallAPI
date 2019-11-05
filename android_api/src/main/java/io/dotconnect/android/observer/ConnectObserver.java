@@ -2,6 +2,8 @@ package io.dotconnect.android.observer;
 
 public class ConnectObserver {
     public interface RegistrationObserver {
+        void onDeviceRegistrationSuccess();
+        void onDeviceUnRegistrationSuccess();
         void onRegistrationSuccess();
         void onRegistrationFailure();
         void onUnRegistrationSuccess();

@@ -51,6 +51,8 @@ public class ConnectFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Title: " + title);
         Log.d(TAG, "Message: " + message);
         Log.d(TAG, "eventType: " + event);
+        Log.d(TAG, "event" + messageMap.get("event"));
+        Log.d(TAG, "proxy" + messageMap.get("outboundProxy"));
 
         String fromAccount = messageMap.get("caller");
         Log.d(TAG, "caller - " + fromAccount);

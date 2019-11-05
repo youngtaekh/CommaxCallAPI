@@ -86,4 +86,68 @@ public class ConnectServer {
         }
         return response;
     }
+
+    public static String DELETE(String subUrl, String accessToken){
+//        CookieSaver cookieSaver = CookieSaver.getInstance();
+        String response = "";
+        try {
+            URL url = new URL(REST_URL + subUrl);
+            HttpURLConnection http;
+
+            //https
+            if (url.getProtocol().toLowerCase().equals("https")) {
+                SecureHttp.trustAllHosts();
+                HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+                https.setHostnameVerifier(SecureHttp.DO_NOT_VERIFY);
+                http = https;
+            } else {
+                http = (HttpURLConnection) url.openConnection();
+            }
+            http.setRequestMethod("DELETE");
+
+            //Time out
+            http.setConnectTimeout(TIMEOUT);
+            http.setReadTimeout(TIMEOUT);
+
+            http.setRequestProperty("Accept", "application/json");
+            http.setRequestProperty("Content-type", "application/json");
+            if (accessToken!=null)
+                http.setRequestProperty("Authorization", accessToken);
+
+            http.setDoOutput(true);
+            http.setDoInput(true);
+
+            //Get body
+            InputStream is = http.getInputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] byteBuffer = new byte[1024];
+            byte[] byteData;
+            int nLength;
+            while((nLength = is.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                baos.write(byteBuffer, 0, nLength);
+            }
+            byteData = baos.toByteArray();
+
+            response = new String(byteData);
+
+            Map<String, List<String>> headers = http.getHeaderFields();
+            List<String> values = headers.get("Authorization");
+            if (values!=null && values.size()!=0) {
+                response = values.get(0);
+            }
+
+            is.close();
+            baos.close();
+
+            http.disconnect();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            if (e.toString()!=null&&e.toString().contains("SocketTimeout")) {
+                return timeout;
+            }
+        }
+        return response;
+    }
 }

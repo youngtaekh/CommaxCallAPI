@@ -21,6 +21,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 //    private var teamId: String? = null
     private var swap = false
     private var speaker = false
+    private var calling = false
     private var scaleType = RendererCommon.ScalingType.SCALE_ASPECT_FIT
 
     private var mediaProjectionPermissionResultData: Intent? = null
@@ -50,6 +51,8 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
 
         tvEnd.setOnClickListener {
+            if(!calling)
+                ConnectManager.getInstance().stopRegistration()
             ConnectManager.getInstance().end()
             finish()
         }
@@ -141,6 +144,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 //    }
 
     override fun onIncomingCallConnected(callInfo: CallInfo?) {
+        calling = true
         runOnUiThread { tvStatus.text = "Calling" }
     }
 

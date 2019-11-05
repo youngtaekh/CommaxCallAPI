@@ -28,13 +28,15 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     ConnectObserver.MessageObserver, ConnectObserver.CallObserver {
+
     val ACTION_INCOMING_CALL = "incomingCall"
     val ACTION_CANCEL_CALL = "cancelCall"
     val ACTION_FCM_TOKEN = "actionFCMToken"
     val COUNTERPART_ACCOUNT = "counterpartAccount"
 
     val appId = "testappid"
-    val DOMAIN = "commax.dot-connect.io"
+    private val DOMAIN = "commax.dot-connect.io"
+    private val OUTBOUND_PROXY = "commax.dot-connect.io"
     private var mContext:Context = this
 
     //Note8
@@ -70,6 +72,13 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     fun LogAndToast(message: String) {
         runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
         Log.d(TAG, message)
+    }
+    override fun onDeviceRegistrationSuccess() {
+        LogAndToast("onDeviceRegistrationSuccess")
+    }
+
+    override fun onDeviceUnRegistrationSuccess() {
+        LogAndToast("onDeviceUnRegistrationSuccess")
     }
 
     override fun onRegistrationSuccess() {
@@ -125,7 +134,9 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
     override fun onFailure(callInfo: CallInfo?) {}
 
-    override fun onTerminated(callInfo: CallInfo?) {}
+    override fun onTerminated(callInfo: CallInfo?) {
+        runOnUiThread { ConnectManager.getInstance().stopRegistration() }
+    }
 
 //    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
 //
@@ -155,8 +166,10 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         etTarget.setText(callTarget)
         etTeamId.setText(teamId)
 
-        tvRegister.setOnClickListener { getAccessToken() }
+        tvRegister.setOnClickListener { getAccessToken(2) }
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
+        tvDeviceRegister.setOnClickListener { getAccessToken(0) }
+        tvDeviceUnregister.setOnClickListener { getAccessToken(1) }
 
         tvSend.setOnClickListener {
 //            val message = etMessage.text.toString()
@@ -193,7 +206,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         if (ACTION_INCOMING_CALL == intent.action) {
             Log.d(TAG, "onIncomingCall")
 
-            getAccessToken()
+            getAccessToken(2)
         }
 
         val intentFilter = IntentFilter()
@@ -207,7 +220,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         if (ACTION_INCOMING_CALL == intent.action) {
             Log.d(TAG, "onIncomingCall")
 
-            getAccessToken()
+            getAccessToken(2)
         }
     }
 
@@ -220,11 +233,11 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         unregisterReceiver(broadcastReceiver)
     }
 
-    private fun getAccessToken() {
+    private fun getAccessToken(action: Int) {
         val jsonObject = JSONObject()
         try {
             jsonObject.put("userId", etEmail.text.toString())
-            GetAccessToken().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, jsonObject.toString())
+            GetAccessToken(action).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, jsonObject.toString())
 
         } catch (e: JSONException) {
             e.printStackTrace()
@@ -233,7 +246,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     }
 
     @SuppressLint("StaticFieldLeak")
-    private inner class GetAccessToken : AsyncTask<String, Void, String>() {
+    private inner class GetAccessToken(var action: Int) : AsyncTask<String, Void, String>() {
 
         override fun doInBackground(vararg params: String): String {
             Log.d(TAG, params[0])
@@ -243,11 +256,11 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         override fun onPostExecute(result: String) {
             super.onPostExecute(result)
             Log.d(TAG, result)
-            getFCMToken(result)
+            getFCMToken(result, action)
         }
     }
 
-    private fun getFCMToken(accessToken: String) {
+    private fun getFCMToken(accessToken: String, action: Int) {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
@@ -257,9 +270,20 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
                 // Get new Instance ID token
                 Log.d(TAG, task.result?.token)
-                ConnectManager.getInstance()
-                    .startRegistration(mContext, etEmail.text.toString(), appId, accessToken, task.result?.token, DOMAIN)
-
+                when (action) {
+                    0 -> ConnectManager.getInstance().deviceRegistration(mContext, accessToken, task.result?.token)
+                    1 -> ConnectManager.getInstance().deviceUnRegistration(mContext, accessToken)
+                    else -> ConnectManager.getInstance()
+                        .startRegistration(
+                            mContext,
+                            etEmail.text.toString(),
+                            appId,
+                            accessToken,
+                            task.result?.token
+                            , DOMAIN
+                            , OUTBOUND_PROXY
+                        )
+                }
             })
     }
 

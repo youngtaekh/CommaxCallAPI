@@ -41,7 +41,8 @@ public class SipMessage {
             messageType, fileType, fileUrl, messageId, messageSeq,
             messageDate, callType, method, teamId, chatType, sdp;
 
-    SipMessage(String jsonStr) {
+    SipMessage(String fromId, String jsonStr) {
+        this.fromId = fromId;
         try {
             Log.d(TAG, jsonStr);
             JSONObject json = new JSONObject(jsonStr);
@@ -49,8 +50,6 @@ public class SipMessage {
                 this.eventCode = json.getInt(EventCode);
             if (json.has(IMS))
                 this.ims = json.getBoolean(IMS);
-            if (json.has(FromId))
-                this.fromId = json.getString(FromId);
             if (json.has(CallKey))
                 this.callKey = json.getString(CallKey);
             if (json.has(StatusCode))
