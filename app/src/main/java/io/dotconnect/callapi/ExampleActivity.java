@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import io.dotconnect.api.ConnectManager;
-import io.dotconnect.api.observer.APICallInfo;
+import io.dotconnect.api.observer.ApiCallInfo;
 import io.dotconnect.api.observer.ConnectAction;
 import io.dotconnect.api.observer.ConnectObserver;
 import io.dotconnect.api.view.ConnectView;
@@ -84,7 +84,7 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
 
         tvAccept.setOnClickListener(view ->  {
 //            initView();
-            ConnectManager.getInstance().acceptVideoCall(this, cvFullView);
+            ConnectManager.getInstance().acceptCall(this, cvFullView);
 //            if (screen) startScreenCapture();
 //            else if (video) ConnectManager.getInstance().acceptVideoCall(this);
 //            else    ConnectManager.getInstance().accept(this);
@@ -130,52 +130,52 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
     }
 
     @Override
-    public void onIncomingCall(APICallInfo APICallInfo) {
+    public void onIncomingCall(ApiCallInfo apiCallInfo) {
 
     }
 
 //    @Override
-//    public void onOutgoingCall(APICallInfo callInfo) {
+//    public void onOutgoingCall(ApiCallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onUpdate(APICallInfo callInfo) {
+//    public void onUpdate(ApiCallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onEarlyMedia(APICallInfo callInfo) {
+//    public void onEarlyMedia(ApiCallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onOutgoingCallConnected(APICallInfo callInfo) {
+//    public void onOutgoingCallConnected(ApiCallInfo callInfo) {
 //        runOnUiThread(() -> tvStatus.setText("Calling"));
 //    }
 
     @Override
-    public void onIncomingCallConnected(APICallInfo APICallInfo) {
+    public void onIncomingCallConnected(ApiCallInfo apiCallInfo) {
         runOnUiThread(() -> tvStatus.setText("Calling"));
     }
 
     @Override
-    public void onFailure(APICallInfo APICallInfo) {
+    public void onFailure(ApiCallInfo apiCallInfo) {
 
     }
 
     @Override
-    public void onTerminated(APICallInfo APICallInfo) {
+    public void onTerminated(ApiCallInfo apiCallInfo) {
         finish();
     }
 
 //    @Override
-//    public void onBusyOnIncomingCall(APICallInfo callInfo) {
+//    public void onBusyOnIncomingCall(ApiCallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onCancelCallBefore180(APICallInfo callInfo) {
+//    public void onCancelCallBefore180(ApiCallInfo callInfo) {
 //
 //    }
 

@@ -3,13 +3,15 @@ package io.dotconnect.api.observer;
 import io.dotconnect.api.enum_class.CallType;
 import io.dotconnect.signaling.observer.SignalingCallInfo;
 
-public class APICallInfo {
+public class ApiCallInfo {
 
     private String counterpart, callKey, reason, message, method, teamId, sdp;
     private CallType callType;
     private int statusCode, cause, remoteTrackCount;
 
-    public APICallInfo(SignalingCallInfo signalingCallInfo) {
+    public ApiCallInfo() {}
+
+    public ApiCallInfo(SignalingCallInfo signalingCallInfo) {
         this.counterpart = signalingCallInfo.getCounterpart();
         this.callKey = signalingCallInfo.getCallKey();
         this.statusCode = signalingCallInfo.getStatusCode();
@@ -36,6 +38,10 @@ public class APICallInfo {
         return reason;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -54,6 +60,10 @@ public class APICallInfo {
 
     public CallType getCallType() {
         return callType;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 
     public int getStatusCode() {

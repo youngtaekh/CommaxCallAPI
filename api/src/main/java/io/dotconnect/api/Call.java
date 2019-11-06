@@ -3,7 +3,7 @@ package io.dotconnect.api;
 import android.content.Context;
 import android.content.Intent;
 import io.dotconnect.api.enum_class.CallState;
-import io.dotconnect.api.observer.APICallInfo;
+import io.dotconnect.api.observer.ApiCallInfo;
 import io.dotconnect.api.util.AuthenticationUtil;
 import io.dotconnect.api.view.ConnectView;
 import io.dotconnect.p2p.P2PManager;
@@ -23,11 +23,13 @@ public class Call {
         acceptScreenCall
     }
 
+    private Context mContext;
     private String callId;
     private SDPType sdpType;
     private CallState callState;
-    private APICallInfo APICallInfo;
+    private ApiCallInfo apiCallInfo;
     private P2PManager p2pManager;
+    private ConnectView cvFullView, cvSmallView;
     private String target, teamId, reason;
     private int cause;
     private SDPListener listener = new SDPListener() {
@@ -75,56 +77,56 @@ public class Call {
         this.teamId = teamId;
     }
 
-    void call(Context context) {
+    void call() {
         sdpType = SDPType.call;
-        getSDP(context, false, false, null, null);
+        getSDP(mContext, false, false, null, null);
     }
 
-    void reasonCall(Context context, String reason, int cause) {
+    void reasonCall(String reason, int cause) {
         this.reason = reason;
         this.cause = cause;
         sdpType = SDPType.reasonCall;
-        getSDP(context, false, false, null, null);
+        getSDP(mContext, false, false, null, null);
     }
 
-    void pstnCall(Context context) {
+    void pstnCall() {
         sdpType = SDPType.pstnCall;
-        getSDP(context, false, false, null, null);
+        getSDP(mContext, false, false, null, null);
     }
 
-    void videoCall(Context context) {
+    void videoCall() {
         sdpType = SDPType.videoCall;
-        getSDP(context, true, false, null, null);
+        getSDP(mContext, true, false, false, null, null);
     }
 
-    void screenCall(Context context, Intent data) {
+    void screenCall(Intent data) {
         sdpType = SDPType.screenCall;
-        getSDP(context, true, false, null, data);
+        getSDP(mContext, true, false, null, data);
     }
 
-    void dataChannelCall(Context context) {
+    void dataChannelCall() {
         sdpType = SDPType.call;
-        getSDP(context, false, true, null, null);
+        getSDP(mContext, false, true, null, null);
     }
 
-    void acceptCall(Context context, String remoteSDP) {
+    void acceptCall() {
         sdpType = SDPType.acceptCall;
-        getSDP(context, false, false, remoteSDP, null);
+        getSDP(mContext, false, false, this.apiCallInfo.getSdp(), null);
     }
 
-    void acceptVideoCall(Context context, String remoteSDP) {
+    void acceptVideoCall() {
         sdpType = SDPType.acceptVideoCall;
-        getSDP(context, true, false, remoteSDP, null);
+        getSDP(mContext, true, false, this.apiCallInfo.getSdp(), null);
     }
 
-    void acceptScreenCall(Context context, String remoteSDP, Intent data) {
+    void acceptScreenCall(Intent data) {
         sdpType = SDPType.acceptVideoCall;
-        getSDP(context, true, false, remoteSDP, data);
+        getSDP(mContext, true, false, apiCallInfo.getSdp(), data);
     }
 
-    void acceptDataChannelCall(Context context, String remoteSDP) {
+    void acceptDataChannelCall() {
         sdpType = SDPType.acceptCall;
-        getSDP(context, false, true, remoteSDP, null);
+        getSDP(mContext, false, true, apiCallInfo.getSdp(), null);
     }
 
     void cancel() {
@@ -180,10 +182,22 @@ public class Call {
     }
 
     private void getSDP(Context context, boolean video, boolean dataChannel, String remoteSDP, Intent data) {
+        getSDP(context, video, true, dataChannel, remoteSDP, data);
+    }
+
+    private void getSDP(Context context, boolean video, boolean videoRecvOnly, boolean dataChannel, String remoteSDP, Intent data) {
         boolean offer = remoteSDP==null;
         boolean screen = data!=null;
-        p2pManager.setParameters(context, video, screen, true, dataChannel, data);
+        p2pManager.setParameters(context, video, screen, videoRecvOnly, dataChannel, data);
         p2pManager.startCall(context, offer, remoteSDP, listener);
+    }
+
+    Context getContext() {
+        return mContext;
+    }
+
+    void setContext(Context context) {
+        this.mContext = context;
     }
 
     String getCallId() {
@@ -202,11 +216,27 @@ public class Call {
         this.callState = callState;
     }
 
-    public APICallInfo getAPICallInfo() {
-        return APICallInfo;
+    public ApiCallInfo getApiCallInfo() {
+        return apiCallInfo;
     }
 
-    public void setAPICallInfo(APICallInfo APICallInfo) {
-        this.APICallInfo = APICallInfo;
+    public void setApiCallInfo(ApiCallInfo apiCallInfo) {
+        this.apiCallInfo = apiCallInfo;
+    }
+
+    public ConnectView getCvFullView() {
+        return cvFullView;
+    }
+
+    public void setCvFullView(ConnectView cvFullView) {
+        this.cvFullView = cvFullView;
+    }
+
+    public ConnectView getCvSmallView() {
+        return cvSmallView;
+    }
+
+    public void setCvSmallView(ConnectView cvSmallView) {
+        this.cvSmallView = cvSmallView;
     }
 }

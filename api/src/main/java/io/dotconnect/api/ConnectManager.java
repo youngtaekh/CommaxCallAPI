@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 import io.dotconnect.api.enum_class.CallState;
-import io.dotconnect.api.observer.APICallInfo;
-import io.dotconnect.api.observer.APIMessageInfo;
+import io.dotconnect.api.observer.ApiCallInfo;
+import io.dotconnect.api.observer.ApiMessageInfo;
 import io.dotconnect.api.observer.ConnectAction;
 import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.util.AuthenticationUtil;
@@ -18,6 +18,8 @@ import io.dotconnect.signaling.observer.SignalingMessageInfo;
 import io.dotconnect.signaling.observer.SignalingObserver;
 import org.webrtc.RendererCommon;
 
+import static io.dotconnect.api.enum_class.CallState.ACCEPT_PENDING;
+import static io.dotconnect.api.enum_class.CallState.INCOMING_CONNECT_READY;
 import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 
 public class ConnectManager {
@@ -25,7 +27,7 @@ public class ConnectManager {
     private static ConnectManager instance;
 
     private CallManager callManager;
-    private APICallInfo APICallInfo;
+    private io.dotconnect.api.observer.ApiCallInfo ApiCallInfo;
 //    private SignalingCallInfo call;
 
     private Handler coreStopHandler;
@@ -34,6 +36,10 @@ public class ConnectManager {
         release();
         ConnectAction.getInstance().onUnRegistrationSuccessObserver();
     };
+
+    private boolean endBlock = false;
+    private Handler endBlockHandler;
+    private Runnable endBlockRunnable = () -> endBlock = false;
 
     private ConnectManager() {
         SignalingAction.getInstance().add(registrationObserver);
@@ -121,49 +127,100 @@ public class ConnectManager {
     //SignalingCallInfo
 
     private Call createCall() {
+        Log.d(TAG, "createCall() callManager.size() is " + callManager.size());
         Call call = new Call();
         callManager.add(call);
         return call;
     }
 
     private void call(Context context, String target, String teamId) {
-        Call call = callManager.get();
-        if (call!=null) {
+        Call call;
+        if (callManager.size() == 0) {
+            call = createCall();
+            call.setContext(context);
             call.setConfig(target, teamId);
-            call.call(context);
+            call.call();
         }
     }
 
-    private void videoCall(Context context, String target, String teamId) {
-        Call call = callManager.get();
-        if (call!=null) {
+    private void videoCall(Context context, String target, String teamId, ConnectView cvFullView, ConnectView cvSmallView) {
+        Call call;
+        if (callManager.size() == 0) {
+            call = createCall();
+            call.setContext(context);
             call.setConfig(target, teamId);
-            call.videoCall(context);
+            initView(cvFullView, cvSmallView);
+            call.videoCall();
         }
     }
 
     private void screenCall(Context context, Intent data, String target, String teamId) {
-        Call call = callManager.get();
-        if (call!=null) {
+        Call call;
+        if (callManager.size() == 0) {
+            call = createCall();
+            call.setContext(context);
             call.setConfig(target, teamId);
-            call.screenCall(context, data);
+            call.screenCall(data);
         }
     }
 
-    private void accept(Context context) {
-        Call call = callManager.get();
-        if (call!=null) {
-            call.acceptCall(context, APICallInfo.getSdp());
+    private void acceptCall(Context context) {
+        Log.d(APP_NAME, "acceptCall(Context)");
+        acceptCall(context, null, null, null);
+    }
+
+    public void acceptCall(Context context, ConnectView cvFullView) {
+        Log.d(APP_NAME, "acceptCall(Context, ConnectView)");
+        acceptCall(context, cvFullView, null, null);
+    }
+
+    private void acceptCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
+        Log.d(APP_NAME, "acceptCall(Context, ConnectView, ConnectView)");
+        acceptCall(context, cvFullView, cvSmallView, null);
+    }
+
+    private void acceptCall(Context context, ConnectView cvFullView, ConnectView cvSmallView, Intent data) {
+        Log.d(APP_NAME, "acceptCall(Context, ConnectView, ConnectView, Intent)");
+        Call call;
+        if (callManager.size() == 0) {
+            call = createCall();
+            call.setCallState(ACCEPT_PENDING);
+            Log.d(TAG, "acceptCall() callSize is 0 callState is " + call.getCallState());
+            call.setContext(context);
+        } else {
+            call = callManager.get();
+            Log.d(TAG, "acceptCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
+            if (call.getCallState()==INCOMING_CONNECT_READY) {
+                call.setCallState(ACCEPT_PENDING);
+                call.setContext(context);
+                initView(cvFullView, cvSmallView);
+                switch (call.getApiCallInfo().getCallType()) {
+                    case One_Audio:
+                        call.acceptCall();
+                        break;
+                    case One_Video:
+                        call.acceptVideoCall();
+                        break;
+                    case One_Screencast:
+                        call.acceptScreenCall(data);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
-    /**
-     * accept call with video
-     * @param context
-     */
-    public int acceptVideoCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
-        Log.d(APP_NAME, "acceptVideoCall(Context, ConnectView, ConnectView)");
-
+//    /**
+//     *
+//     * @param context
+//     * @param cvFullView
+//     * @param cvSmallView
+//     * @return
+//     */
+//    public int acceptVideoCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
+//        Log.d(APP_NAME, "acceptVideoCall(Context, ConnectView, ConnectView)");
+//
 //        Call call;
 //        if (callManager.size() == 0) {
 //            call = createCall();
@@ -171,36 +228,46 @@ public class ConnectManager {
 //        } else {
 //            call = callManager.get();
 //        }
+//
+//        Call call = callManager.get();
+//        if (call!=null && ApiCallInfo !=null && call.getCallState()==CallState.incoming) {
+//            call.setCallState(CallState.incomingConnectTry);
+//            initView(cvFullView, cvSmallView);
+//            call.acceptVideoCall(context, ApiCallInfo.getSdp());
+//            return 0;
+//        }
+//
+//        return -1;
+//    }
+//
+//    public int acceptVideoCall(Context context, ConnectView cvFullView) {
+//        Log.d(APP_NAME, "acceptVideoCall(Context, ConnectView)");
+//        Call call = callManager.get();
+//        if (call!=null && ApiCallInfo !=null && call.getCallState()==CallState.incoming) {
+//            call.setCallState(CallState.incomingConnectTry);
+//            initView(cvFullView);
+//            call.acceptVideoCall(context, ApiCallInfo.getSdp());
+//            return 0;
+//        }
+//
+//        return -1;
+//    }
+//
+//    private void acceptScreenCall(Context context, Intent data) {
+//        Call call = callManager.get();
+//        if (call!=null) {
+//            call.acceptScreenCall(context, ApiCallInfo.getSdp(), data);
+//        }
+//    }
 
-        Call call = callManager.get();
-        if (call!=null && APICallInfo !=null && call.getCallState()==CallState.incoming) {
-            call.setCallState(CallState.incomingConnectTry);
-            initView(cvFullView, cvSmallView);
-            call.acceptVideoCall(context, APICallInfo.getSdp());
-            return 0;
-        }
-
-        return -1;
-    }
-
-    public int acceptVideoCall(Context context, ConnectView cvFullView) {
-        Log.d(APP_NAME, "acceptVideoCall(Context, ConnectView)");
-        Call call = callManager.get();
-        if (call!=null && APICallInfo !=null && call.getCallState()==CallState.incoming) {
-            call.setCallState(CallState.incomingConnectTry);
-            initView(cvFullView);
-            call.acceptVideoCall(context, APICallInfo.getSdp());
-            return 0;
-        }
-
-        return -1;
-    }
-
-    private void acceptScreenCall(Context context, Intent data) {
-        Call call = callManager.get();
-        if (call!=null) {
-            call.acceptScreenCall(context, APICallInfo.getSdp(), data);
-        }
+    private boolean isEndBlock() {
+        if (endBlock)
+            return true;
+        endBlock = true;
+        if (endBlockHandler == null)
+            endBlockHandler = new Handler();
+        endBlockHandler.postDelayed(endBlockRunnable, 1000);
+        return false;
     }
 
     /**
@@ -208,17 +275,27 @@ public class ConnectManager {
      * else reject the call
      */
     public void end() {
-        Call call = callManager.get();
-        if (call!=null && call.getCallState()!=CallState.endTry) {
-            if (call.getCallState() == CallState.calling) {
-                call.setCallState(CallState.endTry);
-                hangup();
-            } else if (call.getCallState() == CallState.incoming) {
-                call.setCallState(CallState.endTry);
-                reject();
-            } else {
-                call.setCallState(CallState.endTry);
-                cancel();
+        if (isEndBlock())
+            return;
+        Call call;
+        if (callManager.size()==0) {
+            call = createCall();
+            call.setCallState(CallState.REJECT_PENDING);
+            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
+        } else {
+            call = callManager.get();
+            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
+            if (call.getCallState()!=CallState.END_PENDING && call.getCallState()!=CallState.REJECT_PENDING) {
+                if (call.getCallState() == CallState.CONNECTED) {
+                    call.setCallState(CallState.END_PENDING);
+                    hangup();
+                } else if (call.getCallState() == CallState.INCOMING_CONNECT_READY) {
+                    call.setCallState(CallState.END_PENDING);
+                    reject();
+                } else {
+                    call.setCallState(CallState.END_PENDING);
+                    cancel();
+                }
             }
         }
     }
@@ -241,7 +318,16 @@ public class ConnectManager {
         Call call = callManager.get();
         if (call!=null) {
             call.reject();
+            io.dotconnect.api.observer.ApiCallInfo apiCallInfo = new ApiCallInfo();
+            apiCallInfo.setStatusCode(603);
+            apiCallInfo.setMessage("Reject");
+            ConnectAction.getInstance().onTerminatedObserver(apiCallInfo);
+            if (callManager.get()!=null) {
+                callManager.get().setCallState(CallState.IDLE);
+                callManager.get().disconnect();
+            }
             callManager.remove();
+            Log.d(TAG, "reject() callSize is " + callManager.size());
         }
     }
 
@@ -251,24 +337,20 @@ public class ConnectManager {
         call.initView();
     }
 
-    private void initView(ConnectView cvFullView) {
-        Call call = callManager.get();
-        call.setVideoView(cvFullView, null);
-        call.initView();
-    }
-
     /**
      * change video between ConnectView
      * @param swap
      */
     private void swapCamera(boolean swap) {
         Call call = callManager.get();
-        call.swapCamera(swap);
+        if (call!=null)
+            call.swapCamera(swap);
     }
 
     public void setScaleType(RendererCommon.ScalingType scaleType) {
         Call call = callManager.get();
-        call.setScaleType(scaleType);
+        if (call!=null)
+            call.setScaleType(scaleType);
     }
 
     private SignalingObserver.RegistrationObserver registrationObserver = new SignalingObserver.RegistrationObserver() {
@@ -307,19 +389,19 @@ public class ConnectManager {
         @Override
         public void onMessageSendSuccess(SignalingMessageInfo signalingMessageInfo) {
             Log.d(TAG, "onMessageSendSuccess");
-            ConnectAction.getInstance().onMessageSendSuccessObserver(new APIMessageInfo(signalingMessageInfo));
+            ConnectAction.getInstance().onMessageSendSuccessObserver(new ApiMessageInfo(signalingMessageInfo));
         }
 
         @Override
         public void onMessageSendFailure(SignalingMessageInfo signalingMessageInfo) {
             Log.d(TAG, "onMessageSendFailure");
-            ConnectAction.getInstance().onMessageSendFailureObserver(new APIMessageInfo(signalingMessageInfo));
+            ConnectAction.getInstance().onMessageSendFailureObserver(new ApiMessageInfo(signalingMessageInfo));
         }
 
         @Override
         public void onMessageArrival(SignalingMessageInfo signalingMessageInfo) {
             Log.d(TAG, "onMessageArrival");
-            ConnectAction.getInstance().onMessageArrivalObserver(new APIMessageInfo(signalingMessageInfo));
+            ConnectAction.getInstance().onMessageArrivalObserver(new ApiMessageInfo(signalingMessageInfo));
         }
     };
 
@@ -328,74 +410,89 @@ public class ConnectManager {
         public void onIncomingCall(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onIncomingCall");
 
+            Call call;
+            if (callManager.size()==0) {
+                call = createCall();
+                call.setApiCallInfo(new ApiCallInfo(signalingCallInfo));
+                call.setCallState(CallState.INCOMING_CONNECT_READY);
+                Log.d(TAG, "onIncomingCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
+            } else {
+                call = callManager.get();
+                Log.d(TAG, "onIncomingCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
+                call.setApiCallInfo(new ApiCallInfo(signalingCallInfo));
+                if (call.getCallState() == ACCEPT_PENDING) {
+                    call.setCallState(CallState.INCOMING_CONNECT_READY);
+                    acceptCall(call.getContext(), call.getCvFullView(), call.getCvSmallView());
+                } else if (call.getCallState() == CallState.REJECT_PENDING) {
+                    reject();
+                }
+            }
 
-
-            ConnectManager.this.APICallInfo = new APICallInfo(signalingCallInfo);
-            ConnectAction.getInstance().onIncomingCallObserver(APICallInfo);
-            callManager.add(new Call(APICallInfo.getCounterpart(), APICallInfo.getTeamId()));
-            callManager.get().setCallState(CallState.incoming);
+            ConnectAction.getInstance().onIncomingCallObserver(call.getApiCallInfo());
         }
 
         @Override
         public void onOutgoingCall(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onOutgoingCall");
-            ConnectAction.getInstance().onOutgoingCallObserver(new APICallInfo(signalingCallInfo));
-            callManager.get().setCallState(CallState.sending);
+            ConnectAction.getInstance().onOutgoingCallObserver(new ApiCallInfo(signalingCallInfo));
+            callManager.get().setCallState(CallState.OUTGOING_CONNECT_READY);
         }
 
         @Override
         public void onUpdate(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onUpdate");
-            ConnectAction.getInstance().onUpdateObserver(new APICallInfo(signalingCallInfo));
+            ConnectAction.getInstance().onUpdateObserver(new ApiCallInfo(signalingCallInfo));
         }
 
         @Override
         public void onEarlyMedia(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onEarlyMedia");
-            ConnectAction.getInstance().onEarlyMediaObserver(new APICallInfo(signalingCallInfo));
+            ConnectAction.getInstance().onEarlyMediaObserver(new ApiCallInfo(signalingCallInfo));
         }
 
         @Override
         public void onOutgoingCallConnected(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onOutgoingCallConnected");
             callManager.get().setRemoteDescription(signalingCallInfo.getSdp());
-            ConnectAction.getInstance().onOutgoingCallConnectedObserver(new APICallInfo(signalingCallInfo));
-            callManager.get().setCallState(CallState.calling);
+            ConnectAction.getInstance().onOutgoingCallConnectedObserver(new ApiCallInfo(signalingCallInfo));
+            callManager.get().setCallState(CallState.CONNECTED);
         }
 
         @Override
         public void onIncomingCallConnected(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onIncomingCallConnected");
-            ConnectAction.getInstance().onIncomingCallConnectedObserver(new APICallInfo(signalingCallInfo));
-            callManager.get().setCallState(CallState.calling);
+            ConnectAction.getInstance().onIncomingCallConnectedObserver(new ApiCallInfo(signalingCallInfo));
+            callManager.get().setCallState(CallState.CONNECTED);
         }
 
         @Override
         public void onFailure(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onFailure");
-            ConnectAction.getInstance().onFailureObserver(new APICallInfo(signalingCallInfo));
+            ConnectAction.getInstance().onFailureObserver(new ApiCallInfo(signalingCallInfo));
         }
 
         @Override
         public void onTerminated(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onTerminated");
-            ConnectAction.getInstance().onTerminatedObserver(new APICallInfo(signalingCallInfo));
-            callManager.get().setCallState(CallState.idle);
-            if (callManager.get()!=null)
+            ConnectAction.getInstance().onTerminatedObserver(new ApiCallInfo(signalingCallInfo));
+            if (callManager.get()!=null) {
+                callManager.get().setCallState(CallState.IDLE);
                 callManager.get().disconnect();
+            }
             callManager.remove();
+            Log.d(TAG, "onTerminated() callSize is " + callManager.size());
         }
 
         @Override
         public void onBusyOnIncomingCall(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onBusyOnIncomingCall");
-            ConnectAction.getInstance().onBusyOnIncomingCallObserver(new APICallInfo(signalingCallInfo));
+            ConnectAction.getInstance().onBusyOnIncomingCallObserver(new ApiCallInfo(signalingCallInfo));
         }
 
         @Override
         public void onCancelCallBefore180(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onCancelCallBefore180");
-            ConnectAction.getInstance().onCancelCallBefore180Observer(new APICallInfo(signalingCallInfo));
+            ConnectAction.getInstance().onCancelCallBefore180Observer(new ApiCallInfo(signalingCallInfo));
         }
     };
 }

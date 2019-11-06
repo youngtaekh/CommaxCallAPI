@@ -8,7 +8,7 @@ import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.dotconnect.api.ConnectManager
-import io.dotconnect.api.observer.APICallInfo
+import io.dotconnect.api.observer.ApiCallInfo
 import io.dotconnect.api.observer.ConnectAction
 import io.dotconnect.api.observer.ConnectObserver
 import kotlinx.android.synthetic.main.activity_call.*
@@ -42,7 +42,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
         if (!incoming) {
             tvStatus.text = "Sending"
-//            initView()
+//            ConnectManager.getInstance().videoCall(this, target, "", cvFullView, cvSmallView)
 //            when {
 //                screen -> startScreenCapture()
 //                video -> ConnectManager.getInstance().videoCall(this, target, teamId)
@@ -51,10 +51,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
 
         tvEnd.setOnClickListener {
-            if(!calling)
-                ConnectManager.getInstance().stopRegistration()
             ConnectManager.getInstance().end()
-            finish()
         }
 
 //        tvCancel.setOnClickListener {
@@ -74,7 +71,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
         tvAccept.setOnClickListener {
 //            initView()
-            ConnectManager.getInstance().acceptVideoCall(this, cvFullView)
+            ConnectManager.getInstance().acceptCall(this, cvFullView)
 //            when {
 //                screen -> startScreenCapture()
 //                video -> ConnectManager.getInstance().acceptVideoCall(this)
@@ -131,32 +128,32 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
     }
 
-    override fun onIncomingCall(APICallInfo: APICallInfo?) {}
+    override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {}
 
-//    override fun onOutgoingCall(callInfo: APICallInfo?) {}
+//    override fun onOutgoingCall(callInfo: ApiCallInfo?) {}
 //
-//    override fun onUpdate(callInfo: APICallInfo?) {}
+//    override fun onUpdate(callInfo: ApiCallInfo?) {}
 //
-//    override fun onEarlyMedia(callInfo: APICallInfo?) {}
+//    override fun onEarlyMedia(callInfo: ApiCallInfo?) {}
 //
-//    override fun onOutgoingCallConnected(callInfo: APICallInfo?) {
+//    override fun onOutgoingCallConnected(callInfo: ApiCallInfo?) {
 //        runOnUiThread { tvStatus.text = "Calling" }
 //    }
 
-    override fun onIncomingCallConnected(APICallInfo: APICallInfo?) {
+    override fun onIncomingCallConnected(ApiCallInfo: ApiCallInfo?) {
         calling = true
         runOnUiThread { tvStatus.text = "Calling" }
     }
 
-    override fun onFailure(APICallInfo: APICallInfo?) {}
+    override fun onFailure(ApiCallInfo: ApiCallInfo?) {}
 
-    override fun onTerminated(APICallInfo: APICallInfo?) {
+    override fun onTerminated(ApiCallInfo: ApiCallInfo?) {
         finish()
     }
 
-//    override fun onBusyOnIncomingCall(callInfo: APICallInfo?) {}
+//    override fun onBusyOnIncomingCall(callInfo: ApiCallInfo?) {}
 //
-//    override fun onCancelCallBefore180(callInfo: APICallInfo?) {}
+//    override fun onCancelCallBefore180(callInfo: ApiCallInfo?) {}
 
     @TargetApi(21)
     private fun startScreenCapture() {

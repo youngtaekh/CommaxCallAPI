@@ -2,13 +2,13 @@ package io.dotconnect.api.observer;
 
 import io.dotconnect.signaling.observer.SignalingMessageInfo;
 
-public class APIMessageInfo {
+public class ApiMessageInfo {
 
     private String message, chatId, messageType, fileType, fileUrl,
             messageId, messageDate, teamId, chatType;
     private int messageSeq;
 
-    public APIMessageInfo(SignalingMessageInfo signalingMessageInfo) {
+    public ApiMessageInfo(SignalingMessageInfo signalingMessageInfo) {
         this.message = signalingMessageInfo.getMessage();
         this.chatId = signalingMessageInfo.getChatId();
         this.messageType = signalingMessageInfo.getMessageType();

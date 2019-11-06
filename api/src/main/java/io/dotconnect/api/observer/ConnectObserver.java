@@ -11,22 +11,22 @@ public class ConnectObserver {
     }
 
     public interface MessageObserver {
-        void onMessageSendSuccess(APIMessageInfo message);
-        void onMessageSendFailure(APIMessageInfo message);
-        void onMessageArrival(APIMessageInfo message);
+        void onMessageSendSuccess(ApiMessageInfo message);
+        void onMessageSendFailure(ApiMessageInfo message);
+        void onMessageArrival(ApiMessageInfo message);
     }
 
     public interface CallObserver {
-        void onIncomingCall(APICallInfo APICallInfo);
-//        void onOutgoingCall(APICallInfo APICallInfo);
-//        void onUpdate(APICallInfo APICallInfo);
-//        void onEarlyMedia(APICallInfo APICallInfo);
-//        void onOutgoingCallConnected(APICallInfo APICallInfo);
-        void onIncomingCallConnected(APICallInfo APICallInfo);
-        void onFailure(APICallInfo APICallInfo);
-        void onTerminated(APICallInfo APICallInfo);
-//        void onBusyOnIncomingCall(APICallInfo callInfo);
-//        void onCancelCallBefore180(APICallInfo callInfo);
+        void onIncomingCall(ApiCallInfo apiCallInfo);
+//        void onOutgoingCall(ApiCallInfo ApiCallInfo);
+//        void onUpdate(ApiCallInfo ApiCallInfo);
+//        void onEarlyMedia(ApiCallInfo ApiCallInfo);
+//        void onOutgoingCallConnected(ApiCallInfo ApiCallInfo);
+        void onIncomingCallConnected(ApiCallInfo apiCallInfo);
+        void onFailure(ApiCallInfo apiCallInfo);
+        void onTerminated(ApiCallInfo apiCallInfo);
+//        void onBusyOnIncomingCall(ApiCallInfo callInfo);
+//        void onCancelCallBefore180(ApiCallInfo callInfo);
 
 //        void onProvisional(SignalingCallInfo callInfo);
 //        void onPrack(SignalingCallInfo callInfo);

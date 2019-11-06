@@ -97,93 +97,93 @@ public class ConnectAction implements ConnectPublisher {
     }
 
     @Override
-    public void onMessageSendSuccessObserver(APIMessageInfo message) {
+    public void onMessageSendSuccessObserver(ApiMessageInfo message) {
         for (ConnectObserver.MessageObserver messageObserver : messageObservers) {
             messageObserver.onMessageSendSuccess(message);
         }
     }
 
     @Override
-    public void onMessageSendFailureObserver(APIMessageInfo message) {
+    public void onMessageSendFailureObserver(ApiMessageInfo message) {
         for (ConnectObserver.MessageObserver messageObserver : messageObservers) {
             messageObserver.onMessageSendFailure(message);
         }
     }
 
     @Override
-    public void onMessageArrivalObserver(APIMessageInfo message) {
+    public void onMessageArrivalObserver(ApiMessageInfo message) {
         for (ConnectObserver.MessageObserver messageObserver : messageObservers) {
             messageObserver.onMessageArrival(message);
         }
     }
 
     @Override
-    public void onIncomingCallObserver(APICallInfo APICallInfo) {
+    public void onIncomingCallObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onIncomingCall(APICallInfo);
+            callObserver.onIncomingCall(apiCallInfo);
         }
     }
 
     @Override
-    public void onOutgoingCallObserver(APICallInfo APICallInfo) {
+    public void onOutgoingCallObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onOutgoingCall(APICallInfo);
+//            callObserver.onOutgoingCall(apiCallInfo);
         }
     }
 
     @Override
-    public void onUpdateObserver(APICallInfo APICallInfo) {
+    public void onUpdateObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onUpdate(APICallInfo);
+//            callObserver.onUpdate(apiCallInfo);
         }
     }
 
     @Override
-    public void onEarlyMediaObserver(APICallInfo APICallInfo) {
+    public void onEarlyMediaObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onEarlyMedia(APICallInfo);
+//            callObserver.onEarlyMedia(apiCallInfo);
         }
     }
 
     @Override
-    public void onOutgoingCallConnectedObserver(APICallInfo APICallInfo) {
+    public void onOutgoingCallConnectedObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onOutgoingCallConnected(APICallInfo);
+//            callObserver.onOutgoingCallConnected(apiCallInfo);
         }
     }
 
     @Override
-    public void onIncomingCallConnectedObserver(APICallInfo APICallInfo) {
+    public void onIncomingCallConnectedObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onIncomingCallConnected(APICallInfo);
+            callObserver.onIncomingCallConnected(apiCallInfo);
         }
     }
 
     @Override
-    public void onFailureObserver(APICallInfo APICallInfo) {
+    public void onFailureObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onFailure(APICallInfo);
+            callObserver.onFailure(apiCallInfo);
         }
     }
 
     @Override
-    public void onTerminatedObserver(APICallInfo APICallInfo) {
+    public void onTerminatedObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-            callObserver.onTerminated(APICallInfo);
+            callObserver.onTerminated(apiCallInfo);
         }
     }
 
     @Override
-    public void onBusyOnIncomingCallObserver(APICallInfo APICallInfo) {
+    public void onBusyOnIncomingCallObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onBusyOnIncomingCall(APICallInfo);
+//            callObserver.onBusyOnIncomingCall(apiCallInfo);
         }
     }
 
     @Override
-    public void onCancelCallBefore180Observer(APICallInfo APICallInfo) {
+    public void onCancelCallBefore180Observer(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onCancelCallBefore180(APICallInfo);
+//            callObserver.onCancelCallBefore180(apiCallInfo);
         }
     }
 }

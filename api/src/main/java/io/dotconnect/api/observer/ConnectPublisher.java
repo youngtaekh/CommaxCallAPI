@@ -17,18 +17,18 @@ public interface ConnectPublisher {
     void onUnRegistrationSuccessObserver();
     void onSocketClosureObserver();
 
-    void onMessageSendSuccessObserver(APIMessageInfo message);
-    void onMessageSendFailureObserver(APIMessageInfo message);
-    void onMessageArrivalObserver(APIMessageInfo message);
+    void onMessageSendSuccessObserver(ApiMessageInfo message);
+    void onMessageSendFailureObserver(ApiMessageInfo message);
+    void onMessageArrivalObserver(ApiMessageInfo message);
 
-    void onIncomingCallObserver(APICallInfo APICallInfo);
-    void onOutgoingCallObserver(APICallInfo APICallInfo);
-    void onUpdateObserver(APICallInfo APICallInfo);
-    void onEarlyMediaObserver(APICallInfo APICallInfo);
-    void onOutgoingCallConnectedObserver(APICallInfo APICallInfo);
-    void onIncomingCallConnectedObserver(APICallInfo APICallInfo);
-    void onFailureObserver(APICallInfo APICallInfo);
-    void onTerminatedObserver(APICallInfo APICallInfo);
-    void onBusyOnIncomingCallObserver(APICallInfo APICallInfo);
-    void onCancelCallBefore180Observer(APICallInfo APICallInfo);
+    void onIncomingCallObserver(ApiCallInfo apiCallInfo);
+    void onOutgoingCallObserver(ApiCallInfo apiCallInfo);
+    void onUpdateObserver(ApiCallInfo apiCallInfo);
+    void onEarlyMediaObserver(ApiCallInfo apiCallInfo);
+    void onOutgoingCallConnectedObserver(ApiCallInfo apiCallInfo);
+    void onIncomingCallConnectedObserver(ApiCallInfo apiCallInfo);
+    void onFailureObserver(ApiCallInfo apiCallInfo);
+    void onTerminatedObserver(ApiCallInfo apiCallInfo);
+    void onBusyOnIncomingCallObserver(ApiCallInfo apiCallInfo);
+    void onCancelCallBefore180Observer(ApiCallInfo apiCallInfo);
 }

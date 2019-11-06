@@ -16,10 +16,10 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.api.ConnectManager
 import io.dotconnect.api.enum_class.CallType
-import io.dotconnect.api.observer.APICallInfo
+import io.dotconnect.api.observer.ApiCallInfo
 import io.dotconnect.api.observer.ConnectAction
 import io.dotconnect.api.observer.ConnectObserver
-import io.dotconnect.api.observer.APIMessageInfo
+import io.dotconnect.api.observer.ApiMessageInfo
 import io.dotconnect.api.util.AuthenticationUtil
 import io.dotconnect.api.util.ConnectServer
 import kotlinx.android.synthetic.main.activity_main.*
@@ -97,50 +97,50 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         LogAndToast("onSocketClosure")
     }
 
-    override fun onMessageSendSuccess(APIMessage: APIMessageInfo?) {
+    override fun onMessageSendSuccess(ApiMessage: ApiMessageInfo?) {
         LogAndToast("onMessageSendSuccess")
     }
 
-    override fun onMessageSendFailure(APIMessage: APIMessageInfo?) {
+    override fun onMessageSendFailure(ApiMessage: ApiMessageInfo?) {
         LogAndToast("onMessageSendFailure")
     }
 
-    override fun onMessageArrival(APIMessage: APIMessageInfo?) {
+    override fun onMessageArrival(ApiMessage: ApiMessageInfo?) {
         LogAndToast("onMessageArrival")
 //        val handler = Handler(Looper.getMainLooper())
-//        val runnable = Runnable { tvMessage.text = APIMessage?.APIMessage ?: ""}
+//        val runnable = Runnable { tvMessage.text = ApiMessage?.ApiMessage ?: ""}
 //        handler.post(runnable)
-//        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, APIMessage?.messageSeq.toString(), chatType, chatId, MessageType.read)
+//        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, ApiMessage?.messageSeq.toString(), chatType, chatId, MessageType.read)
     }
 
-//    override fun onOutgoingCall(callInfo: APICallInfo?) {}
+//    override fun onOutgoingCall(callInfo: ApiCallInfo?) {}
 
-    override fun onIncomingCall(APICallInfo: APICallInfo?) {
+    override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {
         LogAndToast("onIncomingCall")
         val intent = Intent(this, CallActivity::class.java)
-        intent.putExtra("video", APICallInfo?.callType == CallType.One_Video || APICallInfo?.callType == CallType.One_Audio_Screencast)
-        intent.putExtra("screen", APICallInfo?.callType == CallType.One_Audio_Screencast)
+        intent.putExtra("video", ApiCallInfo?.callType == CallType.One_Video || ApiCallInfo?.callType == CallType.One_Audio_Screencast)
+        intent.putExtra("screen", ApiCallInfo?.callType == CallType.One_Audio_Screencast)
         intent.putExtra("incoming", true)
         startActivity(intent)
     }
 
-//    override fun onUpdate(callInfo: APICallInfo?) {}
+//    override fun onUpdate(callInfo: ApiCallInfo?) {}
 //
-//    override fun onEarlyMedia(callInfo: APICallInfo?) {}
+//    override fun onEarlyMedia(callInfo: ApiCallInfo?) {}
 //
-//    override fun onOutgoingCallConnected(callInfo: APICallInfo?) {}
+//    override fun onOutgoingCallConnected(callInfo: ApiCallInfo?) {}
 
-    override fun onIncomingCallConnected(APICallInfo: APICallInfo?) {}
+    override fun onIncomingCallConnected(ApiCallInfo: ApiCallInfo?) {}
 
-    override fun onFailure(APICallInfo: APICallInfo?) {}
+    override fun onFailure(ApiCallInfo: ApiCallInfo?) {}
 
-    override fun onTerminated(APICallInfo: APICallInfo?) {
-        runOnUiThread { ConnectManager.getInstance().stopRegistration() }
+    override fun onTerminated(ApiCallInfo: ApiCallInfo?) {
+//        runOnUiThread { ConnectManager.getInstance().stopRegistration() }
     }
 
-//    override fun onBusyOnIncomingCall(callInfo: APICallInfo?) {}
+//    override fun onBusyOnIncomingCall(callInfo: ApiCallInfo?) {}
 //
-//    override fun onCancelCallBefore180(callInfo: APICallInfo?) {}
+//    override fun onCancelCallBefore180(callInfo: ApiCallInfo?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

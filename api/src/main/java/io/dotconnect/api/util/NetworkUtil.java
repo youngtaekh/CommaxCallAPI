@@ -1,4 +1,4 @@
-package io.dotconnect.signaling.util;
+package io.dotconnect.api.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

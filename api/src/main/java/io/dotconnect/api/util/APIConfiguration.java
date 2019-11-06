@@ -1,6 +1,6 @@
 package io.dotconnect.api.util;
 
-import io.dotconnect.android_api.BuildConfig;
+import io.dotconnect.api.BuildConfig;
 
 public class APIConfiguration {
     public static final String REST_URL = "https://commax.dot-connect.io:4435/api/v1.0";

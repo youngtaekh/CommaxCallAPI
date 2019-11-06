@@ -5,21 +5,20 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
-import io.dotconnect.android_api.BuildConfig;
 import io.dotconnect.api.observer.ConnectAction;
-import io.dotconnect.api.util.AuthenticationUtil;
 import io.dotconnect.api.util.APIConfiguration;
+import io.dotconnect.api.util.AuthenticationUtil;
 import io.dotconnect.api.util.ConnectServer;
+import io.dotconnect.api.util.NetworkUtil;
 import io.dotconnect.signaling.callJni.CallCore;
 import io.dotconnect.signaling.callJni.EventNotifier;
-import io.dotconnect.signaling.util.NetworkUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.StringTokenizer;
 
-import static io.dotconnect.api.util.AuthenticationUtil.getUUID;
 import static io.dotconnect.api.util.APIConfiguration.*;
+import static io.dotconnect.api.util.AuthenticationUtil.getUUID;
 import static io.dotconnect.signaling.util.CertificationUtil.*;
 
 public class Register {

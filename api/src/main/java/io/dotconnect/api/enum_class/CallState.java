@@ -1,15 +1,16 @@
 package io.dotconnect.api.enum_class;
 
 public enum CallState {
-    idle,
-    sending,
-    ringing,
-    incoming,
-    incomingConnectTry,
-    incomingRTPConnecting,
-    outgoingRTPConnecting,
-    incomingConnecting,
-    outgoingConnecting,
-    calling,
-    endTry
+    IDLE,
+    OUTGOING_PENDING,
+    INCOMING_PENDING,
+    ACCEPT_PENDING,
+    REJECT_PENDING,
+    OUTGOING_CONNECT_READY,
+    INCOMING_CONNECT_READY,
+    EARLY_MEDIA,
+    CONNECTING,
+    CONNECTED,
+    END_PENDING,
+    DISCONNECTED;
 }
