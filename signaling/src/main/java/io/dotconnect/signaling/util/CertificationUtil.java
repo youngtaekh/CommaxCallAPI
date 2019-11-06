@@ -8,7 +8,7 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static io.dotconnect.android.util.Configuration.APP_NAME;
+import static io.dotconnect.api.util.Configuration.APP_NAME;
 
 public class CertificationUtil {
 

@@ -5,7 +5,7 @@ import io.dotconnect.signaling.observer.Call;
 import io.dotconnect.signaling.observer.SignalingAction;
 import io.dotconnect.signaling.observer.Message;
 
-import static io.dotconnect.android.util.Configuration.APP_NAME;
+import static io.dotconnect.api.util.Configuration.APP_NAME;
 
 public class EventNotifier
 {

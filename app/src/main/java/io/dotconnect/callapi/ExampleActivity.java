@@ -9,11 +9,11 @@ import android.os.Bundle;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import io.dotconnect.android.ConnectManager;
-import io.dotconnect.android.observer.CallInfo;
-import io.dotconnect.android.observer.ConnectAction;
-import io.dotconnect.android.observer.ConnectObserver;
-import io.dotconnect.android.view.ConnectView;
+import io.dotconnect.api.ConnectManager;
+import io.dotconnect.api.observer.CallInfo;
+import io.dotconnect.api.observer.ConnectAction;
+import io.dotconnect.api.observer.ConnectObserver;
+import io.dotconnect.api.view.ConnectView;
 
 public class ExampleActivity extends AppCompatActivity implements ConnectObserver.CallObserver {
     private static final String TAG = "ExampleActivity";

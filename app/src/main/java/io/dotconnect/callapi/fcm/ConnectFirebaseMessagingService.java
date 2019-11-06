@@ -5,8 +5,8 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import io.dotconnect.android.ConnectManager;
-import io.dotconnect.android.PushParser;
+import io.dotconnect.api.ConnectManager;
+import io.dotconnect.api.PushParser;
 import io.dotconnect.callapi.MainActivity;
 
 import java.util.Map;
