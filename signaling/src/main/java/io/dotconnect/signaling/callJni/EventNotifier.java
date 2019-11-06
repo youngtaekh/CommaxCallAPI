@@ -1,11 +1,11 @@
 package io.dotconnect.signaling.callJni;
 
 import android.util.Log;
-import io.dotconnect.signaling.observer.Call;
+import io.dotconnect.signaling.observer.SignalingCallInfo;
 import io.dotconnect.signaling.observer.SignalingAction;
-import io.dotconnect.signaling.observer.Message;
+import io.dotconnect.signaling.observer.SignalingMessageInfo;
 
-import static io.dotconnect.api.util.Configuration.APP_NAME;
+import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 
 public class EventNotifier
 {
@@ -220,27 +220,27 @@ public class EventNotifier
 
     private void onOutgoingCall(SipMessage message) {
         Log.d(APP_NAME, "onOutgoingCall");
-        signalingAction.onOutgoingCallObserver(new Call(message));
+        signalingAction.onOutgoingCallObserver(new SignalingCallInfo(message));
     }
 
     private void onIncomingCall(SipMessage message) {
         Log.d(APP_NAME, "onIncomingCall");
-        signalingAction.onIncomingCallObserver(new Call(message));
+        signalingAction.onIncomingCallObserver(new SignalingCallInfo(message));
     }
 
     private void onUpdate(SipMessage message) {
         Log.d(APP_NAME, "onUpdate");
-        signalingAction.onUpdateObserver(new Call(message));
+        signalingAction.onUpdateObserver(new SignalingCallInfo(message));
     }
 
     private void onFailure(SipMessage message) {
         Log.d(APP_NAME, "onFailure");
-        signalingAction.onFailureObserver(new Call(message));
+        signalingAction.onFailureObserver(new SignalingCallInfo(message));
     }
 
     private void onEarlyMedia(SipMessage message) {
         Log.d(APP_NAME, "onEarlyMedia");
-        signalingAction.onEarlyMediaObserver(new Call(message));
+        signalingAction.onEarlyMediaObserver(new SignalingCallInfo(message));
     }
 
     private void onProvisional() {
@@ -253,12 +253,12 @@ public class EventNotifier
 
     private void onOutgoingCallConnected(SipMessage message) {
         Log.d(APP_NAME, "onOutgoingCallConnected");
-        signalingAction.onOutgoingCallConnectedObserver(new Call(message));
+        signalingAction.onOutgoingCallConnectedObserver(new SignalingCallInfo(message));
     }
 
     private void onIncomingCallConnected(SipMessage message) {
         Log.d(APP_NAME, "onIncomingCallConnected");
-        signalingAction.onIncomingCallConnectedObserver(new Call(message));
+        signalingAction.onIncomingCallConnectedObserver(new SignalingCallInfo(message));
     }
 
     private void onStableCallTimeout() {
@@ -267,7 +267,7 @@ public class EventNotifier
 
     private void onTerminated(SipMessage message) {
         Log.d(APP_NAME, "onTerminated");
-        signalingAction.onTerminatedObserver(new Call(message));
+        signalingAction.onTerminatedObserver(new SignalingCallInfo(message));
     }
 
     private void onRedirected(SipMessage message) {
@@ -352,12 +352,12 @@ public class EventNotifier
 
     private void onBusyIncomingCall(SipMessage message) {
         Log.d(APP_NAME, "onBusyIncomingCall");
-        signalingAction.onBusyOnIncomingCallObserver(new Call(message));
+        signalingAction.onBusyOnIncomingCallObserver(new SignalingCallInfo(message));
     }
 
     private void onCancelCallBefore180(SipMessage message) {
         Log.d(APP_NAME, "onCancelCallBefore180");
-        signalingAction.onCancelCallBefore180Observer(new Call(message));
+        signalingAction.onCancelCallBefore180Observer(new SignalingCallInfo(message));
     }
 
     // DialogSetHandler
@@ -372,16 +372,16 @@ public class EventNotifier
     //MessageObserver
     private void onMessageSendSuccess(SipMessage message) {
         Log.d(APP_NAME, "onMessageSendSuccess");
-        signalingAction.onMessageSendSuccessObserver(new Message(message));
+        signalingAction.onMessageSendSuccessObserver(new SignalingMessageInfo(message));
     }
 
     private void onMessageSendFailure(SipMessage message) {
         Log.d(APP_NAME, "onMessageSendFailure");
-        signalingAction.onMessageSendFailureObserver(new Message(message));
+        signalingAction.onMessageSendFailureObserver(new SignalingMessageInfo(message));
     }
 
     private void onMessageArrival(SipMessage message) {
         Log.d(APP_NAME, "onMessageArrival");
-        signalingAction.onMessageArrivalObserver(new Message(message));
+        signalingAction.onMessageArrivalObserver(new SignalingMessageInfo(message));
     }
 }

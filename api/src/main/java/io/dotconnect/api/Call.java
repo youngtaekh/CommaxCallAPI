@@ -3,7 +3,8 @@ package io.dotconnect.api;
 import android.content.Context;
 import android.content.Intent;
 import io.dotconnect.api.enum_class.CallState;
-import io.dotconnect.api.observer.CallInfo;
+import io.dotconnect.api.observer.APICallInfo;
+import io.dotconnect.api.util.AuthenticationUtil;
 import io.dotconnect.api.view.ConnectView;
 import io.dotconnect.p2p.P2PManager;
 import io.dotconnect.p2p.SDPListener;
@@ -25,7 +26,7 @@ public class Call {
     private String callId;
     private SDPType sdpType;
     private CallState callState;
-    private CallInfo callInfo;
+    private APICallInfo APICallInfo;
     private P2PManager p2pManager;
     private String target, teamId, reason;
     private int cause;
@@ -59,7 +60,10 @@ public class Call {
         }
     };
 
-    Call(){}
+    Call(){
+        this.callId = AuthenticationUtil.getEncryptedHashId(String.valueOf(System.currentTimeMillis()));
+        this.callState = CallState.IDLE;
+    }
 
     Call(String target, String teamId) {
         this.target = target;
@@ -198,11 +202,11 @@ public class Call {
         this.callState = callState;
     }
 
-    public CallInfo getCallInfo() {
-        return callInfo;
+    public APICallInfo getAPICallInfo() {
+        return APICallInfo;
     }
 
-    public void setCallInfo(CallInfo callInfo) {
-        this.callInfo = callInfo;
+    public void setAPICallInfo(APICallInfo APICallInfo) {
+        this.APICallInfo = APICallInfo;
     }
 }

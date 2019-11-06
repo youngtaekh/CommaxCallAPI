@@ -16,10 +16,10 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.api.ConnectManager
 import io.dotconnect.api.enum_class.CallType
-import io.dotconnect.api.observer.CallInfo
+import io.dotconnect.api.observer.APICallInfo
 import io.dotconnect.api.observer.ConnectAction
 import io.dotconnect.api.observer.ConnectObserver
-import io.dotconnect.api.observer.MessageInfo
+import io.dotconnect.api.observer.APIMessageInfo
 import io.dotconnect.api.util.AuthenticationUtil
 import io.dotconnect.api.util.ConnectServer
 import kotlinx.android.synthetic.main.activity_main.*
@@ -97,50 +97,50 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         LogAndToast("onSocketClosure")
     }
 
-    override fun onMessageSendSuccess(message: MessageInfo?) {
+    override fun onMessageSendSuccess(APIMessage: APIMessageInfo?) {
         LogAndToast("onMessageSendSuccess")
     }
 
-    override fun onMessageSendFailure(message: MessageInfo?) {
+    override fun onMessageSendFailure(APIMessage: APIMessageInfo?) {
         LogAndToast("onMessageSendFailure")
     }
 
-    override fun onMessageArrival(message: MessageInfo?) {
+    override fun onMessageArrival(APIMessage: APIMessageInfo?) {
         LogAndToast("onMessageArrival")
 //        val handler = Handler(Looper.getMainLooper())
-//        val runnable = Runnable { tvMessage.text = message?.message ?: ""}
+//        val runnable = Runnable { tvMessage.text = APIMessage?.APIMessage ?: ""}
 //        handler.post(runnable)
-//        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, message?.messageSeq.toString(), chatType, chatId, MessageType.read)
+//        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, APIMessage?.messageSeq.toString(), chatType, chatId, MessageType.read)
     }
 
-//    override fun onOutgoingCall(callInfo: CallInfo?) {}
+//    override fun onOutgoingCall(callInfo: APICallInfo?) {}
 
-    override fun onIncomingCall(callInfo: CallInfo?) {
+    override fun onIncomingCall(APICallInfo: APICallInfo?) {
         LogAndToast("onIncomingCall")
         val intent = Intent(this, CallActivity::class.java)
-        intent.putExtra("video", callInfo?.callType == CallType.One_Video || callInfo?.callType == CallType.One_Audio_Screencast)
-        intent.putExtra("screen", callInfo?.callType == CallType.One_Audio_Screencast)
+        intent.putExtra("video", APICallInfo?.callType == CallType.One_Video || APICallInfo?.callType == CallType.One_Audio_Screencast)
+        intent.putExtra("screen", APICallInfo?.callType == CallType.One_Audio_Screencast)
         intent.putExtra("incoming", true)
         startActivity(intent)
     }
 
-//    override fun onUpdate(callInfo: CallInfo?) {}
+//    override fun onUpdate(callInfo: APICallInfo?) {}
 //
-//    override fun onEarlyMedia(callInfo: CallInfo?) {}
+//    override fun onEarlyMedia(callInfo: APICallInfo?) {}
 //
-//    override fun onOutgoingCallConnected(callInfo: CallInfo?) {}
+//    override fun onOutgoingCallConnected(callInfo: APICallInfo?) {}
 
-    override fun onIncomingCallConnected(callInfo: CallInfo?) {}
+    override fun onIncomingCallConnected(APICallInfo: APICallInfo?) {}
 
-    override fun onFailure(callInfo: CallInfo?) {}
+    override fun onFailure(APICallInfo: APICallInfo?) {}
 
-    override fun onTerminated(callInfo: CallInfo?) {
+    override fun onTerminated(APICallInfo: APICallInfo?) {
         runOnUiThread { ConnectManager.getInstance().stopRegistration() }
     }
 
-//    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
+//    override fun onBusyOnIncomingCall(callInfo: APICallInfo?) {}
 //
-//    override fun onCancelCallBefore180(callInfo: CallInfo?) {}
+//    override fun onCancelCallBefore180(callInfo: APICallInfo?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

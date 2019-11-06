@@ -2,23 +2,12 @@ package io.dotconnect.signaling.observer;
 
 import io.dotconnect.signaling.callJni.SipMessage;
 
-public class Call {
-    public static final String COUNTERPART = "counterpart";
-    public static final String CALL_KEY = "callKey";
-    public static final String STATUS_CODE = "statusCode";
-    public static final String CAUSE = "cause";
-    public static final String REASON = "reason";
-    public static final String MESSAGE = "message";
-    public static final String CALL_TYPE = "callType";
-    public static final String METHOD = "method";
-    public static final String TEAM_ID = "teamId";
-    public static final String SDP = "sdp";
-    public static final String REMOTE_TRACK_COUNT = "trackCount";
+public class SignalingCallInfo {
 
     private String counterpart, callKey, reason, message, callType, method, teamId, sdp;
     private int statusCode, cause, remoteTrackCount;
 
-    public Call(SipMessage sipMessage) {
+    public SignalingCallInfo(SipMessage sipMessage) {
         if (sipMessage!=null) {
             this.counterpart = sipMessage.getFromId();
             this.callKey = sipMessage.getCallKey();

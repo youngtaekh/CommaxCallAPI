@@ -9,45 +9,45 @@ public class SignalingObserver {
     }
 
     public interface MessageObserver {
-        void onMessageSendSuccess(Message message);
-        void onMessageSendFailure(Message message);
-        void onMessageArrival(Message message);
+        void onMessageSendSuccess(SignalingMessageInfo signalingMessageInfo);
+        void onMessageSendFailure(SignalingMessageInfo signalingMessageInfo);
+        void onMessageArrival(SignalingMessageInfo signalingMessageInfo);
     }
 
     public interface CallObserver {
-        void onIncomingCall(Call call);
-        void onOutgoingCall(Call call);
-        void onUpdate(Call call);
-        void onEarlyMedia(Call call);
-        void onOutgoingCallConnected(Call call);
-        void onIncomingCallConnected(Call call);
-        void onFailure(Call call);
-        void onTerminated(Call call);
-        void onBusyOnIncomingCall(Call call);
-        void onCancelCallBefore180(Call call);
+        void onIncomingCall(SignalingCallInfo signalingCallInfo);
+        void onOutgoingCall(SignalingCallInfo signalingCallInfo);
+        void onUpdate(SignalingCallInfo signalingCallInfo);
+        void onEarlyMedia(SignalingCallInfo signalingCallInfo);
+        void onOutgoingCallConnected(SignalingCallInfo signalingCallInfo);
+        void onIncomingCallConnected(SignalingCallInfo signalingCallInfo);
+        void onFailure(SignalingCallInfo signalingCallInfo);
+        void onTerminated(SignalingCallInfo signalingCallInfo);
+        void onBusyOnIncomingCall(SignalingCallInfo signalingCallInfo);
+        void onCancelCallBefore180(SignalingCallInfo signalingCallInfo);
 
-//        void onProvisional(Call callInfo);
-//        void onPrack(Call callInfo);
-//        void onStableCallTimeout(Call callInfo);
-//        void onRedirected(Call callInfo);
-//        void onAnswer(Call callInfo);
-//        void onOffer(Call callInfo);
-//        void onOfferRequired(Call callInfo);
-//        void onOfferRejected(Call callInfo);
-//        void onOfferRequestRejected(Call callInfo);
-//        void onRemoteSdpChanged(Call callInfo);
-//        void onInfo(Call callInfo);
-//        void onInfoSuccess(Call callInfo);
-//        void onInfoFailure(Call callInfo);
-//        void onRefer(Call callInfo);
-//        void onReferAccepted(Call callInfo);
-//        void onReferRejected(Call callInfo);
-//        void onReferNoSub(Call callInfo);
-//        void onMessage(Call callInfo);
-//        void onMessageSuccess(Call callInfo);
-//        void onMessageFailure(Call callInfo);
-//        void onForkDestroyed(Call callInfo);
-//        void onReadyToSend(Call callInfo);
-//        void onFlowTerminated(Call callInfo);
+//        void onProvisional(SignalingCallInfo callInfo);
+//        void onPrack(SignalingCallInfo callInfo);
+//        void onStableCallTimeout(SignalingCallInfo callInfo);
+//        void onRedirected(SignalingCallInfo callInfo);
+//        void onAnswer(SignalingCallInfo callInfo);
+//        void onOffer(SignalingCallInfo callInfo);
+//        void onOfferRequired(SignalingCallInfo callInfo);
+//        void onOfferRejected(SignalingCallInfo callInfo);
+//        void onOfferRequestRejected(SignalingCallInfo callInfo);
+//        void onRemoteSdpChanged(SignalingCallInfo callInfo);
+//        void onInfo(SignalingCallInfo callInfo);
+//        void onInfoSuccess(SignalingCallInfo callInfo);
+//        void onInfoFailure(SignalingCallInfo callInfo);
+//        void onRefer(SignalingCallInfo callInfo);
+//        void onReferAccepted(SignalingCallInfo callInfo);
+//        void onReferRejected(SignalingCallInfo callInfo);
+//        void onReferNoSub(SignalingCallInfo callInfo);
+//        void onMessage(SignalingCallInfo callInfo);
+//        void onMessageSuccess(SignalingCallInfo callInfo);
+//        void onMessageFailure(SignalingCallInfo callInfo);
+//        void onForkDestroyed(SignalingCallInfo callInfo);
+//        void onReadyToSend(SignalingCallInfo callInfo);
+//        void onFlowTerminated(SignalingCallInfo callInfo);
     }
 }

@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.dotconnect.api.util.Configuration.APP_NAME;
+import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 
 /**
  * Peer connection client implementation.

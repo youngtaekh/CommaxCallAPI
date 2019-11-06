@@ -54,7 +54,7 @@ public class AuthenticationUtil {
      * Iteration : 2
      * Derived key length : 192bits (24bytes)
      */
-    public static String getEncryptedMessageId(String str) {
+    public static String getEncryptedHashId(String str) {
 
         try {
             byte[] encryptedStringByte = encryptString(str, MessageSalt.getBytes(), iterationsForMsg, derivedKeyLength);

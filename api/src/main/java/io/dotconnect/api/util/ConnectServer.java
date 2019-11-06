@@ -9,8 +9,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import static io.dotconnect.api.util.APIConfiguration.REST_URL;
+
 public class ConnectServer {
-    public static final String REST_URL = "https://commax.dot-connect.io:4435/api/v1.0";
 
     private static final int TIMEOUT = 10000;
     private static final String timeout = "timeout";

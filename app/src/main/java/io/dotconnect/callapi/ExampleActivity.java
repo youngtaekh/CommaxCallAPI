@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import io.dotconnect.api.ConnectManager;
-import io.dotconnect.api.observer.CallInfo;
+import io.dotconnect.api.observer.APICallInfo;
 import io.dotconnect.api.observer.ConnectAction;
 import io.dotconnect.api.observer.ConnectObserver;
 import io.dotconnect.api.view.ConnectView;
@@ -130,52 +130,52 @@ public class ExampleActivity extends AppCompatActivity implements ConnectObserve
     }
 
     @Override
-    public void onIncomingCall(CallInfo callInfo) {
+    public void onIncomingCall(APICallInfo APICallInfo) {
 
     }
 
 //    @Override
-//    public void onOutgoingCall(CallInfo callInfo) {
+//    public void onOutgoingCall(APICallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onUpdate(CallInfo callInfo) {
+//    public void onUpdate(APICallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onEarlyMedia(CallInfo callInfo) {
+//    public void onEarlyMedia(APICallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onOutgoingCallConnected(CallInfo callInfo) {
+//    public void onOutgoingCallConnected(APICallInfo callInfo) {
 //        runOnUiThread(() -> tvStatus.setText("Calling"));
 //    }
 
     @Override
-    public void onIncomingCallConnected(CallInfo callInfo) {
+    public void onIncomingCallConnected(APICallInfo APICallInfo) {
         runOnUiThread(() -> tvStatus.setText("Calling"));
     }
 
     @Override
-    public void onFailure(CallInfo callInfo) {
+    public void onFailure(APICallInfo APICallInfo) {
 
     }
 
     @Override
-    public void onTerminated(CallInfo callInfo) {
+    public void onTerminated(APICallInfo APICallInfo) {
         finish();
     }
 
 //    @Override
-//    public void onBusyOnIncomingCall(CallInfo callInfo) {
+//    public void onBusyOnIncomingCall(APICallInfo callInfo) {
 //
 //    }
 //
 //    @Override
-//    public void onCancelCallBefore180(CallInfo callInfo) {
+//    public void onCancelCallBefore180(APICallInfo callInfo) {
 //
 //    }
 

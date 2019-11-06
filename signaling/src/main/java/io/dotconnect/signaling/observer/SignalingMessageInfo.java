@@ -2,24 +2,13 @@ package io.dotconnect.signaling.observer;
 
 import io.dotconnect.signaling.callJni.SipMessage;
 
-public class Message {
-    public static final String SENDER_EMAIL = "senderEmail";
-    public static final String MESSAGE = "message";
-    public static final String CHAT_ID = "chatId";
-    public static final String MESSAGE_TYPE = "messageType";
-    public static final String FILE_TYPE = "fileType";
-    public static final String FILE_URL = "fileURL";
-    public static final String MESSAGE_ID = "messageId";
-    public static final String MESSAGE_SEQ = "messageSeq";
-    public static final String MESSAGE_DATE = "messageDate";
-    public static final String TEAM_ID = "teamId";
-    public static final String CHAT_TYPE = "chatType";
+public class SignalingMessageInfo {
 
     private String senderEmail, message, chatId, messageType, fileType, fileUrl,
             messageId, messageDate, teamId, chatType;
     private int messageSeq;
 
-    public Message(SipMessage sipMessage) {
+    public SignalingMessageInfo(SipMessage sipMessage) {
         if (sipMessage!=null) {
             this.senderEmail = sipMessage.getFromId();
             this.message = sipMessage.getMessage();

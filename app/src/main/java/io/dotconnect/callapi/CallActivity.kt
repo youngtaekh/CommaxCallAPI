@@ -8,7 +8,7 @@ import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import io.dotconnect.api.ConnectManager
-import io.dotconnect.api.observer.CallInfo
+import io.dotconnect.api.observer.APICallInfo
 import io.dotconnect.api.observer.ConnectAction
 import io.dotconnect.api.observer.ConnectObserver
 import kotlinx.android.synthetic.main.activity_call.*
@@ -131,32 +131,32 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
     }
 
-    override fun onIncomingCall(callInfo: CallInfo?) {}
+    override fun onIncomingCall(APICallInfo: APICallInfo?) {}
 
-//    override fun onOutgoingCall(callInfo: CallInfo?) {}
+//    override fun onOutgoingCall(callInfo: APICallInfo?) {}
 //
-//    override fun onUpdate(callInfo: CallInfo?) {}
+//    override fun onUpdate(callInfo: APICallInfo?) {}
 //
-//    override fun onEarlyMedia(callInfo: CallInfo?) {}
+//    override fun onEarlyMedia(callInfo: APICallInfo?) {}
 //
-//    override fun onOutgoingCallConnected(callInfo: CallInfo?) {
+//    override fun onOutgoingCallConnected(callInfo: APICallInfo?) {
 //        runOnUiThread { tvStatus.text = "Calling" }
 //    }
 
-    override fun onIncomingCallConnected(callInfo: CallInfo?) {
+    override fun onIncomingCallConnected(APICallInfo: APICallInfo?) {
         calling = true
         runOnUiThread { tvStatus.text = "Calling" }
     }
 
-    override fun onFailure(callInfo: CallInfo?) {}
+    override fun onFailure(APICallInfo: APICallInfo?) {}
 
-    override fun onTerminated(callInfo: CallInfo?) {
+    override fun onTerminated(APICallInfo: APICallInfo?) {
         finish()
     }
 
-//    override fun onBusyOnIncomingCall(callInfo: CallInfo?) {}
+//    override fun onBusyOnIncomingCall(callInfo: APICallInfo?) {}
 //
-//    override fun onCancelCallBefore180(callInfo: CallInfo?) {}
+//    override fun onCancelCallBefore180(callInfo: APICallInfo?) {}
 
     @TargetApi(21)
     private fun startScreenCapture() {

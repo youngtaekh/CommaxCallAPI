@@ -3,12 +3,12 @@ package io.dotconnect.api;
 import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.signaling.callJni.CallCore;
 
-import static io.dotconnect.api.util.AuthenticationUtil.getEncryptedMessageId;
+import static io.dotconnect.api.util.AuthenticationUtil.getEncryptedHashId;
 
 public class Message {
     int sendMessage(String target, String teamId, String message, String deviceId,
                            String chatType, String chatId, MessageType messageType) {
-        String messageId = getEncryptedMessageId(deviceId + String.valueOf(System.currentTimeMillis()));
+        String messageId = getEncryptedHashId(deviceId + String.valueOf(System.currentTimeMillis()));
         switch (messageType) {
             case normal:
             case one:
@@ -34,7 +34,7 @@ public class Message {
 
     int sendFile(String target, String teamId, String message, String chatType, String deviceId,
                         String chatId, MessageType messageType, String fileType, String fileUrl) {
-        String messageId = getEncryptedMessageId(deviceId + String.valueOf(System.currentTimeMillis()));
+        String messageId = getEncryptedHashId(deviceId + String.valueOf(System.currentTimeMillis()));
         return CallCore.getInstance().sendFileMessage(target, teamId, message,
                 chatType, chatId, messageId, messageType.toString(), fileType, fileUrl);
     }

@@ -1,22 +1,24 @@
 package io.dotconnect.api.observer;
 
-public class MessageInfo {
+import io.dotconnect.signaling.observer.SignalingMessageInfo;
+
+public class APIMessageInfo {
 
     private String message, chatId, messageType, fileType, fileUrl,
             messageId, messageDate, teamId, chatType;
     private int messageSeq;
 
-    public MessageInfo(io.dotconnect.signaling.observer.Message message) {
-        this.message = message.getMessage();
-        this.chatId = message.getChatId();
-        this.messageType = message.getMessageType();
-        this.fileType = message.getFileType();
-        this.fileUrl = message.getFileUrl();
-        this.messageId = message.getMessageId();
-        this.messageDate = message.getMessageDate();
-        this.teamId = message.getTeamId();
-        this.chatType = message.getChatType();
-        this.messageSeq = message.getMessageSeq();
+    public APIMessageInfo(SignalingMessageInfo signalingMessageInfo) {
+        this.message = signalingMessageInfo.getMessage();
+        this.chatId = signalingMessageInfo.getChatId();
+        this.messageType = signalingMessageInfo.getMessageType();
+        this.fileType = signalingMessageInfo.getFileType();
+        this.fileUrl = signalingMessageInfo.getFileUrl();
+        this.messageId = signalingMessageInfo.getMessageId();
+        this.messageDate = signalingMessageInfo.getMessageDate();
+        this.teamId = signalingMessageInfo.getTeamId();
+        this.chatType = signalingMessageInfo.getChatType();
+        this.messageSeq = signalingMessageInfo.getMessageSeq();
     }
 
     public String getMessage() {

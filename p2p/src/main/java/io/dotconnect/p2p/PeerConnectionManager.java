@@ -14,7 +14,7 @@ import org.webrtc.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.dotconnect.api.util.Configuration.APP_NAME;
+import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 import static io.dotconnect.p2p.utils.Configuration.*;
 
 public class PeerConnectionManager implements AppRTCClient.SignalingEvents,

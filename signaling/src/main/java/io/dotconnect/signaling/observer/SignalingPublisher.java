@@ -15,18 +15,18 @@ public interface SignalingPublisher {
     void onUnRegistrationSuccessObserver();
     void onSocketClosureObserver();
 
-    void onMessageSendSuccessObserver(Message message);
-    void onMessageSendFailureObserver(Message message);
-    void onMessageArrivalObserver(Message message);
+    void onMessageSendSuccessObserver(SignalingMessageInfo signalingMessageInfo);
+    void onMessageSendFailureObserver(SignalingMessageInfo signalingMessageInfo);
+    void onMessageArrivalObserver(SignalingMessageInfo signalingMessageInfo);
 
-    void onIncomingCallObserver(Call call);
-    void onOutgoingCallObserver(Call call);
-    void onUpdateObserver(Call call);
-    void onEarlyMediaObserver(Call call);
-    void onOutgoingCallConnectedObserver(Call call);
-    void onIncomingCallConnectedObserver(Call call);
-    void onFailureObserver(Call call);
-    void onTerminatedObserver(Call call);
-    void onBusyOnIncomingCallObserver(Call call);
-    void onCancelCallBefore180Observer(Call call);
+    void onIncomingCallObserver(SignalingCallInfo signalingCallInfo);
+    void onOutgoingCallObserver(SignalingCallInfo signalingCallInfo);
+    void onUpdateObserver(SignalingCallInfo signalingCallInfo);
+    void onEarlyMediaObserver(SignalingCallInfo signalingCallInfo);
+    void onOutgoingCallConnectedObserver(SignalingCallInfo signalingCallInfo);
+    void onIncomingCallConnectedObserver(SignalingCallInfo signalingCallInfo);
+    void onFailureObserver(SignalingCallInfo signalingCallInfo);
+    void onTerminatedObserver(SignalingCallInfo signalingCallInfo);
+    void onBusyOnIncomingCallObserver(SignalingCallInfo signalingCallInfo);
+    void onCancelCallBefore180Observer(SignalingCallInfo signalingCallInfo);
 }

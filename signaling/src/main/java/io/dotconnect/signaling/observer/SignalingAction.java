@@ -84,93 +84,93 @@ public class SignalingAction implements SignalingPublisher {
     }
 
     @Override
-    public void onMessageSendSuccessObserver(Message message) {
+    public void onMessageSendSuccessObserver(SignalingMessageInfo signalingMessageInfo) {
         for (SignalingObserver.MessageObserver messageObserver : messageObservers) {
-            messageObserver.onMessageSendSuccess(message);
+            messageObserver.onMessageSendSuccess(signalingMessageInfo);
         }
     }
 
     @Override
-    public void onMessageSendFailureObserver(Message message) {
+    public void onMessageSendFailureObserver(SignalingMessageInfo signalingMessageInfo) {
         for (SignalingObserver.MessageObserver messageObserver : messageObservers) {
-            messageObserver.onMessageSendFailure(message);
+            messageObserver.onMessageSendFailure(signalingMessageInfo);
         }
     }
 
     @Override
-    public void onMessageArrivalObserver(Message message) {
+    public void onMessageArrivalObserver(SignalingMessageInfo signalingMessageInfo) {
         for (SignalingObserver.MessageObserver messageObserver : messageObservers) {
-            messageObserver.onMessageArrival(message);
+            messageObserver.onMessageArrival(signalingMessageInfo);
         }
     }
 
     @Override
-    public void onIncomingCallObserver(Call call) {
+    public void onIncomingCallObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onIncomingCall(call);
+            callObserver.onIncomingCall(signalingCallInfo);
         }
     }
 
     @Override
-    public void onOutgoingCallObserver(Call call) {
+    public void onOutgoingCallObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onOutgoingCall(call);
+            callObserver.onOutgoingCall(signalingCallInfo);
         }
     }
 
     @Override
-    public void onUpdateObserver(Call call) {
+    public void onUpdateObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onUpdate(call);
+            callObserver.onUpdate(signalingCallInfo);
         }
     }
 
     @Override
-    public void onEarlyMediaObserver(Call call) {
+    public void onEarlyMediaObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onEarlyMedia(call);
+            callObserver.onEarlyMedia(signalingCallInfo);
         }
     }
 
     @Override
-    public void onOutgoingCallConnectedObserver(Call call) {
+    public void onOutgoingCallConnectedObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onOutgoingCallConnected(call);
+            callObserver.onOutgoingCallConnected(signalingCallInfo);
         }
     }
 
     @Override
-    public void onIncomingCallConnectedObserver(Call call) {
+    public void onIncomingCallConnectedObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onIncomingCallConnected(call);
+            callObserver.onIncomingCallConnected(signalingCallInfo);
         }
     }
 
     @Override
-    public void onFailureObserver(Call call) {
+    public void onFailureObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onFailure(call);
+            callObserver.onFailure(signalingCallInfo);
         }
     }
 
     @Override
-    public void onTerminatedObserver(Call call) {
+    public void onTerminatedObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onTerminated(call);
+            callObserver.onTerminated(signalingCallInfo);
         }
     }
 
     @Override
-    public void onBusyOnIncomingCallObserver(Call call) {
+    public void onBusyOnIncomingCallObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onBusyOnIncomingCall(call);
+            callObserver.onBusyOnIncomingCall(signalingCallInfo);
         }
     }
 
     @Override
-    public void onCancelCallBefore180Observer(Call call) {
+    public void onCancelCallBefore180Observer(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onCancelCallBefore180(call);
+            callObserver.onCancelCallBefore180(signalingCallInfo);
         }
     }
 }

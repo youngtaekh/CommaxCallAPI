@@ -5,9 +5,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+import io.dotconnect.android_api.BuildConfig;
 import io.dotconnect.api.observer.ConnectAction;
 import io.dotconnect.api.util.AuthenticationUtil;
-import io.dotconnect.api.util.Configuration;
+import io.dotconnect.api.util.APIConfiguration;
 import io.dotconnect.api.util.ConnectServer;
 import io.dotconnect.signaling.callJni.CallCore;
 import io.dotconnect.signaling.callJni.EventNotifier;
@@ -18,7 +19,7 @@ import org.json.JSONObject;
 import java.util.StringTokenizer;
 
 import static io.dotconnect.api.util.AuthenticationUtil.getUUID;
-import static io.dotconnect.api.util.Configuration.*;
+import static io.dotconnect.api.util.APIConfiguration.*;
 import static io.dotconnect.signaling.util.CertificationUtil.*;
 
 public class Register {
@@ -51,11 +52,11 @@ public class Register {
             jsonObject.put("uuid", AuthenticationUtil.getUUID(context));
             jsonObject.put("deviceName", Build.MODEL);
             jsonObject.put("pushToken", fcmToken);
-            jsonObject.put("osType", Configuration.OsType);
+            jsonObject.put("osType", APIConfiguration.OsType);
             jsonObject.put("osVersion", Build.VERSION.RELEASE);
             jsonObject.put("appVersion", BuildConfig.VERSION_NAME);
             new OnlyDeviceCheck()
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Configuration.DEVICE_CHECK,
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, APIConfiguration.DEVICE_CHECK,
                             jsonObject.toString(), accessToken);
 
         } catch (JSONException e) {
@@ -90,11 +91,11 @@ public class Register {
                 jsonObject.put("uuid", AuthenticationUtil.getUUID(context));
                 jsonObject.put("deviceName", Build.MODEL);
                 jsonObject.put("pushToken", fcmToken);
-                jsonObject.put("osType", Configuration.OsType);
+                jsonObject.put("osType", APIConfiguration.OsType);
                 jsonObject.put("osVersion", Build.VERSION.RELEASE);
                 jsonObject.put("appVersion", BuildConfig.VERSION_NAME);
                 new DeviceCheck(context, userId, appId, accessToken, tlsDomain, outboundProxy)
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Configuration.DEVICE_CHECK,
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, APIConfiguration.DEVICE_CHECK,
                                            jsonObject.toString(), accessToken);
 
             } catch (JSONException e) {
