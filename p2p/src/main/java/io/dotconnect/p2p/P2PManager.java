@@ -7,6 +7,8 @@ import android.os.Looper;
 import android.util.Log;
 import io.dotconnect.p2p.wwc.Camera;
 import io.dotconnect.p2p.wwc.Ice;
+
+import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 import static io.dotconnect.p2p.utils.Configuration.*;
 
 import org.webrtc.*;
@@ -15,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class P2PManager {
-
-    private static P2PManager instance = null;
 
     private AppRTCClient.SignalingParameters signalingParameters = null;
     private PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = null;
@@ -27,7 +27,7 @@ public class P2PManager {
 
     private ProxyVideoSink remoteProxyRenderer = new ProxyVideoSink();
     private ProxyVideoSink localProxyVideoSink = new ProxyVideoSink();
-    private EglBase eglBase = null;
+    private EglBase eglBase;
     private ArrayList<VideoSink> remoteSinks = new ArrayList<>();
 
     private Handler handler = null;
@@ -137,10 +137,8 @@ public class P2PManager {
         }
     };
 
-    public static P2PManager getInstance() {
-        if (instance == null)
-            instance = new P2PManager();
-        return instance;
+    public P2PManager() {
+        eglBase = EglBase.create();
     }
 
     public void setRenderer(SurfaceViewRenderer fullscreenRenderer, SurfaceViewRenderer pipRenderer) {
@@ -149,9 +147,8 @@ public class P2PManager {
     }
 
     public void initRenderer() {
+        Log.d(APP_NAME, "initRenderer()");
         remoteSinks.add(remoteProxyRenderer);
-
-        eglBase = EglBase.create();
 
         // Create video renderers.
         if (pipRenderer!=null) {

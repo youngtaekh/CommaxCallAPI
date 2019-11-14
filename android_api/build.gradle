@@ -6,7 +6,7 @@ publish {
     groupId = 'io.dotconnect'
     repoName = 'maven'
     artifactId = 'android_api'
-    publishVersion = '0.3.0'
+    publishVersion = '0.3.8'
     desc = ''
     website = 'http://gitlab.voiceloco.com/client/android/callapi'
 //    issueTracker = ""
@@ -22,7 +22,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 2
-        versionName "0.3.0"
+        versionName "0.3.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

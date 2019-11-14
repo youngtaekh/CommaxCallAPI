@@ -1,5 +1,7 @@
 package io.dotconnect.api.observer;
 
+import io.dotconnect.signaling.observer.SignalingCallInfo;
+
 public class ConnectObserver {
     public interface RegistrationObserver {
         void onDeviceRegistrationSuccess();

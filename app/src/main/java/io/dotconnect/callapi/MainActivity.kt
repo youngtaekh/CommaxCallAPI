@@ -1,12 +1,10 @@
 package io.dotconnect.callapi
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -21,10 +19,7 @@ import io.dotconnect.api.observer.ConnectAction
 import io.dotconnect.api.observer.ConnectObserver
 import io.dotconnect.api.observer.ApiMessageInfo
 import io.dotconnect.api.util.AuthenticationUtil
-import io.dotconnect.api.util.ConnectServer
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONException
-import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     ConnectObserver.MessageObserver, ConnectObserver.CallObserver {
@@ -35,25 +30,28 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     val COUNTERPART_ACCOUNT = "counterpartAccount"
 
     val appId = "testappid"
-    private val DOMAIN = "commax.dot-connect.io"
-    private val OUTBOUND_PROXY = "commax.dot-connect.io"
+    private val DOMAIN = "commax.dotconnect-api.io"
+    private val OUTBOUND_PROXY = "commax.dotconnect-api.io"
+    private var outboundProxyAddress:String? = null
     private var mContext:Context = this
 
     //Note8
-    private val email = "youngtaek"
+    private val accessToken = "Wkc5MFkyOXViVzh5MjAxOS0xMS0wOCAwNDozOTowMA=="
+    private val userId = "ZG90Y29ubW8y"
     private val password = "aaaaaa"
-    private val deviceId = "11E9D7B9-F4D5-4ACF-B6B9-C690775FA272"
+    private val deviceId = "222222"
     //Note4
-//    private val email = "note4"
+//    private val accessToken = "Wkc5MFkyOXViVzh4MjAxOS0xMS0wOCAwNDozODozOA=="
+//    private val userId = "ZG90Y29ubW8x"
 //    private val password = "aaaaaa"
-//    private val deviceId = "3CFA370E-F7EB-49CF-A18C-E2FF86A4A87A"
+//    private val deviceId = "333333"
 
     private val teamId = "vltest"
 
     //Note8
-    private val callTarget = "youngtaek"
+    private val callTarget = "100001"
     //Note4
-//    private val callTarget = "note8"
+//    private val callTarget = "100000"
 
     private val messageTarget = "sip:27094d15477333d60fe64ed43668d018@voiceloco.com"
     private val chatId = "27094d15477333d60fe64ed43668d018"
@@ -160,16 +158,16 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         ConnectAction.getInstance().add(this as ConnectObserver.MessageObserver)
         ConnectAction.getInstance().add(this as ConnectObserver.CallObserver)
 
-        etEmail.setText(email)
+        etEmail.setText(userId)
         etPassword.setText(password)
         etDeviceId.setText(deviceId)
         etTarget.setText(callTarget)
         etTeamId.setText(teamId)
 
-        tvRegister.setOnClickListener { getAccessToken(2) }
+        tvRegister.setOnClickListener { getFCMToken(accessToken, 2) }
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
-        tvDeviceRegister.setOnClickListener { getAccessToken(0) }
-        tvDeviceUnregister.setOnClickListener { getAccessToken(1) }
+        tvDeviceRegister.setOnClickListener { getFCMToken(accessToken, 0) }
+        tvDeviceUnregister.setOnClickListener { getFCMToken(accessToken, 1) }
 
         tvSend.setOnClickListener {
 //            val message = etMessage.text.toString()
@@ -188,7 +186,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvVideo.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", true)
-            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + "." + DOMAIN
+            val target = "sip:" + etTarget.text.toString() + "@" + appId + "." + DOMAIN
             intent.putExtra("target", target)
             intent.putExtra("teamId", etTeamId.text.toString())
             startActivity(intent)
@@ -206,7 +204,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         if (ACTION_INCOMING_CALL == intent.action) {
             Log.d(TAG, "onIncomingCall")
 
-            getAccessToken(2)
+            getFCMToken(accessToken, 2)
         }
 
         val intentFilter = IntentFilter()
@@ -220,7 +218,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         if (ACTION_INCOMING_CALL == intent.action) {
             Log.d(TAG, "onIncomingCall")
 
-            getAccessToken(2)
+            getFCMToken(accessToken, 2)
         }
     }
 
@@ -231,33 +229,6 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         ConnectAction.getInstance().delete(this as ConnectObserver.CallObserver)
 
         unregisterReceiver(broadcastReceiver)
-    }
-
-    private fun getAccessToken(action: Int) {
-        val jsonObject = JSONObject()
-        try {
-            jsonObject.put("userId", etEmail.text.toString())
-            GetAccessToken(action).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, jsonObject.toString())
-
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private inner class GetAccessToken(var action: Int) : AsyncTask<String, Void, String>() {
-
-        override fun doInBackground(vararg params: String): String {
-            Log.d(TAG, params[0])
-            return ConnectServer.POST("/apps/$appId/users", params[0], null, "testApiKey")
-        }
-
-        override fun onPostExecute(result: String) {
-            super.onPostExecute(result)
-            Log.d(TAG, result)
-            getFCMToken(result, action)
-        }
     }
 
     private fun getFCMToken(accessToken: String, action: Int) {
@@ -271,11 +242,12 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
                 // Get new Instance ID token
                 Log.d(TAG, task.result?.token)
                 when (action) {
-                    0 -> ConnectManager.getInstance().deviceRegistration(mContext, accessToken, task.result?.token)
-                    1 -> ConnectManager.getInstance().deviceUnRegistration(mContext, accessToken)
+                    0 -> ConnectManager.getInstance().deviceRegistration(deviceId, userId, appId, accessToken, task.result?.token)
+                    1 -> ConnectManager.getInstance().deviceUnRegistration(deviceId, accessToken)
                     else -> ConnectManager.getInstance()
                         .startRegistration(
                             mContext,
+                            deviceId,
                             etEmail.text.toString(),
                             appId,
                             accessToken,

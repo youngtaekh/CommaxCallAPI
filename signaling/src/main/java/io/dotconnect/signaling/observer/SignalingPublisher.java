@@ -27,6 +27,7 @@ public interface SignalingPublisher {
     void onIncomingCallConnectedObserver(SignalingCallInfo signalingCallInfo);
     void onFailureObserver(SignalingCallInfo signalingCallInfo);
     void onTerminatedObserver(SignalingCallInfo signalingCallInfo);
+    void onOfferObserver(SignalingCallInfo signalingCallInfo);
     void onBusyOnIncomingCallObserver(SignalingCallInfo signalingCallInfo);
     void onCancelCallBefore180Observer(SignalingCallInfo signalingCallInfo);
 }

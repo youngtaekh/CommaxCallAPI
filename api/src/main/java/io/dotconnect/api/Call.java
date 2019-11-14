@@ -29,9 +29,10 @@ public class Call {
     private CallState callState;
     private ApiCallInfo apiCallInfo;
     private P2PManager p2pManager;
-    private ConnectView cvFullView, cvSmallView;
     private String target, teamId, reason;
     private int cause;
+    private boolean isInit;
+
     private SDPListener listener = new SDPListener() {
         @Override
         public void onLocalDescription(String localSDP) {
@@ -65,9 +66,13 @@ public class Call {
     Call(){
         this.callId = AuthenticationUtil.getEncryptedHashId(String.valueOf(System.currentTimeMillis()));
         this.callState = CallState.IDLE;
+        this.isInit = false;
     }
 
     Call(String target, String teamId) {
+        this.callId = AuthenticationUtil.getEncryptedHashId(String.valueOf(System.currentTimeMillis()));
+        this.callState = CallState.IDLE;
+        this.isInit = false;
         this.target = target;
         this.teamId = teamId;
     }
@@ -224,19 +229,11 @@ public class Call {
         this.apiCallInfo = apiCallInfo;
     }
 
-    public ConnectView getCvFullView() {
-        return cvFullView;
+    public boolean isInit() {
+        return isInit;
     }
 
-    public void setCvFullView(ConnectView cvFullView) {
-        this.cvFullView = cvFullView;
-    }
-
-    public ConnectView getCvSmallView() {
-        return cvSmallView;
-    }
-
-    public void setCvSmallView(ConnectView cvSmallView) {
-        this.cvSmallView = cvSmallView;
+    public void setInit(boolean init) {
+        isInit = init;
     }
 }

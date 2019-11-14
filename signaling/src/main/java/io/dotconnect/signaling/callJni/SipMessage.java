@@ -41,8 +41,12 @@ public class SipMessage {
             messageType, fileType, fileUrl, messageId, messageSeq,
             messageDate, callType, method, teamId, chatType, sdp;
 
-    SipMessage(String fromId, String jsonStr) {
+    SipMessage(String fromId, String sdp, String jsonStr) {
         this.fromId = fromId;
+        this.sdp = sdp;
+        if (this.sdp!=null) {
+            Log.d(TAG, "sdp - " + this.sdp);
+        }
         try {
             Log.d(TAG, jsonStr);
             JSONObject json = new JSONObject(jsonStr);
@@ -82,8 +86,6 @@ public class SipMessage {
                 this.teamId = json.getString(TeamId);
             if (json.has(ChatType))
                 this.chatType = json.getString(ChatType);
-            if (json.has(SDP))
-                this.sdp = json.getString(SDP);
             if (json.has(RemoteVideoCount))
                 this.remoteVideoCount = json.getInt(RemoteVideoCount);
         } catch (JSONException e) {

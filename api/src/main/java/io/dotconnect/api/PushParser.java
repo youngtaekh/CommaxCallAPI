@@ -37,6 +37,9 @@ public class PushParser {
             callee = data.get(CALLEE);
             event = data.get(EVENT);
             outboundProxy = data.get(PROXY);
+            if (EventType.cancel == eventType) {
+                CallManager.getInstance().remove();
+            }
             return true;
         } else {
             return false;

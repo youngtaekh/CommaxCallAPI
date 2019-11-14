@@ -161,6 +161,13 @@ public class SignalingAction implements SignalingPublisher {
     }
 
     @Override
+    public void onOfferObserver(SignalingCallInfo signalingCallInfo) {
+        for (SignalingObserver.CallObserver callObserver : callObservers) {
+            callObserver.onOffer(signalingCallInfo);
+        }
+    }
+
+    @Override
     public void onBusyOnIncomingCallObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
             callObserver.onBusyOnIncomingCall(signalingCallInfo);

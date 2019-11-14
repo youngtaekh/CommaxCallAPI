@@ -3,6 +3,7 @@ package io.dotconnect.api;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import io.dotconnect.api.enum_class.CallState;
 import io.dotconnect.api.observer.ApiCallInfo;
@@ -10,6 +11,7 @@ import io.dotconnect.api.observer.ApiMessageInfo;
 import io.dotconnect.api.observer.ConnectAction;
 import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.util.AuthenticationUtil;
+import io.dotconnect.api.util.NetworkUtil;
 import io.dotconnect.api.view.ConnectView;
 import io.dotconnect.signaling.callJni.CallCore;
 import io.dotconnect.signaling.observer.SignalingAction;
@@ -27,7 +29,6 @@ public class ConnectManager {
     private static ConnectManager instance;
 
     private CallManager callManager;
-    private io.dotconnect.api.observer.ApiCallInfo ApiCallInfo;
 //    private SignalingCallInfo call;
 
     private Handler coreStopHandler;
@@ -37,11 +38,16 @@ public class ConnectManager {
         ConnectAction.getInstance().onUnRegistrationSuccessObserver();
     };
 
-    private boolean endBlock = false;
+    private Boolean endBlock;
     private Handler endBlockHandler;
-    private Runnable endBlockRunnable = () -> endBlock = false;
+    private Runnable endBlockRunnable = () -> {
+        endBlock = false;
+        Log.d(TAG, "endBlock - false");
+    };
 
     private ConnectManager() {
+        endBlock = false;
+        Log.d(TAG, "endBlock - " + endBlock);
         SignalingAction.getInstance().add(registrationObserver);
         SignalingAction.getInstance().add(messageObserver);
         SignalingAction.getInstance().add(callObserver);
@@ -57,6 +63,7 @@ public class ConnectManager {
     }
 
     private void release() {
+        Log.d(TAG, "release");
         Register.getInstance().release();
         instance = null;
         SignalingAction.getInstance().delete(registrationObserver);
@@ -65,13 +72,13 @@ public class ConnectManager {
     }
 
     //Register
-    public void deviceRegistration(Context context, String accessToken, String fcmToken) {
-        Register.getInstance().deviceCheck(context, accessToken, fcmToken);
+    public void deviceRegistration(String deviceId, String userId, String appId, String accessToken, String fcmToken) {
+        Register.getInstance().deviceCheck(deviceId, userId, appId, accessToken, fcmToken);
     }
 
     //TODO : REST develop
-    public void deviceUnRegistration(Context context, String accessToken) {
-        Register.getInstance().deviceUnRegistration(context, accessToken);
+    public void deviceUnRegistration(String deviceId, String accessToken) {
+        Register.getInstance().deviceUnRegistration(deviceId, accessToken);
     }
 
     /**
@@ -82,17 +89,17 @@ public class ConnectManager {
      * @param accessToken
      * @param fcmToken Firebase Push Token
      */
-    public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken) {
-        Register.getInstance().start(context, userId, appId, accessToken, fcmToken);
+    public void startRegistration(Context context, String deviceId, String userId, String appId, String accessToken, String fcmToken) {
+        Register.getInstance().start(context, deviceId, userId, appId, accessToken, fcmToken);
     }
 
-    public void startRegistration(Context context, String userId, String appId, String accessToken, String fcmToken, String domain) {
-        Register.getInstance().start(context, userId, appId, accessToken, fcmToken, domain);
+    public void startRegistration(Context context, String deviceId, String userId, String appId, String accessToken, String fcmToken, String outboundProxy) {
+        Register.getInstance().start(context, deviceId, userId, appId, accessToken, fcmToken, outboundProxy);
     }
 
-    public void startRegistration(Context context, String userId, String appId,
+    public void startRegistration(Context context, String deviceId, String userId, String appId,
                                   String accessToken, String fcmToken, String domain, String outboundProxy) {
-        Register.getInstance().start(context, userId, appId, accessToken, fcmToken, domain, outboundProxy);
+        Register.getInstance().start(context, deviceId, userId, appId, accessToken, fcmToken, domain, outboundProxy);
     }
 
     public void stopRegistration() {
@@ -111,6 +118,12 @@ public class ConnectManager {
      */
     public boolean isRegistered() {
         return Register.getInstance().isRegistered();
+    }
+
+    public void networkChange(Context context) {
+        String networkType = NetworkUtil.getNetworkType(context);
+        String ipAddress = NetworkUtil.getIPAddress(networkType);
+        CallCore.getInstance().applyNetworkChange(networkType, ipAddress, "");
     }
 
     //SignalingMessageInfo
@@ -187,13 +200,16 @@ public class ConnectManager {
             call.setCallState(ACCEPT_PENDING);
             Log.d(TAG, "acceptCall() callSize is 0 callState is " + call.getCallState());
             call.setContext(context);
+            initView(cvFullView, cvSmallView);
+            call.setInit(true);
         } else {
             call = callManager.get();
             Log.d(TAG, "acceptCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
             if (call.getCallState()==INCOMING_CONNECT_READY) {
                 call.setCallState(ACCEPT_PENDING);
                 call.setContext(context);
-                initView(cvFullView, cvSmallView);
+                if (!call.isInit())
+                    initView(cvFullView, cvSmallView);
                 switch (call.getApiCallInfo().getCallType()) {
                     case One_Audio:
                         call.acceptCall();
@@ -261,11 +277,13 @@ public class ConnectManager {
 //    }
 
     private boolean isEndBlock() {
+        Log.d(TAG, "isEndBlock() " + endBlock);
         if (endBlock)
             return true;
         endBlock = true;
+        Log.d(TAG, "endBlock - " + endBlock);
         if (endBlockHandler == null)
-            endBlockHandler = new Handler();
+            endBlockHandler = new Handler(Looper.getMainLooper());
         endBlockHandler.postDelayed(endBlockRunnable, 1000);
         return false;
     }
@@ -281,7 +299,7 @@ public class ConnectManager {
         if (callManager.size()==0) {
             call = createCall();
             call.setCallState(CallState.REJECT_PENDING);
-            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
+            Log.d(TAG, "end() callSize is 0 callState is " + call.getCallState());
         } else {
             call = callManager.get();
             Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
@@ -332,6 +350,7 @@ public class ConnectManager {
     }
 
     private void initView(ConnectView cvFullView, ConnectView cvSmallView) {
+        Log.d(TAG, "initView()");
         Call call = callManager.get();
         call.setVideoView(cvFullView, cvSmallView);
         call.initView();
@@ -374,8 +393,13 @@ public class ConnectManager {
                 coreStopHandler = null;
             }
             CallCore.getInstance().stop();
-            release();
             ConnectAction.getInstance().onUnRegistrationSuccessObserver();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            release();
         }
 
         @Override
@@ -420,10 +444,7 @@ public class ConnectManager {
                 call = callManager.get();
                 Log.d(TAG, "onIncomingCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
                 call.setApiCallInfo(new ApiCallInfo(signalingCallInfo));
-                if (call.getCallState() == ACCEPT_PENDING) {
-                    call.setCallState(CallState.INCOMING_CONNECT_READY);
-                    acceptCall(call.getContext(), call.getCvFullView(), call.getCvSmallView());
-                } else if (call.getCallState() == CallState.REJECT_PENDING) {
+                if (call.getCallState() == CallState.REJECT_PENDING) {
                     reject();
                 }
             }
@@ -481,6 +502,21 @@ public class ConnectManager {
             }
             callManager.remove();
             Log.d(TAG, "onTerminated() callSize is " + callManager.size());
+        }
+
+        @Override
+        public void onOffer(SignalingCallInfo signalingCallInfo) {
+            if (callManager.size()!=0) {
+                Call call = callManager.get();
+                ApiCallInfo callInfo = call.getApiCallInfo();
+                callInfo.setSdp(signalingCallInfo.getSdp());
+                Log.d(TAG, "onOffer() callSize is " + callManager.size() + " callState is " + call.getCallState());
+                if (call.getCallState() == ACCEPT_PENDING) {
+                    call.setCallState(CallState.INCOMING_CONNECT_READY);
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(() -> acceptCall(call.getContext()));
+                }
+            }
         }
 
         @Override

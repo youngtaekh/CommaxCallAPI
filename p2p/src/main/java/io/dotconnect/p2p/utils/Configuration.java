@@ -1,9 +1,9 @@
 package io.dotconnect.p2p.utils;
 
 public class Configuration {
-    public static final String stunServerAddress = "commax.dot-connect.io";
+    public static final String stunServerAddress = "commax.dotconnect-api.io";
     public static final String stunServerPort = "8088";
-    public static final String turnServerAddress = "commax.dot-connect.io";
+    public static final String turnServerAddress = "commax.dotconnect-api.io";
     public static final String turnServerPort = "8088";
     public static final String turnUserId = "vloco";
     public static final String turnUserPassword = "locomotion";

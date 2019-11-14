@@ -1,5 +1,6 @@
 package io.dotconnect.api.observer;
 
+import android.util.Log;
 import io.dotconnect.api.enum_class.CallType;
 import io.dotconnect.signaling.observer.SignalingCallInfo;
 
@@ -52,6 +53,13 @@ public class ApiCallInfo {
 
     public String getTeamId() {
         return teamId;
+    }
+
+    public void setSdp(String sdp) {
+        Log.d("ApiCallInfo", "this.sdp.length : " + this.sdp.length());
+        Log.d("ApiCallInfo", "sdp.length : " + sdp.length());
+        if (this.sdp.length() < sdp.length())
+            this.sdp = sdp;
     }
 
     public String getSdp() {

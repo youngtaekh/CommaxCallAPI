@@ -77,9 +77,9 @@ public class EventNotifier
         return  instance;
     }
 
-    public void eventDispatcher (String from, String jsonStr) {
+    public void eventDispatcher (String from, String sdp, String jsonStr) {
 
-        SipMessage sipMessage = new SipMessage(from, jsonStr);
+        SipMessage sipMessage = new SipMessage(from, sdp, jsonStr);
 
         switch (sipMessage.getEventCode()) {
             case OnRegistrationSuccess          : onRegistrationSuccess();
@@ -116,7 +116,7 @@ public class EventNotifier
                 break;
             case OnAnswer                       : onAnswer(sipMessage);
                 break;
-            case OnOffer                        : onOffer(null);
+            case OnOffer                        : onOffer(sipMessage);
                 break;
             case OnOfferRequired                : onOfferRequired(null);
                 break;
@@ -280,6 +280,7 @@ public class EventNotifier
 
     private void onOffer(SipMessage message) {
         Log.d(APP_NAME, "onOffer");
+        signalingAction.onOfferObserver(new SignalingCallInfo(message));
     }
 
     private void onOfferRequired(SipMessage message) {

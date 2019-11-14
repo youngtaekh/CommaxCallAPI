@@ -23,6 +23,7 @@ public class SignalingObserver {
         void onIncomingCallConnected(SignalingCallInfo signalingCallInfo);
         void onFailure(SignalingCallInfo signalingCallInfo);
         void onTerminated(SignalingCallInfo signalingCallInfo);
+        void onOffer(SignalingCallInfo signalingCallInfo);
         void onBusyOnIncomingCall(SignalingCallInfo signalingCallInfo);
         void onCancelCallBefore180(SignalingCallInfo signalingCallInfo);
 
