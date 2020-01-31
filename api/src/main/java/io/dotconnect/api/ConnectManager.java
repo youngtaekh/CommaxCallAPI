@@ -23,6 +23,8 @@ import org.webrtc.RendererCommon;
 import static io.dotconnect.api.enum_class.CallState.ACCEPT_PENDING;
 import static io.dotconnect.api.enum_class.CallState.INCOMING_CONNECT_READY;
 import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
+import static io.dotconnect.api.util.APIConfiguration.DOMAIN;
+import static io.dotconnect.signaling.util.CertificationUtil.makeSHA256;
 
 public class ConnectManager {
     private static final String TAG = "ConnectManager";
@@ -42,12 +44,10 @@ public class ConnectManager {
     private Handler endBlockHandler;
     private Runnable endBlockRunnable = () -> {
         endBlock = false;
-        Log.d(TAG, "endBlock - false");
     };
 
     private ConnectManager() {
         endBlock = false;
-        Log.d(TAG, "endBlock - " + endBlock);
         SignalingAction.getInstance().add(registrationObserver);
         SignalingAction.getInstance().add(messageObserver);
         SignalingAction.getInstance().add(callObserver);
@@ -62,8 +62,12 @@ public class ConnectManager {
         return instance;
     }
 
-    private void release() {
+    public void release() {
         Log.d(TAG, "release");
+        if (callManager.get()!=null) {
+            callManager.get().setCallState(CallState.IDLE);
+            callManager.get().disconnect();
+        }
         Register.getInstance().release();
         instance = null;
         SignalingAction.getInstance().delete(registrationObserver);
@@ -135,6 +139,31 @@ public class ConnectManager {
     private int sendFile(Context context, String target, String teamId, String message, String chatType,
                         String chatId, MessageType messageType, String fileType, String fileUrl) {
         return new Message().sendFile(target, teamId, message, chatType, AuthenticationUtil.getUUID(context), chatId, messageType, fileType, fileUrl);
+    }
+
+    public int sendMessageToGroup(String targetGroupId, String message, String deviceId, String domain) {
+        String targetEmail = String.format("sip:%s@%s",targetGroupId, domain);
+        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.group);
+    }
+
+    public int sendMessageToUserId(String targetUserId, String message, String deviceId, String domain) {
+        String targetEmail = String.format("sip:%s@%s",targetUserId, domain);
+        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.userId);
+    }
+
+    public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId, String domain) {
+        String targetEmail = String.format("sip:%s@%s",targetDeviceId, domain);
+        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.uuid);
+    }
+
+    public int requestCctv(String targetWallPadId, String deviceId, String domain) {
+        String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
+        return new Message().sendMessage(targetEmail, "", "", deviceId, "", "", MessageType.cctv);
+    }
+
+    public int requestControl(String targetWallPadId, String deviceId, String domain, String requestBody) {
+        String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
+        return new Message().sendMessage(targetEmail, "", requestBody, deviceId, "", "", MessageType.control);
     }
 
     //SignalingCallInfo
@@ -277,11 +306,9 @@ public class ConnectManager {
 //    }
 
     private boolean isEndBlock() {
-        Log.d(TAG, "isEndBlock() " + endBlock);
         if (endBlock)
             return true;
         endBlock = true;
-        Log.d(TAG, "endBlock - " + endBlock);
         if (endBlockHandler == null)
             endBlockHandler = new Handler(Looper.getMainLooper());
         endBlockHandler.postDelayed(endBlockRunnable, 1000);
@@ -307,7 +334,8 @@ public class ConnectManager {
                 if (call.getCallState() == CallState.CONNECTED) {
                     call.setCallState(CallState.END_PENDING);
                     hangup();
-                } else if (call.getCallState() == CallState.INCOMING_CONNECT_READY) {
+                } else if (call.getCallState() == CallState.INCOMING_CONNECT_READY
+                        || call.getCallState() == ACCEPT_PENDING) {
                     call.setCallState(CallState.END_PENDING);
                     reject();
                 } else {
@@ -370,6 +398,18 @@ public class ConnectManager {
         Call call = callManager.get();
         if (call!=null)
             call.setScaleType(scaleType);
+    }
+
+    public void sendOption() {
+
+        //(String target, String teamId, String message, String chatType, String chatId, String messageId, String messageType)
+    }
+
+    public void disconnect() {
+        if (callManager.get()!=null) {
+            callManager.get().setCallState(CallState.IDLE);
+            callManager.get().disconnect();
+        }
     }
 
     private SignalingObserver.RegistrationObserver registrationObserver = new SignalingObserver.RegistrationObserver() {

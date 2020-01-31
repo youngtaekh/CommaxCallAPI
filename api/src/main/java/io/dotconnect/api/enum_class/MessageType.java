@@ -13,5 +13,10 @@ public enum MessageType {
     read,
     joinChannel,
     deleteChannel,
-    linkParsed
+    linkParsed,
+    group,
+    userId,
+    uuid,
+    cctv,
+    control
 }

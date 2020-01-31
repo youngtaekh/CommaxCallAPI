@@ -15,6 +15,9 @@ import io.dotconnect.api.observer.ConnectAction;
 import io.dotconnect.api.observer.ConnectObserver;
 import io.dotconnect.api.view.ConnectView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ExampleActivity extends AppCompatActivity implements ConnectObserver.CallObserver {
     private static final String TAG = "ExampleActivity";
 

@@ -93,11 +93,44 @@
                     android:id="@+id/tvUnregister"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:background="#cccccc"
                     android:textColor="#000000"
                     android:padding="10dp"
                     android:textSize="20dp"
                     android:text="Unregister" />
+
+            <TextView
+                    android:id="@+id/tvMessageGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#cccccc"
+                    android:textColor="#000000"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:text="Send Group" />
+
+            <TextView
+                    android:id="@+id/tvMessageUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#cccccc"
+                    android:textColor="#000000"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:text="Send User" />
+
+            <TextView
+                    android:id="@+id/tvMessageDevice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#cccccc"
+                    android:textColor="#000000"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:text="Send Device" />
 
         </LinearLayout>
 
@@ -123,11 +156,34 @@
                     android:id="@+id/tvDeviceUnregister"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:background="#cccccc"
                     android:textColor="#000000"
                     android:padding="10dp"
                     android:textSize="20dp"
                     android:text="D UnRegister" />
+
+            <TextView
+                    android:id="@+id/tvSendCctv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#cccccc"
+                    android:textColor="#000000"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:text="Send Cctv" />
+
+            <TextView
+                    android:id="@+id/tvSendControl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#cccccc"
+                    android:textColor="#000000"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:text="Send Option" />
 
         </LinearLayout>
 

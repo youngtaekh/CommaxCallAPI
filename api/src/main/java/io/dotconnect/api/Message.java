@@ -13,6 +13,9 @@ public class Message {
             case normal:
             case one:
             case conf:
+            case group:
+            case userId:
+            case uuid:
                 return CallCore.getInstance().sendPlainMessage(target, teamId,
                         message, chatType, chatId, messageId, messageType.toString());
             case quit:
@@ -25,6 +28,8 @@ public class Message {
             case joinChannel:
             case deleteChannel:
             case linkParsed:
+            case cctv:
+            case control:
                 return CallCore.getInstance().sendOption(target, teamId, message,
                         chatType, chatId, messageId, messageType.toString());
             default:

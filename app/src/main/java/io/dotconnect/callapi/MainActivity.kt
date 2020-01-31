@@ -36,10 +36,10 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     private var mContext:Context = this
 
     //Note8
-    private val accessToken = "Wkc5MFkyOXViVzh5MjAxOS0xMS0wOCAwNDozOTowMA=="
-    private val userId = "ZG90Y29ubW8y"
+    private val accessToken = "Wkc5MFkyOXViVzgzMjAxOS0xMS0wOCAwNDo1MzowMg=="
+    private val userId = "ZG90Y29ubW83"
     private val password = "aaaaaa"
-    private val deviceId = "222222"
+    private val deviceId = "777777"
     //Note4
 //    private val accessToken = "Wkc5MFkyOXViVzh4MjAxOS0xMS0wOCAwNDozODozOA=="
 //    private val userId = "ZG90Y29ubW8x"
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     private val teamId = "vltest"
 
     //Note8
-    private val callTarget = "100001"
+    private val callTarget = "100004"
     //Note4
 //    private val callTarget = "100000"
 
@@ -168,6 +168,11 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
         tvDeviceRegister.setOnClickListener { getFCMToken(accessToken, 0) }
         tvDeviceUnregister.setOnClickListener { getFCMToken(accessToken, 1) }
+        tvMessageGroup.setOnClickListener { ConnectManager.getInstance().sendMessageToGroup("100000", "asdf", deviceId, DOMAIN) }
+        tvMessageUser.setOnClickListener { ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", "asdf", deviceId, DOMAIN) }
+        tvMessageDevice.setOnClickListener { ConnectManager.getInstance().sendMessageToDeviceId("666666", "666666", deviceId, DOMAIN) }
+        tvSendCctv.setOnClickListener { ConnectManager.getInstance().requestCctv("wallpadtest", deviceId, DOMAIN) }
+        tvSendControl.setOnClickListener { ConnectManager.getInstance().requestControl("wallpadtest", deviceId, DOMAIN, "Open the door") }
 
         tvSend.setOnClickListener {
 //            val message = etMessage.text.toString()
