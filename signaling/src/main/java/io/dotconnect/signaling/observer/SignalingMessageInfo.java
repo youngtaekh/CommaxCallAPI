@@ -21,7 +21,8 @@ public class SignalingMessageInfo {
             this.teamId = sipMessage.getTeamId();
             this.chatType = sipMessage.getChatType();
             try {
-                this.messageSeq = Integer.parseInt(sipMessage.getMessageSeq());
+                if (sipMessage.getMessageSeq()!=null)
+                    this.messageSeq = Integer.parseInt(sipMessage.getMessageSeq());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }

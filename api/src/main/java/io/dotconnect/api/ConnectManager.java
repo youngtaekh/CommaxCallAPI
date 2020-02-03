@@ -141,9 +141,19 @@ public class ConnectManager {
         return new Message().sendFile(target, teamId, message, chatType, AuthenticationUtil.getUUID(context), chatId, messageType, fileType, fileUrl);
     }
 
+    public int sendMessageToGroup(String targetGroupId, String message, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s",targetGroupId, DOMAIN);
+        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.group);
+    }
+
     public int sendMessageToGroup(String targetGroupId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetGroupId, domain);
         return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.group);
+    }
+
+    public int sendMessageToUserId(String targetUserId, String message, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s",targetUserId, DOMAIN);
+        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.userId);
     }
 
     public int sendMessageToUserId(String targetUserId, String message, String deviceId, String domain) {
@@ -151,14 +161,29 @@ public class ConnectManager {
         return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.userId);
     }
 
+    public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s",targetDeviceId, DOMAIN);
+        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.uuid);
+    }
+
     public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetDeviceId, domain);
         return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.uuid);
     }
 
+    public int requestCctv(String targetWallPadId, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s",targetWallPadId, DOMAIN);
+        return new Message().sendMessage(targetEmail, "", "", deviceId, "", "", MessageType.cctv);
+    }
+
     public int requestCctv(String targetWallPadId, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
         return new Message().sendMessage(targetEmail, "", "", deviceId, "", "", MessageType.cctv);
+    }
+
+    public int requestControl(String targetWallPadId, String deviceId, String requestBody) {
+        String targetEmail = String.format("sip:%s@%s",targetWallPadId, DOMAIN);
+        return new Message().sendMessage(targetEmail, "", requestBody, deviceId, "", "", MessageType.control);
     }
 
     public int requestControl(String targetWallPadId, String deviceId, String domain, String requestBody) {

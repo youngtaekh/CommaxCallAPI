@@ -168,11 +168,21 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
         tvDeviceRegister.setOnClickListener { getFCMToken(accessToken, 0) }
         tvDeviceUnregister.setOnClickListener { getFCMToken(accessToken, 1) }
-        tvMessageGroup.setOnClickListener { ConnectManager.getInstance().sendMessageToGroup("100000", "asdf", deviceId, DOMAIN) }
-        tvMessageUser.setOnClickListener { ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", "asdf", deviceId, DOMAIN) }
-        tvMessageDevice.setOnClickListener { ConnectManager.getInstance().sendMessageToDeviceId("666666", "666666", deviceId, DOMAIN) }
-        tvSendCctv.setOnClickListener { ConnectManager.getInstance().requestCctv("wallpadtest", deviceId, DOMAIN) }
-        tvSendControl.setOnClickListener { ConnectManager.getInstance().requestControl("wallpadtest", deviceId, DOMAIN, "Open the door") }
+        tvMessageGroup.setOnClickListener {
+            ConnectManager.getInstance().sendMessageToGroup("100000", "asdf", deviceId, DOMAIN)
+        }
+        tvMessageUser.setOnClickListener {
+            ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", "asdf", deviceId, DOMAIN)
+        }
+        tvMessageDevice.setOnClickListener {
+            ConnectManager.getInstance().sendMessageToDeviceId("666666", "666666", deviceId, DOMAIN)
+        }
+        tvSendCctv.setOnClickListener {
+            ConnectManager.getInstance().requestCctv("wallpadtest", deviceId, DOMAIN)
+        }
+        tvSendControl.setOnClickListener {
+            ConnectManager.getInstance().requestControl("wallpadtest", deviceId, DOMAIN, "Open the door")
+        }
 
         tvSend.setOnClickListener {
 //            val message = etMessage.text.toString()
