@@ -6,6 +6,7 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import io.dotconnect.api.ConnectManager
 import io.dotconnect.api.observer.ApiCallInfo
@@ -18,6 +19,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
     private var incoming = false
     private var target: String? = null
+    private var deviceId: String? = null
 //    private var teamId: String? = null
     private var swap = false
     private var speaker = false
@@ -41,7 +43,9 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 //        teamId = intent.getStringExtra("teamId")
 
         if (!incoming) {
-            tvStatus.text = "Sending"
+            tvStatus.text = "CCTV"
+            deviceId = intent.getStringExtra("deviceId")
+            ConnectManager.getInstance().requestCctv(this, target, deviceId, cvFullView)
 //            ConnectManager.getInstance().videoCall(this, target, "", cvFullView, cvSmallView)
 //            when {
 //                screen -> startScreenCapture()
@@ -51,7 +55,9 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
         }
 
         tvEnd.setOnClickListener {
+            Log.d("Debug", 0.toString())
             ConnectManager.getInstance().end()
+            Log.d("Debug", 4.toString())
         }
 
 //        tvCancel.setOnClickListener {

@@ -178,7 +178,11 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
             ConnectManager.getInstance().sendMessageToDeviceId("666666", "666666", deviceId, DOMAIN)
         }
         tvSendCctv.setOnClickListener {
-            ConnectManager.getInstance().requestCctv("wallpadtest", deviceId, DOMAIN)
+            val intent = Intent(this, CallActivity::class.java)
+            intent.putExtra("video", false)
+            intent.putExtra("target", "wallpadtest")
+            intent.putExtra("deviceId", deviceId)
+            startActivity(intent)
         }
         tvSendControl.setOnClickListener {
             ConnectManager.getInstance().requestControl("wallpadtest", deviceId, DOMAIN, "Open the door")

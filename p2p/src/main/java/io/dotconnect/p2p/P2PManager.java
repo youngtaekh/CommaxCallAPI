@@ -167,19 +167,11 @@ public class P2PManager {
         setSwappedFeeds(false /* isSwappedFeeds */);
     }
 
-    public void setParameters(Context context, boolean isVideoCall, boolean isScreenCall, boolean videoRecvOnly, boolean dataChannel, Intent mediaProjectionPermissionResultData) {
+    public void setParameters(Context context, boolean audio, boolean isVideoCall, boolean videoRecvOnly) {
         boolean loopback = false;
 
-        PeerConnectionClient.DataChannelParameters dataChannelParameters = null;
-        if (dataChannel) {
-            dataChannelParameters = new PeerConnectionClient.DataChannelParameters(ORDERED,
-                    MAX_RETRANSMIT_TIME_MS,
-                    MAX_RETRANSMITS, PROTOCOL,
-                    NEGOTIATED, ID);
-        }
-
         peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
-                isVideoCall, isScreenCall, videoRecvOnly, false,
+                audio, isVideoCall, videoRecvOnly, false,
                 TRACING, VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS,
                 VIDEO_MAX_BITRATE, VIDEO_CODEC,
                 VIDEO_CODEC_HW_ACCELERATION,
@@ -193,7 +185,7 @@ public class P2PManager {
                 DISABLE_BUILT_IN_AGC,
                 DISABLE_BUILT_IN_NS,
                 DISABLE_WEBRTC_AGC_AND_HPF,
-                ENABLE_RTC_EVENT_LOG, mediaProjectionPermissionResultData, dataChannelParameters);
+                ENABLE_RTC_EVENT_LOG, null, null);
 
         // Create peer connection client.
         peerConnectionClient = new PeerConnectionClient(
@@ -219,12 +211,9 @@ public class P2PManager {
         signalingParameters =
                 new AppRTCClient.SignalingParameters(iceServers, isOffer, offerSDP, null);
         VideoCapturer videoCapturer = null;
-        if (!peerConnectionParameters.videoRecvOnly) {
-            if (peerConnectionParameters.screenCallEnabled) {
-                videoCapturer = new Camera(context).createScreenCapturer(peerConnectionParameters.data);
-            } else if (peerConnectionParameters.videoCallEnabled) {
-                videoCapturer = new Camera(context).createVideoCapturer();
-            }
+        if (!peerConnectionParameters.videoRecvOnly
+                && peerConnectionParameters.videoCallEnabled) {
+            videoCapturer = new Camera(context).createVideoCapturer();
         }
         peerConnectionClient.createPeerConnection(
                 localProxyVideoSink, remoteSinks, videoCapturer, signalingParameters

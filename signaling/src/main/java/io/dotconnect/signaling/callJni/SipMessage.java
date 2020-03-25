@@ -41,7 +41,7 @@ public class SipMessage {
             messageType, fileType, fileUrl, messageId, messageSeq,
             messageDate, callType, method, teamId, chatType, sdp;
 
-    SipMessage(String fromId, String sdp, String jsonStr) {
+    SipMessage(String jsonStr) {
         this.fromId = fromId;
         this.sdp = sdp;
         if (this.sdp!=null) {
@@ -50,6 +50,10 @@ public class SipMessage {
         try {
             Log.d(TAG, jsonStr);
             JSONObject json = new JSONObject(jsonStr);
+            if (json.has(FromId))
+                this.fromId = json.getString(FromId);
+            if (json.has(SDP))
+                this.sdp = json.getString(SDP);
             if (json.has(EventCode))
                 this.eventCode = json.getInt(EventCode);
             if (json.has(IMS))

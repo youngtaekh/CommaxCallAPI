@@ -12,5 +12,6 @@ public enum CallState {
     CONNECTING,
     CONNECTED,
     END_PENDING,
-    DISCONNECTED;
+    DISCONNECTED,
+    CCTV;
 }

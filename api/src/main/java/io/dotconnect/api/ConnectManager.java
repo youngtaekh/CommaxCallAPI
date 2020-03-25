@@ -171,14 +171,20 @@ public class ConnectManager {
         return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.uuid);
     }
 
-    public int requestCctv(String targetWallPadId, String deviceId) {
-        String targetEmail = String.format("sip:%s@%s",targetWallPadId, DOMAIN);
-        return new Message().sendMessage(targetEmail, "", "", deviceId, "", "", MessageType.cctv);
+    public void requestCctv(Context context, String targetWallPadId, String deviceId, ConnectView cvFullView) {
+        requestCctv(context, targetWallPadId, deviceId, DOMAIN, cvFullView);
     }
 
-    public int requestCctv(String targetWallPadId, String deviceId, String domain) {
+    public void requestCctv(Context context, String targetWallPadId, String deviceId, String domain, ConnectView cvFullView) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
-        return new Message().sendMessage(targetEmail, "", "", deviceId, "", "", MessageType.cctv);
+        Call call;
+        if (callManager.size() == 0) {
+            call = createCall();
+            call.setContext(context);
+            call.setConfig(targetEmail, "");
+            initView(cvFullView, null);
+            call.requestCctv(deviceId);
+        }
     }
 
     public int requestControl(String targetWallPadId, String deviceId, String requestBody) {
@@ -210,44 +216,18 @@ public class ConnectManager {
         }
     }
 
-    private void videoCall(Context context, String target, String teamId, ConnectView cvFullView, ConnectView cvSmallView) {
-        Call call;
-        if (callManager.size() == 0) {
-            call = createCall();
-            call.setContext(context);
-            call.setConfig(target, teamId);
-            initView(cvFullView, cvSmallView);
-            call.videoCall();
-        }
-    }
-
-    private void screenCall(Context context, Intent data, String target, String teamId) {
-        Call call;
-        if (callManager.size() == 0) {
-            call = createCall();
-            call.setContext(context);
-            call.setConfig(target, teamId);
-            call.screenCall(data);
-        }
-    }
-
     private void acceptCall(Context context) {
         Log.d(APP_NAME, "acceptCall(Context)");
-        acceptCall(context, null, null, null);
+        acceptCall(context, null, null);
     }
 
     public void acceptCall(Context context, ConnectView cvFullView) {
         Log.d(APP_NAME, "acceptCall(Context, ConnectView)");
-        acceptCall(context, cvFullView, null, null);
+        acceptCall(context, cvFullView, null);
     }
 
     private void acceptCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
         Log.d(APP_NAME, "acceptCall(Context, ConnectView, ConnectView)");
-        acceptCall(context, cvFullView, cvSmallView, null);
-    }
-
-    private void acceptCall(Context context, ConnectView cvFullView, ConnectView cvSmallView, Intent data) {
-        Log.d(APP_NAME, "acceptCall(Context, ConnectView, ConnectView, Intent)");
         Call call;
         if (callManager.size() == 0) {
             call = createCall();
@@ -271,64 +251,12 @@ public class ConnectManager {
                     case One_Video:
                         call.acceptVideoCall();
                         break;
-                    case One_Screencast:
-                        call.acceptScreenCall(data);
-                        break;
                     default:
                         break;
                 }
             }
         }
     }
-
-//    /**
-//     *
-//     * @param context
-//     * @param cvFullView
-//     * @param cvSmallView
-//     * @return
-//     */
-//    public int acceptVideoCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
-//        Log.d(APP_NAME, "acceptVideoCall(Context, ConnectView, ConnectView)");
-//
-//        Call call;
-//        if (callManager.size() == 0) {
-//            call = createCall();
-//            call.setCallState(CallState.ACCEPT_PENDING);
-//        } else {
-//            call = callManager.get();
-//        }
-//
-//        Call call = callManager.get();
-//        if (call!=null && ApiCallInfo !=null && call.getCallState()==CallState.incoming) {
-//            call.setCallState(CallState.incomingConnectTry);
-//            initView(cvFullView, cvSmallView);
-//            call.acceptVideoCall(context, ApiCallInfo.getSdp());
-//            return 0;
-//        }
-//
-//        return -1;
-//    }
-//
-//    public int acceptVideoCall(Context context, ConnectView cvFullView) {
-//        Log.d(APP_NAME, "acceptVideoCall(Context, ConnectView)");
-//        Call call = callManager.get();
-//        if (call!=null && ApiCallInfo !=null && call.getCallState()==CallState.incoming) {
-//            call.setCallState(CallState.incomingConnectTry);
-//            initView(cvFullView);
-//            call.acceptVideoCall(context, ApiCallInfo.getSdp());
-//            return 0;
-//        }
-//
-//        return -1;
-//    }
-//
-//    private void acceptScreenCall(Context context, Intent data) {
-//        Call call = callManager.get();
-//        if (call!=null) {
-//            call.acceptScreenCall(context, ApiCallInfo.getSdp(), data);
-//        }
-//    }
 
     private boolean isEndBlock() {
         if (endBlock)
@@ -345,8 +273,9 @@ public class ConnectManager {
      * else reject the call
      */
     public void end() {
-        if (isEndBlock())
+        if (isEndBlock()) {
             return;
+        }
         Call call;
         if (callManager.size()==0) {
             call = createCall();
@@ -354,7 +283,17 @@ public class ConnectManager {
             Log.d(TAG, "end() callSize is 0 callState is " + call.getCallState());
         } else {
             call = callManager.get();
-            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
+            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());if (call.getCallState() == CallState.CCTV) {
+                io.dotconnect.api.observer.ApiCallInfo apiCallInfo = new ApiCallInfo();
+                apiCallInfo.setStatusCode(200);
+                apiCallInfo.setMessage("OK");
+                ConnectAction.getInstance().onTerminatedObserver(apiCallInfo);
+                if (callManager.get()!=null) {
+                    callManager.get().setCallState(CallState.IDLE);
+                    callManager.get().disconnect();
+                }
+                callManager.remove();
+            }
             if (call.getCallState()!=CallState.END_PENDING && call.getCallState()!=CallState.REJECT_PENDING) {
                 if (call.getCallState() == CallState.CONNECTED) {
                     call.setCallState(CallState.END_PENDING);

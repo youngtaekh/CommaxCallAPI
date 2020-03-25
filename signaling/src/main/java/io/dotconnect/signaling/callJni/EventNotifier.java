@@ -77,9 +77,9 @@ public class EventNotifier
         return  instance;
     }
 
-    public void eventDispatcher (String from, String sdp, String jsonStr) {
+    public void eventDispatcher (String jsonStr) {
 
-        SipMessage sipMessage = new SipMessage(from, sdp, jsonStr);
+        SipMessage sipMessage = new SipMessage(jsonStr);
 
         switch (sipMessage.getEventCode()) {
             case OnRegistrationSuccess          : onRegistrationSuccess();

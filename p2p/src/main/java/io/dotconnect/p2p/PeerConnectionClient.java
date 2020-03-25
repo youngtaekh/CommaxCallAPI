@@ -166,42 +166,42 @@ public class PeerConnectionClient {
     /**
      * Peer connection parameters.
      */
-    public static class PeerConnectionParameters {
-        public final boolean videoCallEnabled;
-        public final boolean screenCallEnabled;
-        public final boolean videoRecvOnly;
-        public final boolean loopback;
-        public final boolean tracing;
-        public final int videoWidth;
-        public final int videoHeight;
-        public final int videoFps;
-        public final int videoMaxBitrate;
-        public final String videoCodec;
-        public final boolean videoCodecHwAcceleration;
-        public final boolean videoFlexfecEnabled;
-        public final int audioStartBitrate;
-        public final String audioCodec;
-        public final boolean noAudioProcessing;
-        public final boolean aecDump;
-        public final boolean saveInputAudioToFile;
-        public final boolean useOpenSLES;
-        public final boolean disableBuiltInAEC;
-        public final boolean disableBuiltInAGC;
-        public final boolean disableBuiltInNS;
-        public final boolean disableWebRtcAGCAndHPF;
-        public final boolean enableRtcEventLog;
-        public final Intent data;
+    static class PeerConnectionParameters {
+        final boolean audioEnabled;
+        final boolean videoCallEnabled;
+        final boolean videoRecvOnly;
+        final boolean loopback;
+        final boolean tracing;
+        final int videoWidth;
+        final int videoHeight;
+        final int videoFps;
+        final int videoMaxBitrate;
+        final String videoCodec;
+        final boolean videoCodecHwAcceleration;
+        final boolean videoFlexfecEnabled;
+        final int audioStartBitrate;
+        final String audioCodec;
+        final boolean noAudioProcessing;
+        final boolean aecDump;
+        final boolean saveInputAudioToFile;
+        final boolean useOpenSLES;
+        final boolean disableBuiltInAEC;
+        final boolean disableBuiltInAGC;
+        final boolean disableBuiltInNS;
+        final boolean disableWebRtcAGCAndHPF;
+        final boolean enableRtcEventLog;
+        final Intent data;
         private final DataChannelParameters dataChannelParameters;
 
-        public PeerConnectionParameters(boolean videoCallEnabled, boolean screenCallEnabled, boolean videoRecvOnly, boolean loopback, boolean tracing,
+        public PeerConnectionParameters(boolean audioEnabled, boolean videoCallEnabled, boolean videoRecvOnly, boolean loopback, boolean tracing,
                                         int videoWidth, int videoHeight, int videoFps, int videoMaxBitrate, String videoCodec,
                                         boolean videoCodecHwAcceleration, boolean videoFlexfecEnabled, int audioStartBitrate,
                                         String audioCodec, boolean noAudioProcessing, boolean aecDump, boolean saveInputAudioToFile,
                                         boolean useOpenSLES, boolean disableBuiltInAEC, boolean disableBuiltInAGC,
                                         boolean disableBuiltInNS, boolean disableWebRtcAGCAndHPF, boolean enableRtcEventLog,
                                         Intent data, DataChannelParameters dataChannelParameters) {
+            this.audioEnabled = audioEnabled;
             this.videoCallEnabled = videoCallEnabled;
-            this.screenCallEnabled = screenCallEnabled;
             this.videoRecvOnly = videoRecvOnly;
             this.loopback = loopback;
             this.tracing = tracing;
@@ -533,10 +533,11 @@ public class PeerConnectionClient {
         // Create SDP constraints.
         sdpMediaConstraints = new MediaConstraints();
         sdpMediaConstraints.mandatory.add(
-                new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
+//                new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
+                new MediaConstraints.KeyValuePair("OfferToReceiveAudio", String.valueOf(peerConnectionParameters.audioEnabled)));
         sdpMediaConstraints.mandatory.add(
 //                new MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(peerConnectionParameters.videoCallEnabled ^ peerConnectionParameters.screenCallEnabled)));
-                new MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(peerConnectionParameters.videoCallEnabled)));
+                new MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(peerConnectionParameters.videoCallEnabled || peerConnectionParameters.videoRecvOnly)));
     }
 
     private void createPeerConnectionInternal() {
@@ -581,7 +582,7 @@ public class PeerConnectionClient {
         Logging.enableLogToDebugOutput(Logging.Severity.LS_INFO);
 
         List<String> mediaStreamLabels = Collections.singletonList("ARDAMS");
-        if (isVideoCallEnabled()) {
+        if (isVideoCallEnabled() && !peerConnectionParameters.videoRecvOnly) {
             peerConnection.addTrack(createVideoTrack(videoCapturer), mediaStreamLabels);
             // We can add the renderers right away because we don't need to wait for an
             // answer to get the remote track.
@@ -591,7 +592,8 @@ public class PeerConnectionClient {
                 remoteVideoTrack.addSink(remoteSink);
             }
         }
-        peerConnection.addTrack(createAudioTrack(), mediaStreamLabels);
+        if (peerConnectionParameters.audioEnabled)
+            peerConnection.addTrack(createAudioTrack(), mediaStreamLabels);
         if (isVideoCallEnabled()) {
             findVideoSender();
         }
@@ -662,7 +664,7 @@ public class PeerConnectionClient {
             audioSource = null;
         }
         Log.d(TAG, "Stopping capture.");
-        if (videoCapturer != null && !peerConnectionParameters.screenCallEnabled) {
+        if (videoCapturer != null) {
             try {
                 videoCapturer.stopCapture();
             } catch (Exception e) {
@@ -890,7 +892,7 @@ public class PeerConnectionClient {
     private AudioTrack createAudioTrack() {
         audioSource = factory.createAudioSource(audioConstraints);
         localAudioTrack = factory.createAudioTrack(AUDIO_TRACK_ID, audioSource);
-        localAudioTrack.setEnabled(enableAudio);
+        localAudioTrack.setEnabled(enableAudio && peerConnectionParameters.audioEnabled);
         return localAudioTrack;
     }
 
