@@ -125,35 +125,7 @@ public class ConnectAction implements ConnectPublisher {
     }
 
     @Override
-    public void onOutgoingCallObserver(ApiCallInfo apiCallInfo) {
-        for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onOutgoingCall(apiCallInfo);
-        }
-    }
-
-    @Override
-    public void onUpdateObserver(ApiCallInfo apiCallInfo) {
-        for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onUpdate(apiCallInfo);
-        }
-    }
-
-    @Override
-    public void onEarlyMediaObserver(ApiCallInfo apiCallInfo) {
-        for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onEarlyMedia(apiCallInfo);
-        }
-    }
-
-    @Override
-    public void onOutgoingCallConnectedObserver(ApiCallInfo apiCallInfo) {
-        for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onOutgoingCallConnected(apiCallInfo);
-        }
-    }
-
-    @Override
-    public void onIncomingCallConnectedObserver(ApiCallInfo apiCallInfo) {
+    public void onCallConnectedObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
             callObserver.onIncomingCallConnected(apiCallInfo);
         }
@@ -170,20 +142,6 @@ public class ConnectAction implements ConnectPublisher {
     public void onTerminatedObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
             callObserver.onTerminated(apiCallInfo);
-        }
-    }
-
-    @Override
-    public void onBusyOnIncomingCallObserver(ApiCallInfo apiCallInfo) {
-        for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onBusyOnIncomingCall(apiCallInfo);
-        }
-    }
-
-    @Override
-    public void onCancelCallBefore180Observer(ApiCallInfo apiCallInfo) {
-        for (ConnectObserver.CallObserver callObserver : callObservers) {
-//            callObserver.onCancelCallBefore180(apiCallInfo);
         }
     }
 }

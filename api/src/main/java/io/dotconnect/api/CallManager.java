@@ -1,15 +1,9 @@
 package io.dotconnect.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class CallManager {
     private static CallManager instance;
 
-//    private Map<String, SignalingCallInfo> callMap;
-    private List<Call> callList;
+    private Call call;
 
     public static CallManager getInstance() {
         if (instance==null)
@@ -17,36 +11,23 @@ public class CallManager {
         return instance;
     }
 
-    private CallManager() {
-//        callMap = new HashMap<>();
-        callList = new ArrayList<>();
-    }
+    private CallManager() {}
 
-    public int size() {
-//        return callMap.size();
-        return callList.size();
+    int size() {
+        return call==null?0:1;
     }
 
     public void add(Call call) {
-//        callMap.put(call.getCallId(), call);
-        callList.add(call);
+        this.call = call;
     }
 
-//    public SignalingCallInfo get(String callId) {
-//        return callMap.get(callId);
-//    }
-//
-//    public void remove(String callId) {
-//        callMap.remove(callId);
-//    }
-
     public Call get() {
-        if (callList.size()!=0)
-            return callList.get(callList.size()-1);
+        if (size()!=0)
+            return call;
         return null;
     }
 
-    public void remove() {
-        callList = new ArrayList<>();
+    void remove() {
+        call = null;
     }
 }

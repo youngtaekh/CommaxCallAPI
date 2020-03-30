@@ -10,7 +10,7 @@ public class SignalingAction implements SignalingPublisher {
 
     private static SignalingAction instance;
 
-    public SignalingAction() {
+    private SignalingAction() {
         registrationObservers = new ArrayList<>();
         messageObservers = new ArrayList<>();
         callObservers = new ArrayList<>();
@@ -112,37 +112,9 @@ public class SignalingAction implements SignalingPublisher {
     }
 
     @Override
-    public void onOutgoingCallObserver(SignalingCallInfo signalingCallInfo) {
+    public void onCallConnectedObserver(SignalingCallInfo signalingCallInfo) {
         for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onOutgoingCall(signalingCallInfo);
-        }
-    }
-
-    @Override
-    public void onUpdateObserver(SignalingCallInfo signalingCallInfo) {
-        for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onUpdate(signalingCallInfo);
-        }
-    }
-
-    @Override
-    public void onEarlyMediaObserver(SignalingCallInfo signalingCallInfo) {
-        for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onEarlyMedia(signalingCallInfo);
-        }
-    }
-
-    @Override
-    public void onOutgoingCallConnectedObserver(SignalingCallInfo signalingCallInfo) {
-        for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onOutgoingCallConnected(signalingCallInfo);
-        }
-    }
-
-    @Override
-    public void onIncomingCallConnectedObserver(SignalingCallInfo signalingCallInfo) {
-        for (SignalingObserver.CallObserver callObserver : callObservers) {
-            callObserver.onIncomingCallConnected(signalingCallInfo);
+            callObserver.onCallConnected(signalingCallInfo);
         }
     }
 

@@ -6,9 +6,9 @@ import io.dotconnect.signaling.callJni.CallCore;
 import static io.dotconnect.api.util.AuthenticationUtil.getEncryptedHashId;
 
 public class Message {
-    int sendMessage(String target, String teamId, String message, String deviceId,
-                           String chatType, String chatId, MessageType messageType) {
-        String messageId = getEncryptedHashId(deviceId + String.valueOf(System.currentTimeMillis()));
+    int sendMessage(String target, String message, String deviceId,
+                           MessageType messageType) {
+        String messageId = getEncryptedHashId(deviceId + System.currentTimeMillis());
         switch (messageType) {
             case normal:
             case one:
@@ -16,8 +16,8 @@ public class Message {
             case group:
             case userId:
             case uuid:
-                return CallCore.getInstance().sendPlainMessage(target, teamId,
-                        message, chatType, chatId, messageId, messageType.toString());
+                return CallCore.getInstance().sendPlainMessage(target,
+                        message, messageId, messageType.toString());
             case quit:
             case create:
             case invite:
@@ -30,17 +30,9 @@ public class Message {
             case linkParsed:
             case cctv:
             case control:
-                return CallCore.getInstance().sendOption(target, teamId, message,
-                        chatType, chatId, messageId, messageType.toString());
+                return CallCore.getInstance().sendOption(target, message, messageId, messageType.toString());
             default:
                 return -1;
         }
-    }
-
-    int sendFile(String target, String teamId, String message, String chatType, String deviceId,
-                        String chatId, MessageType messageType, String fileType, String fileUrl) {
-        String messageId = getEncryptedHashId(deviceId + String.valueOf(System.currentTimeMillis()));
-        return CallCore.getInstance().sendFileMessage(target, teamId, message,
-                chatType, chatId, messageId, messageType.toString(), fileType, fileUrl);
     }
 }

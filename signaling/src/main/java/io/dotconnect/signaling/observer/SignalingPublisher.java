@@ -20,11 +20,7 @@ public interface SignalingPublisher {
     void onMessageArrivalObserver(SignalingMessageInfo signalingMessageInfo);
 
     void onIncomingCallObserver(SignalingCallInfo signalingCallInfo);
-    void onOutgoingCallObserver(SignalingCallInfo signalingCallInfo);
-    void onUpdateObserver(SignalingCallInfo signalingCallInfo);
-    void onEarlyMediaObserver(SignalingCallInfo signalingCallInfo);
-    void onOutgoingCallConnectedObserver(SignalingCallInfo signalingCallInfo);
-    void onIncomingCallConnectedObserver(SignalingCallInfo signalingCallInfo);
+    void onCallConnectedObserver(SignalingCallInfo signalingCallInfo);
     void onFailureObserver(SignalingCallInfo signalingCallInfo);
     void onTerminatedObserver(SignalingCallInfo signalingCallInfo);
     void onOfferObserver(SignalingCallInfo signalingCallInfo);

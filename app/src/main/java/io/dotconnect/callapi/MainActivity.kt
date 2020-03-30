@@ -15,10 +15,9 @@ import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.api.ConnectManager
 import io.dotconnect.api.enum_class.CallType
 import io.dotconnect.api.observer.ApiCallInfo
+import io.dotconnect.api.observer.ApiMessageInfo
 import io.dotconnect.api.observer.ConnectAction
 import io.dotconnect.api.observer.ConnectObserver
-import io.dotconnect.api.observer.ApiMessageInfo
-import io.dotconnect.api.util.AuthenticationUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
@@ -38,24 +37,17 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     //Note8
     private val accessToken = "Wkc5MFkyOXViVzgzMjAxOS0xMS0wOCAwNDo1MzowMg=="
     private val userId = "ZG90Y29ubW83"
-    private val password = "aaaaaa"
     private val deviceId = "777777"
     //Note4
 //    private val accessToken = "Wkc5MFkyOXViVzh4MjAxOS0xMS0wOCAwNDozODozOA=="
 //    private val userId = "ZG90Y29ubW8x"
-//    private val password = "aaaaaa"
 //    private val deviceId = "333333"
-
-    private val teamId = "vltest"
 
     //Note8
     private val callTarget = "100004"
     //Note4
 //    private val callTarget = "100000"
 
-    private val messageTarget = "sip:27094d15477333d60fe64ed43668d018@voiceloco.com"
-    private val chatId = "27094d15477333d60fe64ed43668d018"
-    private val chatType = "chat"
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
 
@@ -105,13 +97,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
     override fun onMessageArrival(ApiMessage: ApiMessageInfo?) {
         LogAndToast("onMessageArrival")
-//        val handler = Handler(Looper.getMainLooper())
-//        val runnable = Runnable { tvMessage.text = ApiMessage?.ApiMessage ?: ""}
-//        handler.post(runnable)
-//        ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, ApiMessage?.messageSeq.toString(), chatType, chatId, MessageType.read)
     }
-
-//    override fun onOutgoingCall(callInfo: ApiCallInfo?) {}
 
     override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {
         LogAndToast("onIncomingCall")
@@ -122,23 +108,11 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         startActivity(intent)
     }
 
-//    override fun onUpdate(callInfo: ApiCallInfo?) {}
-//
-//    override fun onEarlyMedia(callInfo: ApiCallInfo?) {}
-//
-//    override fun onOutgoingCallConnected(callInfo: ApiCallInfo?) {}
-
     override fun onIncomingCallConnected(ApiCallInfo: ApiCallInfo?) {}
 
     override fun onFailure(ApiCallInfo: ApiCallInfo?) {}
 
-    override fun onTerminated(ApiCallInfo: ApiCallInfo?) {
-//        runOnUiThread { ConnectManager.getInstance().stopRegistration() }
-    }
-
-//    override fun onBusyOnIncomingCall(callInfo: ApiCallInfo?) {}
-//
-//    override fun onCancelCallBefore180(callInfo: ApiCallInfo?) {}
+    override fun onTerminated(ApiCallInfo: ApiCallInfo?) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,10 +133,8 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         ConnectAction.getInstance().add(this as ConnectObserver.CallObserver)
 
         etEmail.setText(userId)
-        etPassword.setText(password)
         etDeviceId.setText(deviceId)
         etTarget.setText(callTarget)
-        etTeamId.setText(teamId)
 
         tvRegister.setOnClickListener { getFCMToken(accessToken, 2) }
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
@@ -188,36 +160,12 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
             ConnectManager.getInstance().requestControl("wallpadtest", deviceId, DOMAIN, "Open the door")
         }
 
-        tvSend.setOnClickListener {
-//            val message = etMessage.text.toString()
-//            ConnectManager.getInstance().sendMessage(this, messageTarget, teamId, message, chatType, chatId, MessageType.one)
-        }
+        tvSend.setOnClickListener {}
 
         tvCall.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", false)
-//            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
             intent.putExtra("target", etTarget.text.toString())
-            intent.putExtra("teamId", etTeamId.text.toString())
-            startActivity(intent)
-        }
-
-        tvVideo.setOnClickListener {
-            val intent = Intent(this, CallActivity::class.java)
-            intent.putExtra("video", true)
-            val target = "sip:" + etTarget.text.toString() + "@" + appId + "." + DOMAIN
-            intent.putExtra("target", target)
-            intent.putExtra("teamId", etTeamId.text.toString())
-            startActivity(intent)
-        }
-
-        tvScreen.setOnClickListener {
-            val intent = Intent(this, CallActivity::class.java)
-            intent.putExtra("video", true)
-            intent.putExtra("screen", true)
-//            val target = "sip:" + AuthenticationUtil.makeSHA256(etTarget.text.toString() + appId) + "@" + appId + DOMAIN
-            intent.putExtra("target", etTarget.text.toString())
-            intent.putExtra("teamId", etTeamId.text.toString())
             startActivity(intent)
         }
         if (ACTION_INCOMING_CALL == intent.action) {

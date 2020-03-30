@@ -22,13 +22,7 @@ public interface ConnectPublisher {
     void onMessageArrivalObserver(ApiMessageInfo message);
 
     void onIncomingCallObserver(ApiCallInfo apiCallInfo);
-    void onOutgoingCallObserver(ApiCallInfo apiCallInfo);
-    void onUpdateObserver(ApiCallInfo apiCallInfo);
-    void onEarlyMediaObserver(ApiCallInfo apiCallInfo);
-    void onOutgoingCallConnectedObserver(ApiCallInfo apiCallInfo);
-    void onIncomingCallConnectedObserver(ApiCallInfo apiCallInfo);
+    void onCallConnectedObserver(ApiCallInfo apiCallInfo);
     void onFailureObserver(ApiCallInfo apiCallInfo);
     void onTerminatedObserver(ApiCallInfo apiCallInfo);
-    void onBusyOnIncomingCallObserver(ApiCallInfo apiCallInfo);
-    void onCancelCallBefore180Observer(ApiCallInfo apiCallInfo);
 }

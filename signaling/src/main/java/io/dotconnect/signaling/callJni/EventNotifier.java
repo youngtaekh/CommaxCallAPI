@@ -77,9 +77,9 @@ public class EventNotifier
         return  instance;
     }
 
-    public void eventDispatcher (String jsonStr) {
+    public void eventDispatcher (String fromId, String sdp, String jsonStr) {
 
-        SipMessage sipMessage = new SipMessage(jsonStr);
+        SipMessage sipMessage = new SipMessage(fromId, sdp, jsonStr);
 
         switch (sipMessage.getEventCode()) {
             case OnRegistrationSuccess          : onRegistrationSuccess();
@@ -171,32 +171,6 @@ public class EventNotifier
         }
     }
 
-    /*
-    class CheckToast implements Runnable {
-        static final int REGISTRATION = 0;
-        static final int UN_REGISTRATION = 1;
-        int type;
-        int duration;
-
-        CheckToast(int type, int duration) {
-            this.duration = duration;
-            this.type = type;
-        }
-
-        @Override
-        public void run() {
-            try {
-                if (type == REGISTRATION)
-                    Toast.makeText(mContext, "onRegistrationSuccess", Toast.LENGTH_SHORT).show();
-                if (type == UN_REGISTRATION)
-                    Toast.makeText(mContext, "onUnRegistrationSuccess", Toast.LENGTH_SHORT).show();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    */
-
     // Registration Events
     private void onRegistrationSuccess() {
         Log.d(APP_NAME, "onRegistrationSuccess");
@@ -220,7 +194,6 @@ public class EventNotifier
 
     private void onOutgoingCall(SipMessage message) {
         Log.d(APP_NAME, "onOutgoingCall");
-        signalingAction.onOutgoingCallObserver(new SignalingCallInfo(message));
     }
 
     private void onIncomingCall(SipMessage message) {
@@ -230,7 +203,6 @@ public class EventNotifier
 
     private void onUpdate(SipMessage message) {
         Log.d(APP_NAME, "onUpdate");
-        signalingAction.onUpdateObserver(new SignalingCallInfo(message));
     }
 
     private void onFailure(SipMessage message) {
@@ -240,7 +212,6 @@ public class EventNotifier
 
     private void onEarlyMedia(SipMessage message) {
         Log.d(APP_NAME, "onEarlyMedia");
-        signalingAction.onEarlyMediaObserver(new SignalingCallInfo(message));
     }
 
     private void onProvisional() {
@@ -253,12 +224,12 @@ public class EventNotifier
 
     private void onOutgoingCallConnected(SipMessage message) {
         Log.d(APP_NAME, "onOutgoingCallConnected");
-        signalingAction.onOutgoingCallConnectedObserver(new SignalingCallInfo(message));
+//        signalingAction.onCallConnectedObserver(new SignalingCallInfo(message));
     }
 
     private void onIncomingCallConnected(SipMessage message) {
         Log.d(APP_NAME, "onIncomingCallConnected");
-        signalingAction.onIncomingCallConnectedObserver(new SignalingCallInfo(message));
+        signalingAction.onCallConnectedObserver(new SignalingCallInfo(message));
     }
 
     private void onStableCallTimeout() {

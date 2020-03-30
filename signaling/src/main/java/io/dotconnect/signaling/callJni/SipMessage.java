@@ -41,7 +41,7 @@ public class SipMessage {
             messageType, fileType, fileUrl, messageId, messageSeq,
             messageDate, callType, method, teamId, chatType, sdp;
 
-    SipMessage(String jsonStr) {
+    SipMessage(String fromId, String sdp, String jsonStr) {
         this.fromId = fromId;
         this.sdp = sdp;
         if (this.sdp!=null) {

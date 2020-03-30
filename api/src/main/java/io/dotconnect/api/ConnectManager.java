@@ -1,16 +1,17 @@
 package io.dotconnect.api;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import org.webrtc.RendererCommon;
+
 import io.dotconnect.api.enum_class.CallState;
+import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.observer.ApiCallInfo;
 import io.dotconnect.api.observer.ApiMessageInfo;
 import io.dotconnect.api.observer.ConnectAction;
-import io.dotconnect.api.enum_class.MessageType;
-import io.dotconnect.api.util.AuthenticationUtil;
 import io.dotconnect.api.util.NetworkUtil;
 import io.dotconnect.api.view.ConnectView;
 import io.dotconnect.signaling.callJni.CallCore;
@@ -18,20 +19,17 @@ import io.dotconnect.signaling.observer.SignalingAction;
 import io.dotconnect.signaling.observer.SignalingCallInfo;
 import io.dotconnect.signaling.observer.SignalingMessageInfo;
 import io.dotconnect.signaling.observer.SignalingObserver;
-import org.webrtc.RendererCommon;
 
 import static io.dotconnect.api.enum_class.CallState.ACCEPT_PENDING;
 import static io.dotconnect.api.enum_class.CallState.INCOMING_CONNECT_READY;
 import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 import static io.dotconnect.api.util.APIConfiguration.DOMAIN;
-import static io.dotconnect.signaling.util.CertificationUtil.makeSHA256;
 
 public class ConnectManager {
     private static final String TAG = "ConnectManager";
     private static ConnectManager instance;
 
     private CallManager callManager;
-//    private SignalingCallInfo call;
 
     private Handler coreStopHandler;
     private Runnable coreStopRunnable = () -> {
@@ -42,9 +40,7 @@ public class ConnectManager {
 
     private Boolean endBlock;
     private Handler endBlockHandler;
-    private Runnable endBlockRunnable = () -> {
-        endBlock = false;
-    };
+    private Runnable endBlockRunnable = ()->endBlock = false;
 
     private ConnectManager() {
         endBlock = false;
@@ -62,7 +58,7 @@ public class ConnectManager {
         return instance;
     }
 
-    public void release() {
+    private void release() {
         Log.d(TAG, "release");
         if (callManager.get()!=null) {
             callManager.get().setCallState(CallState.IDLE);
@@ -80,17 +76,16 @@ public class ConnectManager {
         Register.getInstance().deviceCheck(deviceId, userId, appId, accessToken, fcmToken);
     }
 
-    //TODO : REST develop
     public void deviceUnRegistration(String deviceId, String accessToken) {
         Register.getInstance().deviceUnRegistration(deviceId, accessToken);
     }
 
     /**
      *
-     * @param context
-     * @param userId
-     * @param appId
-     * @param accessToken
+     * @param context application context
+     * @param userId user id
+     * @param appId app id
+     * @param accessToken access token
      * @param fcmToken Firebase Push Token
      */
     public void startRegistration(Context context, String deviceId, String userId, String appId, String accessToken, String fcmToken) {
@@ -131,44 +126,34 @@ public class ConnectManager {
     }
 
     //SignalingMessageInfo
-    private int sendMessage(Context context, String target, String teamId, String message,
-                           String chatType, String chatId, MessageType messageType) {
-        return new Message().sendMessage(target, teamId, message, AuthenticationUtil.getUUID(context), chatType, chatId, messageType);
-    }
-
-    private int sendFile(Context context, String target, String teamId, String message, String chatType,
-                        String chatId, MessageType messageType, String fileType, String fileUrl) {
-        return new Message().sendFile(target, teamId, message, chatType, AuthenticationUtil.getUUID(context), chatId, messageType, fileType, fileUrl);
-    }
-
     public int sendMessageToGroup(String targetGroupId, String message, String deviceId) {
         String targetEmail = String.format("sip:%s@%s",targetGroupId, DOMAIN);
-        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.group);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group);
     }
 
     public int sendMessageToGroup(String targetGroupId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetGroupId, domain);
-        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.group);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group);
     }
 
     public int sendMessageToUserId(String targetUserId, String message, String deviceId) {
         String targetEmail = String.format("sip:%s@%s",targetUserId, DOMAIN);
-        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.userId);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId);
     }
 
     public int sendMessageToUserId(String targetUserId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetUserId, domain);
-        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.userId);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId);
     }
 
     public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId) {
         String targetEmail = String.format("sip:%s@%s",targetDeviceId, DOMAIN);
-        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.uuid);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
     }
 
     public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetDeviceId, domain);
-        return new Message().sendMessage(targetEmail, "", message, deviceId, "", "", MessageType.uuid);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
     }
 
     public void requestCctv(Context context, String targetWallPadId, String deviceId, ConnectView cvFullView) {
@@ -181,7 +166,7 @@ public class ConnectManager {
         if (callManager.size() == 0) {
             call = createCall();
             call.setContext(context);
-            call.setConfig(targetEmail, "");
+            call.setConfig(targetEmail);
             initView(cvFullView, null);
             call.requestCctv(deviceId);
         }
@@ -189,12 +174,12 @@ public class ConnectManager {
 
     public int requestControl(String targetWallPadId, String deviceId, String requestBody) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, DOMAIN);
-        return new Message().sendMessage(targetEmail, "", requestBody, deviceId, "", "", MessageType.control);
+        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control);
     }
 
     public int requestControl(String targetWallPadId, String deviceId, String domain, String requestBody) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
-        return new Message().sendMessage(targetEmail, "", requestBody, deviceId, "", "", MessageType.control);
+        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control);
     }
 
     //SignalingCallInfo
@@ -206,12 +191,12 @@ public class ConnectManager {
         return call;
     }
 
-    private void call(Context context, String target, String teamId) {
+    private void call(Context context, String target) {
         Call call;
         if (callManager.size() == 0) {
             call = createCall();
             call.setContext(context);
-            call.setConfig(target, teamId);
+            call.setConfig(target);
             call.call();
         }
     }
@@ -235,7 +220,7 @@ public class ConnectManager {
             Log.d(TAG, "acceptCall() callSize is 0 callState is " + call.getCallState());
             call.setContext(context);
             initView(cvFullView, cvSmallView);
-            call.setInit(true);
+            call.setInit();
         } else {
             call = callManager.get();
             Log.d(TAG, "acceptCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
@@ -348,25 +333,10 @@ public class ConnectManager {
         call.initView();
     }
 
-    /**
-     * change video between ConnectView
-     * @param swap
-     */
-    private void swapCamera(boolean swap) {
-        Call call = callManager.get();
-        if (call!=null)
-            call.swapCamera(swap);
-    }
-
     public void setScaleType(RendererCommon.ScalingType scaleType) {
         Call call = callManager.get();
         if (call!=null)
             call.setScaleType(scaleType);
-    }
-
-    public void sendOption() {
-
-        //(String target, String teamId, String message, String chatType, String chatId, String messageId, String messageType)
     }
 
     public void disconnect() {
@@ -457,36 +427,9 @@ public class ConnectManager {
         }
 
         @Override
-        public void onOutgoingCall(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onOutgoingCall");
-            ConnectAction.getInstance().onOutgoingCallObserver(new ApiCallInfo(signalingCallInfo));
-            callManager.get().setCallState(CallState.OUTGOING_CONNECT_READY);
-        }
-
-        @Override
-        public void onUpdate(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onUpdate");
-            ConnectAction.getInstance().onUpdateObserver(new ApiCallInfo(signalingCallInfo));
-        }
-
-        @Override
-        public void onEarlyMedia(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onEarlyMedia");
-            ConnectAction.getInstance().onEarlyMediaObserver(new ApiCallInfo(signalingCallInfo));
-        }
-
-        @Override
-        public void onOutgoingCallConnected(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onOutgoingCallConnected");
-            callManager.get().setRemoteDescription(signalingCallInfo.getSdp());
-            ConnectAction.getInstance().onOutgoingCallConnectedObserver(new ApiCallInfo(signalingCallInfo));
-            callManager.get().setCallState(CallState.CONNECTED);
-        }
-
-        @Override
-        public void onIncomingCallConnected(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onIncomingCallConnected");
-            ConnectAction.getInstance().onIncomingCallConnectedObserver(new ApiCallInfo(signalingCallInfo));
+        public void onCallConnected(SignalingCallInfo signalingCallInfo) {
+            Log.d(TAG, "onCallConnected");
+            ConnectAction.getInstance().onCallConnectedObserver(new ApiCallInfo(signalingCallInfo));
             callManager.get().setCallState(CallState.CONNECTED);
         }
 
@@ -526,13 +469,11 @@ public class ConnectManager {
         @Override
         public void onBusyOnIncomingCall(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onBusyOnIncomingCall");
-            ConnectAction.getInstance().onBusyOnIncomingCallObserver(new ApiCallInfo(signalingCallInfo));
         }
 
         @Override
         public void onCancelCallBefore180(SignalingCallInfo signalingCallInfo) {
             Log.d(TAG, "onCancelCallBefore180");
-            ConnectAction.getInstance().onCancelCallBefore180Observer(new ApiCallInfo(signalingCallInfo));
         }
     };
 }
