@@ -5,6 +5,7 @@ import android.content.Context;
 import org.webrtc.RendererCommon;
 
 import io.dotconnect.api.enum_class.CallState;
+import io.dotconnect.api.enum_class.MessageDetail;
 import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.observer.ApiCallInfo;
 import io.dotconnect.api.util.AuthenticationUtil;
@@ -39,7 +40,7 @@ class Call {
                     CallCore.getInstance().acceptCall(localSDP);
                     break;
                 case cctv:
-                    new Message().sendMessage(target, localSDP, deviceId, MessageType.cctv);
+                    new Message().sendMessage(target, localSDP, deviceId, MessageType.cctv, MessageDetail.valueOf(""));
                     break;
             }
         }

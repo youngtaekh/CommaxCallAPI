@@ -8,6 +8,7 @@ import android.util.Log;
 import org.webrtc.RendererCommon;
 
 import io.dotconnect.api.enum_class.CallState;
+import io.dotconnect.api.enum_class.MessageDetail;
 import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.observer.ApiCallInfo;
 import io.dotconnect.api.observer.ApiMessageInfo;
@@ -128,32 +129,32 @@ public class ConnectManager {
     //SignalingMessageInfo
     public int sendMessageToGroup(String targetGroupId, String message, String deviceId) {
         String targetEmail = String.format("sip:%s@%s",targetGroupId, DOMAIN);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group, MessageDetail.valueOf(""));
     }
 
     public int sendMessageToGroup(String targetGroupId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetGroupId, domain);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group, MessageDetail.valueOf(""));
     }
 
     public int sendMessageToUserId(String targetUserId, String message, String deviceId) {
         String targetEmail = String.format("sip:%s@%s",targetUserId, DOMAIN);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId, MessageDetail.valueOf(""));
     }
 
     public int sendMessageToUserId(String targetUserId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetUserId, domain);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId, MessageDetail.valueOf(""));
     }
 
     public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId) {
         String targetEmail = String.format("sip:%s@%s",targetDeviceId, DOMAIN);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid, MessageDetail.valueOf(""));
     }
 
     public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId, String domain) {
         String targetEmail = String.format("sip:%s@%s",targetDeviceId, domain);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid, MessageDetail.valueOf(""));
     }
 
     public void requestCctv(Context context, String targetWallPadId, String deviceId, ConnectView cvFullView) {
@@ -162,24 +163,26 @@ public class ConnectManager {
 
     public void requestCctv(Context context, String targetWallPadId, String deviceId, String domain, ConnectView cvFullView) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
-        Call call;
-        if (callManager.size() == 0) {
-            call = createCall();
-            call.setContext(context);
-            call.setConfig(targetEmail);
-            initView(cvFullView, null);
-            call.requestCctv(deviceId);
-        }
+
+        new Message().sendMessage(targetEmail, "", deviceId, MessageType.cctv, MessageDetail.cctvRequest);
+//        Call call;
+//        if (callManager.size() == 0) {
+//            call = createCall();
+//            call.setContext(context);
+//            call.setConfig(targetEmail);
+//            initView(cvFullView, null);
+//            call.requestCctv(deviceId);
+//        }
     }
 
     public int requestControl(String targetWallPadId, String deviceId, String requestBody) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, DOMAIN);
-        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control);
+        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control, MessageDetail.valueOf(""));
     }
 
     public int requestControl(String targetWallPadId, String deviceId, String domain, String requestBody) {
         String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
-        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control);
+        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control, MessageDetail.valueOf(""));
     }
 
     //SignalingCallInfo

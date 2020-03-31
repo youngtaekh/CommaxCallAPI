@@ -63,6 +63,5 @@ public class CallCore
     public native int createPKIFiles(String privateKeyFile, String certificateFile, String tlsDomain);
 
     //MessageObserver
-    public native int sendPlainMessage(String target, String message, String messageId, String messageType);
-    public native int sendOption(String target, String message, String messageId, String messageType);
+    public native int sendMessage(String target, String message, String messageId, String messageType, String messageDetail);
 }
