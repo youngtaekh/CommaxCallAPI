@@ -9,16 +9,7 @@ public class Configuration {
     public static final String turnUserPassword = "locomotion";
     public static final boolean dtlsEncryption = true;
 
-    //DataChannelParameters
-    public static final boolean ORDERED = true;
-    public static final int MAX_RETRANSMIT_TIME_MS = -1;
-    public static final int MAX_RETRANSMITS = -1;
-    public static final String PROTOCOL = "";
-    public static final boolean NEGOTIATED = false;
-    public static final int ID = -1;
-
     //PeerConnectionParameters
-    public static final boolean LOOPBACK = false;
     public static final boolean TRACING = false;
     public static final int VIDEO_WIDTH = 0;
     public static final int VIDEO_HEIGHT = 0;
@@ -26,7 +17,7 @@ public class Configuration {
     public static final int VIDEO_MAX_BITRATE = 0;
     private static final String VIDEO_CODEC_H264_BASELINE = "H264 Baseline";
     private static final String VIDEO_CODEC_H264_HIGH = "H264 High";
-//    public static final String VIDEO_CODEC = "VP8";
+//    public static final String VIDEO_CODEC_VP8 = "VP8";
     public static final String VIDEO_CODEC = VIDEO_CODEC_H264_BASELINE;
     public static final boolean VIDEO_FLEXFEC_ENABLED = false;
     public static final boolean VIDEO_CODEC_HW_ACCELERATION = true;
@@ -34,7 +25,6 @@ public class Configuration {
     public static final String AUDIO_CODEC = "OPUS";
     public static final boolean NO_AUDIO_PROCESSING = false;
     public static final boolean AEC_DUMP = false;
-    public static final boolean SAVE_INPUT_AUDIO_TO_FILE = false;
     public static final boolean USE_OPEN_SLES = false;
     public static final boolean DISABLE_BUILT_IN_AEC = false;
     public static final boolean DISABLE_BUILT_IN_AGC = false;

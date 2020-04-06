@@ -1,12 +1,10 @@
 package io.dotconnect.p2p;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import io.dotconnect.p2p.wwc.Camera;
-import io.dotconnect.p2p.wwc.Ice;
+import io.dotconnect.p2p.utils.Ice;
 
 import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 import static io.dotconnect.p2p.utils.Configuration.*;
@@ -168,55 +166,38 @@ public class P2PManager {
     }
 
     public void setParameters(Context context, boolean audio, boolean isVideoCall, boolean videoRecvOnly) {
-        boolean loopback = false;
-
         peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
-                audio, isVideoCall, videoRecvOnly, false,
-                TRACING, VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS,
+                audio, isVideoCall, videoRecvOnly,
+                TRACING,
                 VIDEO_MAX_BITRATE, VIDEO_CODEC,
                 VIDEO_CODEC_HW_ACCELERATION,
                 VIDEO_FLEXFEC_ENABLED,
                 AUDIO_START_BITRATE, AUDIO_CODEC,
-                NO_AUDIO_PROCESSING,
-                AEC_DUMP,
-                SAVE_INPUT_AUDIO_TO_FILE,
-                USE_OPEN_SLES,
                 DISABLE_BUILT_IN_AEC,
-                DISABLE_BUILT_IN_AGC,
                 DISABLE_BUILT_IN_NS,
-                DISABLE_WEBRTC_AGC_AND_HPF,
-                ENABLE_RTC_EVENT_LOG, null, null);
+                DISABLE_WEBRTC_AGC_AND_HPF);
 
         // Create peer connection client.
         peerConnectionClient = new PeerConnectionClient(
                 context.getApplicationContext(), eglBase, peerConnectionParameters, events);
         PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-        if (loopback) {
-            options.networkIgnoreMask = 0;
-        }
         peerConnectionClient.createPeerConnectionFactory(options);
     }
 
-    public void startCall(Context context, boolean isOffer, String description, SDPListener listener) {
+    public void startCall(boolean isOffer, String description, SDPListener listener) {
         this.listener = listener;
         // Request TURN servers.
         List<PeerConnection.IceServer> turnServers = new Ice().getIceServers();
         List<PeerConnection.IceServer> iceServers = new ArrayList<>(turnServers);
 
         SessionDescription offerSDP = null;
-        if (!isOffer) {
+        if (!isOffer)
             offerSDP = new SessionDescription(SessionDescription.Type.OFFER, description);
-        }
 
         signalingParameters =
                 new AppRTCClient.SignalingParameters(iceServers, isOffer, offerSDP, null);
-        VideoCapturer videoCapturer = null;
-        if (!peerConnectionParameters.videoRecvOnly
-                && peerConnectionParameters.videoCallEnabled) {
-            videoCapturer = new Camera(context).createVideoCapturer();
-        }
         peerConnectionClient.createPeerConnection(
-                localProxyVideoSink, remoteSinks, videoCapturer, signalingParameters
+                localProxyVideoSink, remoteSinks, signalingParameters
         );
 
         if (signalingParameters.initiator) {

@@ -46,6 +46,27 @@
 
     </LinearLayout>
 
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="20dp"
+                android:text="target : "/>
+
+        <EditText
+                android:id="@+id/etTarget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -164,72 +185,11 @@
                     android:textColor="#000000"
                     android:padding="10dp"
                     android:textSize="20dp"
-                    android:text="Send Option" />
+                    android:text="Send Control" />
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="20dp"
-                android:text="target : "/>
-
-        <EditText
-                android:id="@+id/etTarget"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-
-        <TextView
-                android:id="@+id/tvCall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#cccccc"
-                android:textColor="#000000"
-                android:layout_marginRight="10dp"
-                android:padding="10dp"
-                android:textSize="20dp"
-                android:text="Call" />
-
-    </LinearLayout>
-
-    <EditText
-            android:id="@+id/etMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    <TextView
-            android:id="@+id/tvSend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#cccccc"
-            android:textColor="#000000"
-            android:padding="10dp"
-            android:textSize="20dp"
-            android:text="Send" />
-
-    <TextView
-            android:id="@+id/tvMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#000000"
-            android:padding="10dp"
-            android:textSize="20dp"/>
 
 
 </LinearLayout>

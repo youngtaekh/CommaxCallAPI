@@ -4,6 +4,15 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+task copySo(type: Copy) {
+    from '../../resiprocate/ndk-prebuilt/resip',
+            '../../core-build/app/build/intermediates/binaries/debug/arm8/lib',
+            '../../core-build/app/build/intermediates/binaries/debug/arm7/lib'
+    into '../android_api/src/main/jniLibs'
+    include('**/*.so')
+}
+tasks.withType(JavaCompile) { compileTask -> compileTask.dependsOn copySo }
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -36,14 +45,11 @@ android {
             // Enables building multiple APKs per ABI.
             enable true
 
-            // By default all ABIs are included, so use reset() and include to specify that we only
-            // want APKs for x86 and x86_64.
-
             // Resets the list of ABIs that Gradle should create APKs for to none.
             reset()
 
             // Specifies a list of ABIs that Gradle should create APKs for.
-            include "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
+            include "armeabi-v7a", "arm64-v8a"
 
             // Specifies that we do not want to also generate a universal APK that includes all ABIs.
             universalApk false
@@ -58,9 +64,6 @@ dependencies {
 //    implementation files('libs/android-release.aar')
 //    implementation files('libs/signaling-release.aar')
 //    implementation files('libs/p2p-release.aar')
-//    implementation 'io.dotconnect.android:android-release:1.0@aar'
-//    implementation 'io.dotconnect.signaling:signaling-release:1.0@aar'
-//    implementation 'io.dotconnect.p2p:p2p-release:1.0@aar'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'

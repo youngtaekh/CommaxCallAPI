@@ -50,7 +50,7 @@ public class CallCore
     // call related methods
     public native void startRegistration(String networkType, String localIPAddress);
     public native void stopRegistration();
-    public native void applyNetworkChange(String networkType, String localIPAddress, String activeInterfaceName);
+    public native void applyNetworkChange(String networkType, String localIPAddress, String sdp);
     public native boolean isRegistered();
 
     public native int makeCall(String target, String teamId, String sdp);

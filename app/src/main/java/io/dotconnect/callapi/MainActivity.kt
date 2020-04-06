@@ -13,7 +13,6 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.api.ConnectManager
-import io.dotconnect.api.enum_class.CallType
 import io.dotconnect.api.observer.ApiCallInfo
 import io.dotconnect.api.observer.ApiMessageInfo
 import io.dotconnect.api.observer.ConnectAction
@@ -44,7 +43,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 //    private val deviceId = "333333"
 
     //Note8
-    private val callTarget = "100004"
+    private val callTarget = "wallpadtest"
     //Note4
 //    private val callTarget = "100000"
 
@@ -59,51 +58,49 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
 
     private val TAG = "MainActivity"
 
-    fun LogAndToast(message: String) {
+    private fun logAndToast(message: String) {
         runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
         Log.d(TAG, message)
     }
     override fun onDeviceRegistrationSuccess() {
-        LogAndToast("onDeviceRegistrationSuccess")
+        logAndToast("onDeviceRegistrationSuccess")
     }
 
     override fun onDeviceUnRegistrationSuccess() {
-        LogAndToast("onDeviceUnRegistrationSuccess")
+        logAndToast("onDeviceUnRegistrationSuccess")
     }
 
     override fun onRegistrationSuccess() {
-        LogAndToast("onRegistrationSuccess")
+        logAndToast("onRegistrationSuccess")
     }
 
     override fun onRegistrationFailure() {
-        LogAndToast("onRegistrationFailure")
+        logAndToast("onRegistrationFailure")
     }
 
     override fun onUnRegistrationSuccess() {
-        LogAndToast("onUnRegistrationSuccess")
+        logAndToast("onUnRegistrationSuccess")
     }
 
     override fun onSocketClosure() {
-        LogAndToast("onSocketClosure")
+        logAndToast("onSocketClosure")
     }
 
     override fun onMessageSendSuccess(ApiMessage: ApiMessageInfo?) {
-        LogAndToast("onMessageSendSuccess")
+        logAndToast("onMessageSendSuccess")
     }
 
     override fun onMessageSendFailure(ApiMessage: ApiMessageInfo?) {
-        LogAndToast("onMessageSendFailure")
+        logAndToast("onMessageSendFailure")
     }
 
     override fun onMessageArrival(ApiMessage: ApiMessageInfo?) {
-        LogAndToast("onMessageArrival")
+        logAndToast("onMessageArrival")
     }
 
     override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {
-        LogAndToast("onIncomingCall")
+        logAndToast("onIncomingCall")
         val intent = Intent(this, CallActivity::class.java)
-        intent.putExtra("video", ApiCallInfo?.callType == CallType.One_Video || ApiCallInfo?.callType == CallType.One_Audio_Screencast)
-        intent.putExtra("screen", ApiCallInfo?.callType == CallType.One_Audio_Screencast)
         intent.putExtra("incoming", true)
         startActivity(intent)
     }
@@ -141,33 +138,26 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvDeviceRegister.setOnClickListener { getFCMToken(accessToken, 0) }
         tvDeviceUnregister.setOnClickListener { getFCMToken(accessToken, 1) }
         tvMessageGroup.setOnClickListener {
-            ConnectManager.getInstance().sendMessageToGroup("100000", "asdf", deviceId, DOMAIN)
+            ConnectManager.getInstance().sendMessageToGroup("100000", appId, "asdf", deviceId)
         }
         tvMessageUser.setOnClickListener {
-            ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", "asdf", deviceId, DOMAIN)
+            ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", appId, "asdf", deviceId)
         }
         tvMessageDevice.setOnClickListener {
-            ConnectManager.getInstance().sendMessageToDeviceId("666666", "666666", deviceId, DOMAIN)
+            ConnectManager.getInstance().sendMessageToDeviceId("666666", appId, "666666", deviceId)
         }
         tvSendCctv.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", false)
-            intent.putExtra("target", "wallpadtest")
+            intent.putExtra("target", etTarget.text.toString())
+            intent.putExtra("appId", appId)
             intent.putExtra("deviceId", deviceId)
             startActivity(intent)
         }
         tvSendControl.setOnClickListener {
-            ConnectManager.getInstance().requestControl("wallpadtest", deviceId, DOMAIN, "Open the door")
+            ConnectManager.getInstance().requestControl("wallpadtest", appId, deviceId, "Open the door")
         }
 
-        tvSend.setOnClickListener {}
-
-        tvCall.setOnClickListener {
-            val intent = Intent(this, CallActivity::class.java)
-            intent.putExtra("video", false)
-            intent.putExtra("target", etTarget.text.toString())
-            startActivity(intent)
-        }
         if (ACTION_INCOMING_CALL == intent.action) {
             Log.d(TAG, "onIncomingCall")
 

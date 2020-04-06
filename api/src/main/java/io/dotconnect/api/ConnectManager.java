@@ -22,6 +22,7 @@ import io.dotconnect.signaling.observer.SignalingMessageInfo;
 import io.dotconnect.signaling.observer.SignalingObserver;
 
 import static io.dotconnect.api.enum_class.CallState.ACCEPT_PENDING;
+import static io.dotconnect.api.enum_class.CallState.CCTV;
 import static io.dotconnect.api.enum_class.CallState.INCOMING_CONNECT_READY;
 import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 import static io.dotconnect.api.util.APIConfiguration.DOMAIN;
@@ -31,6 +32,7 @@ public class ConnectManager {
     private static ConnectManager instance;
 
     private CallManager callManager;
+    private String deviceId;
 
     private Handler coreStopHandler;
     private Runnable coreStopRunnable = () -> {
@@ -121,68 +123,46 @@ public class ConnectManager {
     }
 
     public void networkChange(Context context) {
-        String networkType = NetworkUtil.getNetworkType(context);
-        String ipAddress = NetworkUtil.getIPAddress(networkType);
-        CallCore.getInstance().applyNetworkChange(networkType, ipAddress, "");
+//        String networkType = NetworkUtil.getNetworkType(context);
+//        String ipAddress = NetworkUtil.getIPAddress(networkType);
+//        CallCore.getInstance().applyNetworkChange(networkType, ipAddress, "");
     }
 
     //SignalingMessageInfo
-    public int sendMessageToGroup(String targetGroupId, String message, String deviceId) {
-        String targetEmail = String.format("sip:%s@%s",targetGroupId, DOMAIN);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group, MessageDetail.valueOf(""));
+    public int sendMessageToGroup(String targetGroupId, String appId, String message, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s.%s",targetGroupId, appId, DOMAIN);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group);
     }
 
-    public int sendMessageToGroup(String targetGroupId, String message, String deviceId, String domain) {
-        String targetEmail = String.format("sip:%s@%s",targetGroupId, domain);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.group, MessageDetail.valueOf(""));
+    public int sendMessageToUserId(String targetUserId, String appId, String message, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s.%s",targetUserId, appId, DOMAIN);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId);
     }
 
-    public int sendMessageToUserId(String targetUserId, String message, String deviceId) {
-        String targetEmail = String.format("sip:%s@%s",targetUserId, DOMAIN);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId, MessageDetail.valueOf(""));
+    public int sendMessageToDeviceId(String targetDeviceId, String appId, String message, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s.%s",targetDeviceId, appId, DOMAIN);
+        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
     }
 
-    public int sendMessageToUserId(String targetUserId, String message, String deviceId, String domain) {
-        String targetEmail = String.format("sip:%s@%s",targetUserId, domain);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.userId, MessageDetail.valueOf(""));
+    public void requestCctv(Context context, String targetWallPadId, String appId, String deviceId, ConnectView cvFullView) {
+        String targetEmail = String.format("sip:%s@%s.%s",targetWallPadId, appId, DOMAIN);
+        this.deviceId = deviceId;
+        Call call;
+        if (callManager.size() == 0) {
+            call = createCall();
+            call.setContext(context);
+            call.setConfig(targetEmail);
+            call.setCallState(CCTV);
+            call.setMessageId(new Message().getMessageId(deviceId));
+            initView(cvFullView, null);
+            call.setInit();
+            new Message().sendMessage(targetEmail, "", deviceId, call.getMessageId(), MessageType.cctv, MessageDetail.request);
+        }
     }
 
-    public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId) {
-        String targetEmail = String.format("sip:%s@%s",targetDeviceId, DOMAIN);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid, MessageDetail.valueOf(""));
-    }
-
-    public int sendMessageToDeviceId(String targetDeviceId, String message, String deviceId, String domain) {
-        String targetEmail = String.format("sip:%s@%s",targetDeviceId, domain);
-        return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid, MessageDetail.valueOf(""));
-    }
-
-    public void requestCctv(Context context, String targetWallPadId, String deviceId, ConnectView cvFullView) {
-        requestCctv(context, targetWallPadId, deviceId, DOMAIN, cvFullView);
-    }
-
-    public void requestCctv(Context context, String targetWallPadId, String deviceId, String domain, ConnectView cvFullView) {
-        String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
-
-        new Message().sendMessage(targetEmail, "", deviceId, MessageType.cctv, MessageDetail.cctvRequest);
-//        Call call;
-//        if (callManager.size() == 0) {
-//            call = createCall();
-//            call.setContext(context);
-//            call.setConfig(targetEmail);
-//            initView(cvFullView, null);
-//            call.requestCctv(deviceId);
-//        }
-    }
-
-    public int requestControl(String targetWallPadId, String deviceId, String requestBody) {
-        String targetEmail = String.format("sip:%s@%s",targetWallPadId, DOMAIN);
-        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control, MessageDetail.valueOf(""));
-    }
-
-    public int requestControl(String targetWallPadId, String deviceId, String domain, String requestBody) {
-        String targetEmail = String.format("sip:%s@%s",targetWallPadId, domain);
-        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control, MessageDetail.valueOf(""));
+    public int requestControl(String targetWallPadId, String appId, String deviceId, String requestBody) {
+        String targetEmail = String.format("sip:%s@%s.%s",targetWallPadId, appId, DOMAIN);
+        return new Message().sendMessage(targetEmail, requestBody, deviceId, MessageType.control);
     }
 
     //SignalingCallInfo
@@ -232,16 +212,7 @@ public class ConnectManager {
                 call.setContext(context);
                 if (!call.isInit())
                     initView(cvFullView, cvSmallView);
-                switch (call.getApiCallInfo().getCallType()) {
-                    case One_Audio:
-                        call.acceptCall();
-                        break;
-                    case One_Video:
-                        call.acceptVideoCall();
-                        break;
-                    default:
-                        break;
-                }
+                call.acceptCall();
             }
         }
     }
@@ -271,13 +242,15 @@ public class ConnectManager {
             Log.d(TAG, "end() callSize is 0 callState is " + call.getCallState());
         } else {
             call = callManager.get();
-            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());if (call.getCallState() == CallState.CCTV) {
+            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
+            if (call.getCallState() == CallState.CCTV) {
                 io.dotconnect.api.observer.ApiCallInfo apiCallInfo = new ApiCallInfo();
                 apiCallInfo.setStatusCode(200);
                 apiCallInfo.setMessage("OK");
                 ConnectAction.getInstance().onTerminatedObserver(apiCallInfo);
                 if (callManager.get()!=null) {
                     callManager.get().setCallState(CallState.IDLE);
+                    callManager.get().end();
                     callManager.get().disconnect();
                 }
                 callManager.remove();
@@ -402,6 +375,14 @@ public class ConnectManager {
         @Override
         public void onMessageArrival(SignalingMessageInfo signalingMessageInfo) {
             Log.d(TAG, "onMessageArrival");
+            if (signalingMessageInfo.getMessageDetail() == MessageDetail.offer
+                    && MessageType.cctv == signalingMessageInfo.getMessageType()) {
+                if (callManager.get()!=null) {
+
+                    callManager.get().setApiMessageInfo(new ApiMessageInfo(signalingMessageInfo));
+                    callManager.get().requestCctv(deviceId);
+                }
+            }
             ConnectAction.getInstance().onMessageArrivalObserver(new ApiMessageInfo(signalingMessageInfo));
         }
     };

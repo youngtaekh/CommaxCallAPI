@@ -8,6 +8,7 @@ import io.dotconnect.api.enum_class.CallState;
 import io.dotconnect.api.enum_class.MessageDetail;
 import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.observer.ApiCallInfo;
+import io.dotconnect.api.observer.ApiMessageInfo;
 import io.dotconnect.api.util.AuthenticationUtil;
 import io.dotconnect.api.view.ConnectView;
 import io.dotconnect.p2p.P2PManager;
@@ -27,21 +28,36 @@ class Call {
     private SDPType sdpType;
     private CallState callState;
     private ApiCallInfo apiCallInfo;
+    private ApiMessageInfo apiMessageInfo;
     private P2PManager p2pManager;
     private String target, deviceId;
+    private String messageId;
     private boolean isInit;
+    private boolean isNetworkChanged;
 
     private SDPListener listener = new SDPListener() {
         @Override
         public void onLocalDescription(String localSDP) {
-            switch (Call.this.sdpType) {
-                case acceptCall:
-                case acceptVideoCall:
-                    CallCore.getInstance().acceptCall(localSDP);
-                    break;
-                case cctv:
-                    new Message().sendMessage(target, localSDP, deviceId, MessageType.cctv, MessageDetail.valueOf(""));
-                    break;
+            if (!isNetworkChanged) {
+                switch (Call.this.sdpType) {
+                    case acceptCall:
+                    case acceptVideoCall:
+                        CallCore.getInstance().acceptCall(localSDP);
+                        break;
+                    case cctv:
+                        new Message().sendMessage(target, localSDP, deviceId, messageId, MessageType.cctv, MessageDetail.answer);
+                        break;
+                }
+            } else {
+                switch (Call.this.sdpType) {
+                    case acceptCall:
+                    case acceptVideoCall:
+                        CallCore.getInstance().applyNetworkChange("", "", localSDP);
+                        break;
+                    case cctv:
+//                        new Message().sendMessage(target, localSDP, deviceId, messageId, MessageType.cctv, MessageDetail.answer);
+                        break;
+                }
             }
         }
     };
@@ -50,6 +66,7 @@ class Call {
         this.callId = AuthenticationUtil.getEncryptedHashId(String.valueOf(System.currentTimeMillis()));
         this.callState = CallState.IDLE;
         this.isInit = false;
+        this.isNetworkChanged = false;
     }
 
     void setConfig(String target) {
@@ -62,11 +79,6 @@ class Call {
     }
 
     void acceptCall() {
-        sdpType = SDPType.acceptCall;
-        getSDP(mContext, true, false, false, this.apiCallInfo.getSdp());
-    }
-
-    void acceptVideoCall() {
         sdpType = SDPType.acceptVideoCall;
         getSDP(mContext, true, true, false, this.apiCallInfo.getSdp());
     }
@@ -75,7 +87,18 @@ class Call {
         this.deviceId = deviceId;
         sdpType = SDPType.cctv;
         callState = CallState.CCTV;
-        getSDP(mContext, false, true, true, null);
+        getSDP(mContext, false, true, false, apiMessageInfo.getMessage());
+    }
+
+    void networkChange() {
+        if (p2pManager!=null) {
+            isNetworkChanged = true;
+            p2pManager.startCall(true, null, listener);
+        }
+    }
+
+    void end() {
+        new Message().sendMessage(target, "", deviceId, messageId, MessageType.cctv, MessageDetail.end);
     }
 
     void cancel() {
@@ -132,7 +155,7 @@ class Call {
     private void getSDP(Context context, boolean audio, boolean video, boolean videoRecvOnly, String remoteSDP) {
         boolean offer = remoteSDP==null;
         p2pManager.setParameters(context, audio, video, videoRecvOnly);
-        p2pManager.startCall(context, offer, remoteSDP, listener);
+        p2pManager.startCall(offer, remoteSDP, listener);
     }
 
     Context getContext() {
@@ -167,11 +190,23 @@ class Call {
         this.apiCallInfo = apiCallInfo;
     }
 
+    void setApiMessageInfo(ApiMessageInfo apiMessageInfo) {
+        this.apiMessageInfo = apiMessageInfo;
+    }
+
     boolean isInit() {
         return isInit;
     }
 
     void setInit() {
         isInit = true;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 }

@@ -1,4 +1,4 @@
-package io.dotconnect.p2p.wwc;
+package io.dotconnect.p2p.utils;
 
 import org.webrtc.PeerConnection;
 

@@ -82,15 +82,5 @@ public interface AppRTCClient {
          * Callback fired once remote Ice candidate removals are received.
          */
         void onRemoteIceCandidatesRemoved(final IceCandidate[] candidates);
-
-        /**
-         * Callback fired once channel is closed.
-         */
-        void onChannelClose();
-
-        /**
-         * Callback fired once channel error happened.
-         */
-        void onChannelError(final String description);
     }
 }

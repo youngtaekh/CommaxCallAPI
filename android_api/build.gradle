@@ -37,22 +37,10 @@ android {
 
     sourceSets {
         main {
-//            manifest.srcFile "../../androidapp/AndroidManifest.xml"
             java.srcDirs = [
                     "../api/src/main/java", "../p2p/src/main/java", "../signaling/src/main/java"
             ]
-//            res.srcDirs = [
-//                    "../../androidapp/res"
-//            ]
         }
-//        androidTest {
-//            manifest.srcFile "../../androidtests/AndroidManifest.xml"
-//            java.srcDirs = [
-//                    "../../androidtests/src"
-//            ]
-//            // This test doesn't work in Android Studio.
-//            java.exclude('**/CallActivityStubbedInputOutputTest.java')
-//        }
     }
     compileOptions {
         sourceCompatibility = '1.8'

@@ -16,6 +16,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 
     private var incoming = false
     private var target: String? = null
+    private var appId: String? = null
     private var deviceId: String? = null
     private var speaker = false
     private var calling = false
@@ -33,11 +34,12 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver {
 //        val video:Boolean = intent.getBooleanExtra("video", false)
 //        val screen:Boolean = intent.getBooleanExtra("screen", false)
         target = intent.getStringExtra("target")
+        appId = intent.getStringExtra("appId")
 
         if (!incoming) {
             tvStatus.text = "CCTV"
             deviceId = intent.getStringExtra("deviceId")
-            ConnectManager.getInstance().requestCctv(this, target, deviceId, cvFullView)
+            ConnectManager.getInstance().requestCctv(this, target, appId, deviceId, cvFullView)
 //            ConnectManager.getInstance().videoCall(this, target, "", cvFullView, cvSmallView)
 //            when {
 //                screen -> startScreenCapture()
