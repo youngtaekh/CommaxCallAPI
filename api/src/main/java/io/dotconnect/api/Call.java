@@ -19,7 +19,6 @@ class Call {
     enum SDPType {
         call,
         acceptCall,
-        acceptVideoCall,
         cctv
     }
 
@@ -41,7 +40,6 @@ class Call {
             if (!isNetworkChanged) {
                 switch (Call.this.sdpType) {
                     case acceptCall:
-                    case acceptVideoCall:
                         CallCore.getInstance().acceptCall(localSDP);
                         break;
                     case cctv:
@@ -51,7 +49,6 @@ class Call {
             } else {
                 switch (Call.this.sdpType) {
                     case acceptCall:
-                    case acceptVideoCall:
                         CallCore.getInstance().applyNetworkChange("", "", localSDP);
                         break;
                     case cctv:
@@ -75,19 +72,19 @@ class Call {
 
     void call() {
         sdpType = SDPType.call;
-        getSDP(mContext, true, false, false, null);
+        getSDP(mContext, true, false, null);
     }
 
     void acceptCall() {
-        sdpType = SDPType.acceptVideoCall;
-        getSDP(mContext, true, true, false, this.apiCallInfo.getSdp());
+        sdpType = SDPType.acceptCall;
+        getSDP(mContext, true, true, this.apiCallInfo.getSdp());
     }
 
     void requestCctv(String deviceId) {
         this.deviceId = deviceId;
         sdpType = SDPType.cctv;
         callState = CallState.CCTV;
-        getSDP(mContext, false, true, false, apiMessageInfo.getMessage());
+        getSDP(mContext, false, true, apiMessageInfo.getMessage());
     }
 
     void networkChange() {
@@ -132,10 +129,10 @@ class Call {
         p2pManager.initRenderer();
     }
 
-    void setVideoView(ConnectView cvFullView, ConnectView cvSmallView) {
+    void setVideoView(ConnectView cvFullView) {
         if (p2pManager==null)
             p2pManager = new P2PManager();
-        p2pManager.setRenderer(cvFullView, cvSmallView);
+        p2pManager.setRenderer(cvFullView);
     }
 
     void setRemoteDescription(String description) {
@@ -149,12 +146,12 @@ class Call {
     }
 
     private void getSDP(Context context, boolean video, String remoteSDP) {
-        getSDP(context, true, video, true, remoteSDP);
+        getSDP(context, true, video, remoteSDP);
     }
 
-    private void getSDP(Context context, boolean audio, boolean video, boolean videoRecvOnly, String remoteSDP) {
+    private void getSDP(Context context, boolean audio, boolean video, String remoteSDP) {
         boolean offer = remoteSDP==null;
-        p2pManager.setParameters(context, audio, video, videoRecvOnly);
+        p2pManager.setParameters(context, audio, video);
         p2pManager.startCall(offer, remoteSDP, listener);
     }
 

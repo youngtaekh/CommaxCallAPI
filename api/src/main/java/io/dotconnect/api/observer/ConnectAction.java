@@ -7,6 +7,7 @@ public class ConnectAction implements ConnectPublisher {
     private List<ConnectObserver.RegistrationObserver> registrationObservers;
     private List<ConnectObserver.MessageObserver> messageObservers;
     private List<ConnectObserver.CallObserver> callObservers;
+    private List<ConnectObserver.PeerConnectionObserver> peerConnectionObservers;
 
     private static ConnectAction instance;
 
@@ -19,6 +20,7 @@ public class ConnectAction implements ConnectPublisher {
         registrationObservers = new ArrayList<>();
         messageObservers = new ArrayList<>();
         callObservers = new ArrayList<>();
+        peerConnectionObservers = new ArrayList<>();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class ConnectAction implements ConnectPublisher {
 
     @Override
     public void delete(ConnectObserver.MessageObserver observer) {
-        messageObservers.add(observer);
+        messageObservers.remove(observer);
     }
 
     @Override
@@ -52,6 +54,17 @@ public class ConnectAction implements ConnectPublisher {
     @Override
     public void delete(ConnectObserver.CallObserver observer) {
         callObservers.remove(observer);
+    }
+
+    @Override
+    public void add(ConnectObserver.PeerConnectionObserver observer) {
+        if (!peerConnectionObservers.contains(observer))
+            peerConnectionObservers.add(observer);
+    }
+
+    @Override
+    public void delete(ConnectObserver.PeerConnectionObserver observer) {
+        peerConnectionObservers.remove(observer);
     }
 
     @Override
@@ -142,6 +155,41 @@ public class ConnectAction implements ConnectPublisher {
     public void onTerminatedObserver(ApiCallInfo apiCallInfo) {
         for (ConnectObserver.CallObserver callObserver : callObservers) {
             callObserver.onTerminated(apiCallInfo);
+        }
+    }
+
+    @Override
+    public void onConnectedObserver() {
+        for (ConnectObserver.PeerConnectionObserver peerConnectionObserver : peerConnectionObservers) {
+            peerConnectionObserver.onPeerConnectionConnected();
+        }
+    }
+
+    @Override
+    public void onDisconnectedObserver() {
+        for (ConnectObserver.PeerConnectionObserver peerConnectionObserver : peerConnectionObservers) {
+            peerConnectionObserver.onPeerConnectionDisconnected();
+        }
+    }
+
+    @Override
+    public void onFailedObserver() {
+        for (ConnectObserver.PeerConnectionObserver peerConnectionObserver : peerConnectionObservers) {
+            peerConnectionObserver.onPeerConnectionFailed();
+        }
+    }
+
+    @Override
+    public void onClosedObserver() {
+        for (ConnectObserver.PeerConnectionObserver peerConnectionObserver : peerConnectionObservers) {
+            peerConnectionObserver.onPeerConnectionClosed();
+        }
+    }
+
+    @Override
+    public void onErrorObserver(String description) {
+        for (ConnectObserver.PeerConnectionObserver peerConnectionObserver : peerConnectionObservers) {
+            peerConnectionObserver.onPeerConnectionError(description);
         }
     }
 }

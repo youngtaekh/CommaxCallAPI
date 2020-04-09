@@ -32,10 +32,6 @@ public class Register {
 
     private Register() {}
 
-//    static Register getInstance() {
-//        return instance;
-//    }
-
     void release() {
         instance = null;
     }
@@ -205,7 +201,12 @@ public class Register {
         }
     }
 
-    private void sipStart(Context context, String deviceId, String userId, String appId, String accessToken, String tlsDomain, String outboundProxy) {
+    private void sipStart(Context context, String deviceId, String userId, String appId,
+                          String accessToken, String tlsDomain, String outboundProxy) {
+        if (appId == null || "".equals(appId)
+                || tlsDomain == null || "".equals(tlsDomain)
+                || outboundProxy == null || "".equals(outboundProxy))
+            return;
         String domain = appId + "." + tlsDomain;
         generateCertification(context, domain, outboundProxy);
         EventNotifier eventNotifier = EventNotifier.getInstance();
@@ -238,55 +239,6 @@ public class Register {
         callCore.startRegistration(networkType, ipAddress);
     }
 
-    void start(Context context, String email, String password, String deviceId) {
-        try {
-            // encrypt password
-            String userPassword = AuthenticationUtil.makeSHA256(password);
-            String encryptedPassword    = "";
-            try {
-                encryptedPassword   = AuthenticationUtil.getEncryptedPasswordWithPasswordBasedSalt(userPassword);
-            } catch (Exception e){
-                Log.e("BackgroundService", "Exception occurred to encrypt user password!");
-            }
-
-            CallCore callCore = CallCore.getInstance();
-
-            EventNotifier eventNotifier = EventNotifier.getInstance();
-            StringTokenizer tokenizer = new StringTokenizer(email, "@");
-            String id = tokenizer.nextToken();
-            String domain = tokenizer.nextToken();
-
-            generateCertification(context, domain, outboundProxyAddress);
-
-            callCore.createCoreServiceInstance(
-                    context,
-                    eventNotifier,
-                    -1,
-                    -1,
-                    0,
-                    context.getFilesDir().toString(),
-                    domain,
-                    registerDuration,
-                    deviceId,
-                    id,
-                    id,
-                    accessToken,
-                    encryptedPassword,
-                    domain,
-                    outboundProxyAddress,
-                    outboundProxyPort,
-                    coreVersion);
-
-            String networkType = NetworkUtil.getNetworkType(context);
-            String ipAddress = NetworkUtil.getIPAddress(networkType);
-
-            callCore.start();
-            callCore.startRegistration(networkType, ipAddress);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     void stop() {
         CallCore callCore = CallCore.getInstance();
         callCore.stopRegistration();
@@ -297,13 +249,10 @@ public class Register {
     }
 
     private void generateCertification(Context context, String domain, String outboundProxy) {
-
         // generate X509Certificate
         copyAssets(context);
-//        if (!certificateFile.exists() || !privateKeyFile.exists()) {
         createPKIFiles(domain,
                 context.getFilesDir().getAbsolutePath() + "/",
-//                Environment.getExternalStorageDirectory()+"/Typhone/Download/",
                 "domain_cert_" + domain + ".pem",
                 "domain_key_" + domain + ".pem");
         copyPEMFile(domain, outboundProxy, context);

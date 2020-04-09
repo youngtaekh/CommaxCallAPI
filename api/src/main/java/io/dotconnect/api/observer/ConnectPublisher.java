@@ -10,6 +10,9 @@ public interface ConnectPublisher {
     void add(ConnectObserver.CallObserver observer);
     void delete(ConnectObserver.CallObserver observer);
 
+    void add(ConnectObserver.PeerConnectionObserver observer);
+    void delete(ConnectObserver.PeerConnectionObserver observer);
+
     void onDeviceRegistrationSuccessObserver();
     void onDeviceUnRegistrationSuccessObserver();
     void onRegistrationSuccessObserver();
@@ -25,4 +28,10 @@ public interface ConnectPublisher {
     void onCallConnectedObserver(ApiCallInfo apiCallInfo);
     void onFailureObserver(ApiCallInfo apiCallInfo);
     void onTerminatedObserver(ApiCallInfo apiCallInfo);
+
+    void onConnectedObserver();
+    void onDisconnectedObserver();
+    void onFailedObserver();
+    void onClosedObserver();
+    void onErrorObserver(String description);
 }

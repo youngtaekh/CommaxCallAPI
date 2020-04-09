@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
         Log.d(TAG, message)
     }
+
     override fun onDeviceRegistrationSuccess() {
         logAndToast("onDeviceRegistrationSuccess")
     }
@@ -86,16 +87,18 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         logAndToast("onSocketClosure")
     }
 
-    override fun onMessageSendSuccess(ApiMessage: ApiMessageInfo?) {
+    override fun onMessageSendSuccess(apiMessageInfo: ApiMessageInfo?) {
         logAndToast("onMessageSendSuccess")
+        Log.d(TAG, apiMessageInfo.toString())
     }
 
-    override fun onMessageSendFailure(ApiMessage: ApiMessageInfo?) {
+    override fun onMessageSendFailure(apiMessageInfo: ApiMessageInfo?) {
         logAndToast("onMessageSendFailure")
     }
 
-    override fun onMessageArrival(ApiMessage: ApiMessageInfo?) {
+    override fun onMessageArrival(apiMessageInfo: ApiMessageInfo?) {
         logAndToast("onMessageArrival")
+        Log.d(TAG, apiMessageInfo.toString())
     }
 
     override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {
@@ -124,10 +127,6 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
             ),
             0
         )
-
-        ConnectAction.getInstance().add(this as ConnectObserver.RegistrationObserver)
-        ConnectAction.getInstance().add(this as ConnectObserver.MessageObserver)
-        ConnectAction.getInstance().add(this as ConnectObserver.CallObserver)
 
         etEmail.setText(userId)
         etDeviceId.setText(deviceId)
@@ -179,11 +178,23 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+
+        ConnectAction.getInstance().add(this as ConnectObserver.RegistrationObserver)
+        ConnectAction.getInstance().add(this as ConnectObserver.MessageObserver)
+        ConnectAction.getInstance().add(this as ConnectObserver.CallObserver)
+    }
+
+    override fun onPause() {
+        super.onPause()
         ConnectAction.getInstance().delete(this as ConnectObserver.RegistrationObserver)
         ConnectAction.getInstance().delete(this as ConnectObserver.MessageObserver)
         ConnectAction.getInstance().delete(this as ConnectObserver.CallObserver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
 
         unregisterReceiver(broadcastReceiver)
     }

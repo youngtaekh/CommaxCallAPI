@@ -85,11 +85,11 @@ public class PeerConnectionClient {
     private static final String AUDIO_CODEC_OPUS = "opus";
     private static final String AUDIO_CODEC_ISAC = "ISAC";
     private static final String VIDEO_CODEC_PARAM_START_BITRATE = "x-google-start-bitrate";
-    private static final String VIDEO_FLEXFEC_FIELDTRIAL =
+    private static final String VIDEO_FLEX_FEC_FIELD_TRIAL =
             "WebRTC-FlexFEC-03-Advertised/Enabled/WebRTC-FlexFEC-03/Enabled/";
-    private static final String VIDEO_VP8_INTEL_HW_ENCODER_FIELDTRIAL = "WebRTC-IntelVP8/Enabled/";
-    private static final String VIDEO_H264_HW_ENCODER_FIELDTRIAL = "WebRTC-MediaTekH264/Enabled/";
-    private static final String DISABLE_WEBRTC_AGC_FIELDTRIAL =
+    private static final String VIDEO_VP8_INTEL_HW_ENCODER_FIELD_TRIAL = "WebRTC-IntelVP8/Enabled/";
+    private static final String VIDEO_H264_HW_ENCODER_FIELD_TRIAL = "WebRTC-MediaTekH264/Enabled/";
+    private static final String DISABLE_WEBRTC_AGC_FIELD_TRIAL =
             "WebRTC-Audio-MinimizeResamplingOnMobile/Enabled/";
     private static final String AUDIO_CODEC_PARAM_BITRATE = "maxaveragebitrate";
 
@@ -148,8 +148,7 @@ public class PeerConnectionClient {
      */
     static class PeerConnectionParameters {
         final boolean audioEnabled;
-        final boolean videoCallEnabled;
-        final boolean videoRecvOnly;
+        final boolean videoEnabled;
         final boolean tracing;
         final int videoMaxBitrate;
         final String videoCodec;
@@ -161,14 +160,13 @@ public class PeerConnectionClient {
         final boolean disableBuiltInNS;
         final boolean disableWebRtcAGCAndHPF;
 
-        PeerConnectionParameters(boolean audioEnabled, boolean videoCallEnabled, boolean videoRecvOnly, boolean tracing,
+        PeerConnectionParameters(boolean audioEnabled, boolean videoEnabled, boolean tracing,
                                  int videoMaxBitrate, String videoCodec,
                                  boolean videoCodecHwAcceleration, boolean videoFlexfecEnabled, int audioStartBitrate,
                                  String audioCodec, boolean disableBuiltInAEC,
                                  boolean disableBuiltInNS, boolean disableWebRtcAGCAndHPF) {
             this.audioEnabled = audioEnabled;
-            this.videoCallEnabled = videoCallEnabled;
-            this.videoRecvOnly = videoRecvOnly;
+            this.videoEnabled = videoEnabled;
             this.tracing = tracing;
             this.videoMaxBitrate = videoMaxBitrate;
             this.videoCodec = videoCodec;
@@ -228,6 +226,12 @@ public class PeerConnectionClient {
         void onDisconnected();
 
         /**
+         * Callback fired once DTLS connection is disconnected (PeerConnectionState
+         * is FAILED).
+         */
+        void onFailed();
+
+        /**
          * Callback fired once peer connection is closed.
          */
         void onPeerConnectionClosed();
@@ -254,13 +258,13 @@ public class PeerConnectionClient {
         this.events = events;
         this.peerConnectionParameters = peerConnectionParameters;
 
-        Log.d(TAG, "Preferred video codec: " + getSdpVideoCodecName(peerConnectionParameters));
+        Log.d(APP_NAME, TAG + "Preferred video codec: " + getSdpVideoCodecName(peerConnectionParameters));
 
         final String fieldTrials = getFieldTrials(peerConnectionParameters);
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "Initialize WebRTC. Field trials: " + fieldTrials);
+                Log.d(APP_NAME, TAG + "Initialize WebRTC. Field trials: " + fieldTrials);
                 PeerConnectionFactory.initialize(
                         PeerConnectionFactory.InitializationOptions.builder(appContext)
                                 .setFieldTrials(fieldTrials)
@@ -282,7 +286,7 @@ public class PeerConnectionClient {
 
     public void createPeerConnection(final VideoSink localRender, final VideoSink remoteSink,
                                      final AppRTCClient.SignalingParameters signalingParameters) {
-        if (peerConnectionParameters.videoCallEnabled && videoCapturer == null) {
+        if (peerConnectionParameters.videoEnabled && videoCapturer == null) {
             Log.w(TAG, "Video call enabled but no video capturer provided.");
         }
         createPeerConnection(
@@ -333,7 +337,7 @@ public class PeerConnectionClient {
 
         // Create peer connection factory.
         if (options != null) {
-            Log.d(TAG, "Factory networkIgnoreMask option: " + options.networkIgnoreMask);
+            Log.d(APP_NAME, TAG + "Factory networkIgnoreMask option: " + options.networkIgnoreMask);
         }
         final boolean enableH264HighProfile =
                 VIDEO_CODEC_H264_HIGH.equals(peerConnectionParameters.videoCodec);
@@ -355,7 +359,7 @@ public class PeerConnectionClient {
                 .setVideoEncoderFactory(encoderFactory)
                 .setVideoDecoderFactory(decoderFactory)
                 .createPeerConnectionFactory();
-        Log.d(TAG, "Peer connection factory created.");
+        Log.d(APP_NAME, TAG + "Peer connection factory created.");
         adm.release();
 
         VideoEncoderFactory videoEncoderFactory =
@@ -430,8 +434,7 @@ public class PeerConnectionClient {
 //                new MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"));
                 new MediaConstraints.KeyValuePair("OfferToReceiveAudio", String.valueOf(peerConnectionParameters.audioEnabled)));
         sdpMediaConstraints.mandatory.add(
-//                new MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(peerConnectionParameters.videoCallEnabled ^ peerConnectionParameters.screenCallEnabled)));
-                new MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(peerConnectionParameters.videoCallEnabled || peerConnectionParameters.videoRecvOnly)));
+                new MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(peerConnectionParameters.videoEnabled)));
     }
 
     private void createPeerConnectionInternal() {
@@ -439,7 +442,7 @@ public class PeerConnectionClient {
             Log.e(TAG, "Peerconnection factory is not created");
             return;
         }
-        Log.d(TAG, "Create peer connection.");
+        Log.d(APP_NAME, TAG + "Create peer connection.");
 
         queuedRemoteCandidates = new ArrayList<>();
 
@@ -466,7 +469,7 @@ public class PeerConnectionClient {
         Logging.enableLogToDebugOutput(Logging.Severity.LS_INFO);
 
         List<String> mediaStreamLabels = Collections.singletonList("ARDAMS");
-        if (peerConnectionParameters.videoCallEnabled && !peerConnectionParameters.videoRecvOnly) {
+        if (peerConnectionParameters.videoEnabled) {
             peerConnection.addTrack(createVideoTrack(), mediaStreamLabels);
             // We can add the renderers right away because we don't need to wait for an
             // answer to get the remote track.
@@ -479,22 +482,22 @@ public class PeerConnectionClient {
         if (peerConnectionParameters.audioEnabled)
             peerConnection.addTrack(createAudioTrack(), mediaStreamLabels);
 
-        Log.d(TAG, "Peer connection created.");
+        Log.d(APP_NAME, TAG + "Peer connection created.");
     }
 
     private void closeInternal() {
-        Log.d(TAG, "Closing peer connection.");
+        Log.d(APP_NAME, TAG + "Closing peer connection.");
         statsTimer.cancel();
         if (peerConnection != null) {
             peerConnection.dispose();
             peerConnection = null;
         }
-        Log.d(TAG, "Closing audio source.");
+        Log.d(APP_NAME, TAG + "Closing audio source.");
         if (audioSource != null) {
             audioSource.dispose();
             audioSource = null;
         }
-        Log.d(TAG, "Closing video source.");
+        Log.d(APP_NAME, TAG + "Closing video source.");
         if (videoSource != null) {
             videoSource.dispose();
             videoSource = null;
@@ -505,13 +508,13 @@ public class PeerConnectionClient {
         }
         localRender = null;
         remoteSinks = null;
-        Log.d(TAG, "Closing peer connection factory.");
+        Log.d(APP_NAME, TAG + "Closing peer connection factory.");
         if (factory != null) {
             factory.dispose();
             factory = null;
         }
         rootEglBase.release();
-        Log.d(TAG, "Closing peer connection done.");
+        Log.d(APP_NAME, TAG + "Closing peer connection done.");
         events.onPeerConnectionClosed();
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
@@ -529,7 +532,7 @@ public class PeerConnectionClient {
     void createOffer() {
         executor.execute(() -> {
             if (peerConnection != null && !isError) {
-                Log.d(TAG, "PC Create OFFER");
+                Log.d(APP_NAME, TAG + "PC Create OFFER");
                 isInitiator = true;
                 peerConnection.createOffer(sdpObserver, sdpMediaConstraints);
             }
@@ -539,7 +542,7 @@ public class PeerConnectionClient {
     void createAnswer() {
         executor.execute(() -> {
             if (peerConnection != null && !isError) {
-                Log.d(TAG, "PC create ANSWER");
+                Log.d(APP_NAME, TAG + "PC create ANSWER");
                 isInitiator = false;
                 peerConnection.createAnswer(sdpObserver, sdpMediaConstraints);
             }
@@ -579,7 +582,7 @@ public class PeerConnectionClient {
             if (preferIsac) {
                 sdpDescription = preferCodec(sdpDescription, AUDIO_CODEC_ISAC, true);
             }
-            if (peerConnectionParameters.videoCallEnabled) {
+            if (peerConnectionParameters.videoEnabled) {
                 sdpDescription =
                         preferCodec(sdpDescription, getSdpVideoCodecName(peerConnectionParameters), false);
             }
@@ -587,7 +590,7 @@ public class PeerConnectionClient {
                 sdpDescription = setStartBitrate(
                         AUDIO_CODEC_OPUS, false, sdpDescription, peerConnectionParameters.audioStartBitrate);
             }
-            Log.d(TAG, "Set remote SDP.");
+            Log.d(APP_NAME, TAG + "Set remote SDP.");
             SessionDescription sdpRemote = new SessionDescription(sdp.type, sdpDescription);
             peerConnection.setRemoteDescription(sdpObserver, sdpRemote);
         });
@@ -650,14 +653,14 @@ public class PeerConnectionClient {
     private static String getFieldTrials(PeerConnectionParameters peerConnectionParameters) {
         String fieldTrials = "";
         if (peerConnectionParameters.videoFlexfecEnabled) {
-            fieldTrials += VIDEO_FLEXFEC_FIELDTRIAL;
-            Log.d(TAG, "Enable FlexFEC field trial.");
+            fieldTrials += VIDEO_FLEX_FEC_FIELD_TRIAL;
+            Log.d(APP_NAME, TAG + "Enable FlexFEC field trial.");
         }
 //        fieldTrials += VIDEO_VP8_INTEL_HW_ENCODER_FIELDTRIAL;
-        fieldTrials += VIDEO_H264_HW_ENCODER_FIELDTRIAL;
+        fieldTrials += VIDEO_H264_HW_ENCODER_FIELD_TRIAL;
         if (peerConnectionParameters.disableWebRtcAGCAndHPF) {
-            fieldTrials += DISABLE_WEBRTC_AGC_FIELDTRIAL;
-            Log.d(TAG, "Disable WebRTC AGC field trial.");
+            fieldTrials += DISABLE_WEBRTC_AGC_FIELD_TRIAL;
+            Log.d(APP_NAME, TAG + "Disable WebRTC AGC field trial.");
         }
         return fieldTrials;
     }
@@ -685,7 +688,7 @@ public class PeerConnectionClient {
             Log.w(TAG, "No rtpmap for " + codec + " codec");
             return sdpDescription;
         }
-        Log.d(TAG, "Found " + codec + " rtpmap " + codecRtpMap + " at " + lines[rtpmapLineIndex]);
+        Log.d(APP_NAME, TAG + "Found " + codec + " rtpmap " + codecRtpMap + " at " + lines[rtpmapLineIndex]);
 
         // Check if a=fmtp string already exist in remote SDP for this codec and
         // update it with new bitrate parameter.
@@ -694,13 +697,13 @@ public class PeerConnectionClient {
         for (int i = 0; i < lines.length; i++) {
             Matcher codecMatcher = codecPattern.matcher(lines[i]);
             if (codecMatcher.matches()) {
-                Log.d(TAG, "Found " + codec + " " + lines[i]);
+                Log.d(APP_NAME, TAG + "Found " + codec + " " + lines[i]);
                 if (isVideoCodec) {
                     lines[i] += "; " + VIDEO_CODEC_PARAM_START_BITRATE + "=" + bitrateKbps;
                 } else {
                     lines[i] += "; " + AUDIO_CODEC_PARAM_BITRATE + "=" + (bitrateKbps * 1000);
                 }
-                Log.d(TAG, "Update remote SDP line: " + lines[i]);
+                Log.d(APP_NAME, TAG + "Update remote SDP line: " + lines[i]);
                 sdpFormatUpdated = true;
                 break;
             }
@@ -719,7 +722,7 @@ public class PeerConnectionClient {
                     bitrateSet = "a=fmtp:" + codecRtpMap + " " + AUDIO_CODEC_PARAM_BITRATE + "="
                             + (bitrateKbps * 1000);
                 }
-                Log.d(TAG, "Add remote SDP line: " + bitrateSet);
+                Log.d(APP_NAME, TAG + "Add remote SDP line: " + bitrateSet);
                 newSdpDescription.append(bitrateSet).append("\r\n");
             }
         }
@@ -801,14 +804,14 @@ public class PeerConnectionClient {
         if (newMLine == null) {
             return sdpDescription;
         }
-        Log.d(TAG, "Change media description from: " + lines[mLineIndex] + " to " + newMLine);
+        Log.d(APP_NAME, TAG + "Change media description from: " + lines[mLineIndex] + " to " + newMLine);
         lines[mLineIndex] = newMLine;
         return joinString(Arrays.asList(lines), "\r\n", true /* delimiterAtEnd */);
     }
 
     private void drainCandidates() {
         if (queuedRemoteCandidates != null) {
-            Log.d(TAG, "Add " + queuedRemoteCandidates.size() + " remote candidates");
+            Log.d(APP_NAME, TAG + "Add " + queuedRemoteCandidates.size() + " remote candidates");
             for (IceCandidate candidate : queuedRemoteCandidates) {
                 peerConnection.addIceCandidate(candidate);
             }
@@ -909,7 +912,7 @@ public class PeerConnectionClient {
             if (preferIsac) {
                 sdpDescription = preferCodec(sdpDescription, AUDIO_CODEC_ISAC, true);
             }
-            if (peerConnectionParameters.videoCallEnabled) {
+            if (peerConnectionParameters.videoEnabled) {
                 sdpDescription =
                         preferCodec(sdpDescription, getSdpVideoCodecName(peerConnectionParameters), false);
             }
@@ -917,7 +920,7 @@ public class PeerConnectionClient {
             localSdp = sdp;
             executor.execute(() -> {
                 if (peerConnection != null && !isError) {
-                    Log.d(TAG, "Set local SDP from " + sdp.type);
+                    Log.d(APP_NAME, TAG + "Set local SDP from " + sdp.type);
                     peerConnection.setLocalDescription(sdpObserver, sdp);
                 }
             });
@@ -934,12 +937,12 @@ public class PeerConnectionClient {
                     // local SDP, then after receiving answer set remote SDP.
                     if (peerConnection.getRemoteDescription() == null) {
                         // We've just set our local SDP so time to send it.
-                        Log.d(TAG, "Local SDP set succesfully");
+                        Log.d(APP_NAME, TAG + "Local SDP set succesfully");
                         events.onLocalDescription(localSdp);
                     } else {
                         // We've just set remote description, so drain remote
                         // and send local ICE candidates.
-                        Log.d(TAG, "Remote SDP set succesfully");
+                        Log.d(APP_NAME, TAG + "Remote SDP set succesfully");
                         drainCandidates();
                     }
                 } else {
@@ -948,13 +951,13 @@ public class PeerConnectionClient {
                     if (peerConnection.getLocalDescription() != null) {
                         // We've just set our local SDP so time to send it, drain
                         // remote and send local ICE candidates.
-                        Log.d(TAG, "Local SDP set succesfully");
+                        Log.d(APP_NAME, TAG + "Local SDP set succesfully");
                         events.onLocalDescription(localSdp);
                         drainCandidates();
                     } else {
                         // We've just set remote SDP - do nothing for now -
                         // answer will be created soon.
-                        Log.d(TAG, "Remote SDP set succesfully");
+                        Log.d(APP_NAME, TAG + "Remote SDP set succesfully");
                     }
                 }
             });

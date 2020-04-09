@@ -5,9 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 task copySo(type: Copy) {
-    from '../../resiprocate/ndk-prebuilt/resip',
-            '../../core-build/app/build/intermediates/binaries/debug/arm8/lib',
-            '../../core-build/app/build/intermediates/binaries/debug/arm7/lib'
+    from '../../corebuild/commax_client'
     into '../android_api/src/main/jniLibs'
     include('**/*.so')
 }

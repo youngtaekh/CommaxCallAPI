@@ -13,8 +13,9 @@ import io.dotconnect.api.enum_class.MessageType;
 import io.dotconnect.api.observer.ApiCallInfo;
 import io.dotconnect.api.observer.ApiMessageInfo;
 import io.dotconnect.api.observer.ConnectAction;
-import io.dotconnect.api.util.NetworkUtil;
 import io.dotconnect.api.view.ConnectView;
+import io.dotconnect.p2p.observer.P2PAction;
+import io.dotconnect.p2p.observer.P2PObserver;
 import io.dotconnect.signaling.callJni.CallCore;
 import io.dotconnect.signaling.observer.SignalingAction;
 import io.dotconnect.signaling.observer.SignalingCallInfo;
@@ -28,7 +29,7 @@ import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
 import static io.dotconnect.api.util.APIConfiguration.DOMAIN;
 
 public class ConnectManager {
-    private static final String TAG = "ConnectManager";
+    private static final String TAG = "ConnectManager - ";
     private static ConnectManager instance;
 
     private CallManager callManager;
@@ -50,6 +51,7 @@ public class ConnectManager {
         SignalingAction.getInstance().add(registrationObserver);
         SignalingAction.getInstance().add(messageObserver);
         SignalingAction.getInstance().add(callObserver);
+        P2PAction.getInstance().add(p2PObserver);
 
         callManager = CallManager.getInstance();
     }
@@ -62,7 +64,7 @@ public class ConnectManager {
     }
 
     private void release() {
-        Log.d(TAG, "release");
+        Log.d(APP_NAME, TAG + "release");
         if (callManager.get()!=null) {
             callManager.get().setCallState(CallState.IDLE);
             callManager.get().disconnect();
@@ -72,6 +74,7 @@ public class ConnectManager {
         SignalingAction.getInstance().delete(registrationObserver);
         SignalingAction.getInstance().delete(messageObserver);
         SignalingAction.getInstance().delete(callObserver);
+        P2PAction.getInstance().delete(p2PObserver);
     }
 
     //Register
@@ -154,7 +157,7 @@ public class ConnectManager {
             call.setConfig(targetEmail);
             call.setCallState(CCTV);
             call.setMessageId(new Message().getMessageId(deviceId));
-            initView(cvFullView, null);
+            initView(cvFullView);
             call.setInit();
             new Message().sendMessage(targetEmail, "", deviceId, call.getMessageId(), MessageType.cctv, MessageDetail.request);
         }
@@ -168,7 +171,7 @@ public class ConnectManager {
     //SignalingCallInfo
 
     private Call createCall() {
-        Log.d(TAG, "createCall() callManager.size() is " + callManager.size());
+        Log.d(APP_NAME, TAG + "createCall()");
         Call call = new Call();
         callManager.add(call);
         return call;
@@ -185,33 +188,26 @@ public class ConnectManager {
     }
 
     private void acceptCall(Context context) {
-        Log.d(APP_NAME, "acceptCall(Context)");
-        acceptCall(context, null, null);
+        Log.d(APP_NAME, TAG + "acceptCall(Context)");
+        acceptCall(context, null);
     }
 
     public void acceptCall(Context context, ConnectView cvFullView) {
-        Log.d(APP_NAME, "acceptCall(Context, ConnectView)");
-        acceptCall(context, cvFullView, null);
-    }
-
-    private void acceptCall(Context context, ConnectView cvFullView, ConnectView cvSmallView) {
-        Log.d(APP_NAME, "acceptCall(Context, ConnectView, ConnectView)");
+        Log.d(APP_NAME, TAG + "acceptCall(Context, ConnectView)");
         Call call;
         if (callManager.size() == 0) {
             call = createCall();
             call.setCallState(ACCEPT_PENDING);
-            Log.d(TAG, "acceptCall() callSize is 0 callState is " + call.getCallState());
             call.setContext(context);
-            initView(cvFullView, cvSmallView);
+            initView(cvFullView);
             call.setInit();
         } else {
             call = callManager.get();
-            Log.d(TAG, "acceptCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
             if (call.getCallState()==INCOMING_CONNECT_READY) {
                 call.setCallState(ACCEPT_PENDING);
                 call.setContext(context);
                 if (!call.isInit())
-                    initView(cvFullView, cvSmallView);
+                    initView(cvFullView);
                 call.acceptCall();
             }
         }
@@ -239,20 +235,13 @@ public class ConnectManager {
         if (callManager.size()==0) {
             call = createCall();
             call.setCallState(CallState.REJECT_PENDING);
-            Log.d(TAG, "end() callSize is 0 callState is " + call.getCallState());
         } else {
             call = callManager.get();
-            Log.d(TAG, "end() callSize is " + callManager.size() + " callState is " + call.getCallState());
             if (call.getCallState() == CallState.CCTV) {
-                io.dotconnect.api.observer.ApiCallInfo apiCallInfo = new ApiCallInfo();
-                apiCallInfo.setStatusCode(200);
-                apiCallInfo.setMessage("OK");
-                ConnectAction.getInstance().onTerminatedObserver(apiCallInfo);
-                if (callManager.get()!=null) {
-                    callManager.get().setCallState(CallState.IDLE);
-                    callManager.get().end();
-                    callManager.get().disconnect();
-                }
+                ApiCallInfo apiCallInfo = new ApiCallInfo();
+                ConnectAction.getInstance().onTerminatedObserver(apiCallInfo.makeOK());
+                call.end();
+                disconnect();
                 callManager.remove();
             }
             if (call.getCallState()!=CallState.END_PENDING && call.getCallState()!=CallState.REJECT_PENDING) {
@@ -289,23 +278,17 @@ public class ConnectManager {
         Call call = callManager.get();
         if (call!=null) {
             call.reject();
-            io.dotconnect.api.observer.ApiCallInfo apiCallInfo = new ApiCallInfo();
-            apiCallInfo.setStatusCode(603);
-            apiCallInfo.setMessage("Reject");
-            ConnectAction.getInstance().onTerminatedObserver(apiCallInfo);
-            if (callManager.get()!=null) {
-                callManager.get().setCallState(CallState.IDLE);
-                callManager.get().disconnect();
-            }
+            ApiCallInfo apiCallInfo = new ApiCallInfo();
+            ConnectAction.getInstance().onTerminatedObserver(apiCallInfo.makeReject());
+            disconnect();
             callManager.remove();
-            Log.d(TAG, "reject() callSize is " + callManager.size());
         }
     }
 
-    private void initView(ConnectView cvFullView, ConnectView cvSmallView) {
-        Log.d(TAG, "initView()");
+    private void initView(ConnectView cvFullView) {
+        Log.d(APP_NAME, TAG + "initView(ConnectView)");
         Call call = callManager.get();
-        call.setVideoView(cvFullView, cvSmallView);
+        call.setVideoView(cvFullView);
         call.initView();
     }
 
@@ -315,7 +298,7 @@ public class ConnectManager {
             call.setScaleType(scaleType);
     }
 
-    public void disconnect() {
+    private void disconnect() {
         if (callManager.get()!=null) {
             callManager.get().setCallState(CallState.IDLE);
             callManager.get().disconnect();
@@ -325,19 +308,19 @@ public class ConnectManager {
     private SignalingObserver.RegistrationObserver registrationObserver = new SignalingObserver.RegistrationObserver() {
         @Override
         public void onRegistrationSuccess() {
-            Log.d(TAG, "onRegistrationSuccess");
+            Log.d(APP_NAME, TAG + "onRegistrationSuccess");
             ConnectAction.getInstance().onRegistrationSuccessObserver();
         }
 
         @Override
         public void onRegistrationFailure() {
-            Log.d(TAG, "onRegistrationFailure");
+            Log.d(APP_NAME, TAG + "onRegistrationFailure");
             ConnectAction.getInstance().onRegistrationFailureObserver();
         }
 
         @Override
         public void onUnRegistrationSuccess() {
-            Log.d(TAG, "onUnRegistrationSuccess");
+            Log.d(APP_NAME, TAG + "onUnRegistrationSuccess");
             if (coreStopHandler!=null) {
                 coreStopHandler.removeCallbacks(coreStopRunnable);
                 coreStopHandler = null;
@@ -354,7 +337,7 @@ public class ConnectManager {
 
         @Override
         public void onSocketClosure() {
-            Log.d(TAG, "onSocketClosure");
+            Log.d(APP_NAME, TAG + "onSocketClosure");
             ConnectAction.getInstance().onSocketClosureObserver();
         }
     };
@@ -362,19 +345,19 @@ public class ConnectManager {
     private SignalingObserver.MessageObserver messageObserver = new SignalingObserver.MessageObserver() {
         @Override
         public void onMessageSendSuccess(SignalingMessageInfo signalingMessageInfo) {
-            Log.d(TAG, "onMessageSendSuccess");
+            Log.d(APP_NAME, TAG + "onMessageSendSuccess");
             ConnectAction.getInstance().onMessageSendSuccessObserver(new ApiMessageInfo(signalingMessageInfo));
         }
 
         @Override
         public void onMessageSendFailure(SignalingMessageInfo signalingMessageInfo) {
-            Log.d(TAG, "onMessageSendFailure");
+            Log.d(APP_NAME, TAG + "onMessageSendFailure");
             ConnectAction.getInstance().onMessageSendFailureObserver(new ApiMessageInfo(signalingMessageInfo));
         }
 
         @Override
         public void onMessageArrival(SignalingMessageInfo signalingMessageInfo) {
-            Log.d(TAG, "onMessageArrival");
+            Log.d(APP_NAME, TAG + "onMessageArrival");
             if (signalingMessageInfo.getMessageDetail() == MessageDetail.offer
                     && MessageType.cctv == signalingMessageInfo.getMessageType()) {
                 if (callManager.get()!=null) {
@@ -390,17 +373,15 @@ public class ConnectManager {
     private SignalingObserver.CallObserver callObserver = new SignalingObserver.CallObserver() {
         @Override
         public void onIncomingCall(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onIncomingCall");
+            Log.d(APP_NAME, TAG + "onIncomingCall");
 
             Call call;
             if (callManager.size()==0) {
                 call = createCall();
                 call.setApiCallInfo(new ApiCallInfo(signalingCallInfo));
                 call.setCallState(CallState.INCOMING_CONNECT_READY);
-                Log.d(TAG, "onIncomingCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
             } else {
                 call = callManager.get();
-                Log.d(TAG, "onIncomingCall() callSize is " + callManager.size() + " callState is " + call.getCallState());
                 call.setApiCallInfo(new ApiCallInfo(signalingCallInfo));
                 if (call.getCallState() == CallState.REJECT_PENDING) {
                     reject();
@@ -412,27 +393,23 @@ public class ConnectManager {
 
         @Override
         public void onCallConnected(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onCallConnected");
+            Log.d(APP_NAME, TAG + "onCallConnected");
             ConnectAction.getInstance().onCallConnectedObserver(new ApiCallInfo(signalingCallInfo));
             callManager.get().setCallState(CallState.CONNECTED);
         }
 
         @Override
         public void onFailure(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onFailure");
+            Log.d(APP_NAME, TAG + "onFailure");
             ConnectAction.getInstance().onFailureObserver(new ApiCallInfo(signalingCallInfo));
         }
 
         @Override
         public void onTerminated(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onTerminated");
+            Log.d(APP_NAME, TAG + "onTerminated");
             ConnectAction.getInstance().onTerminatedObserver(new ApiCallInfo(signalingCallInfo));
-            if (callManager.get()!=null) {
-                callManager.get().setCallState(CallState.IDLE);
-                callManager.get().disconnect();
-            }
+            disconnect();
             callManager.remove();
-            Log.d(TAG, "onTerminated() callSize is " + callManager.size());
         }
 
         @Override
@@ -441,7 +418,6 @@ public class ConnectManager {
                 Call call = callManager.get();
                 ApiCallInfo callInfo = call.getApiCallInfo();
                 callInfo.setSdp(signalingCallInfo.getSdp());
-                Log.d(TAG, "onOffer() callSize is " + callManager.size() + " callState is " + call.getCallState());
                 if (call.getCallState() == ACCEPT_PENDING) {
                     call.setCallState(CallState.INCOMING_CONNECT_READY);
                     Handler handler = new Handler(Looper.getMainLooper());
@@ -452,12 +428,44 @@ public class ConnectManager {
 
         @Override
         public void onBusyOnIncomingCall(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onBusyOnIncomingCall");
+            Log.d(APP_NAME, TAG + "onBusyOnIncomingCall");
         }
 
         @Override
         public void onCancelCallBefore180(SignalingCallInfo signalingCallInfo) {
-            Log.d(TAG, "onCancelCallBefore180");
+            Log.d(APP_NAME, TAG + "onCancelCallBefore180");
+        }
+    };
+
+    private P2PObserver p2PObserver = new P2PObserver() {
+        @Override
+        public void onConnected() {
+            Log.d(APP_NAME, TAG + "onConnected");
+            ConnectAction.getInstance().onConnectedObserver();
+        }
+
+        @Override
+        public void onDisconnected() {
+            Log.d(APP_NAME, TAG + "onDisconnected");
+            ConnectAction.getInstance().onDisconnectedObserver();
+        }
+
+        @Override
+        public void onFailed() {
+            Log.d(APP_NAME, TAG + "onFailed");
+            ConnectAction.getInstance().onFailedObserver();
+        }
+
+        @Override
+        public void onClosed() {
+            Log.d(APP_NAME, TAG + "onClosed");
+            ConnectAction.getInstance().onClosedObserver();
+        }
+
+        @Override
+        public void onError(String description) {
+            Log.d(APP_NAME, TAG + "onError - " + description);
+            ConnectAction.getInstance().onErrorObserver(description);
         }
     };
 }

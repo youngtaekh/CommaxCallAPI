@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import io.dotconnect.p2p.observer.P2PAction;
 import io.dotconnect.p2p.utils.Ice;
 
 import static io.dotconnect.api.util.APIConfiguration.APP_NAME;
@@ -17,10 +19,8 @@ import java.util.List;
 public class P2PManager {
 
     private AppRTCClient.SignalingParameters signalingParameters = null;
-    private PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = null;
     private PeerConnectionClient peerConnectionClient = null;
 
-    private SurfaceViewRenderer pipRenderer = null;
     private SurfaceViewRenderer fullscreenRenderer = null;
 
     private ProxyVideoSink remoteProxyRenderer = new ProxyVideoSink();
@@ -29,29 +29,24 @@ public class P2PManager {
     private ArrayList<VideoSink> remoteSinks = new ArrayList<>();
 
     private Handler handler = null;
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            sendSdp();
-        }
-    };
+    private Runnable runnable = this::sendSdp;
 
     private SDPListener listener;
 
-    public class ProxyVideoSink implements VideoSink {
+    public static class ProxyVideoSink implements VideoSink {
         private VideoSink target = null;
 
         @Override
         synchronized public void onFrame(VideoFrame videoFrame) {
             if (target == null) {
-                Logging.d("asdf", "Dropping frame in proxy because target is null.");
+                Logging.d(APP_NAME, "Dropping frame in proxy because target is null.");
                 return;
             }
 
             target.onFrame(videoFrame);
         }
 
-        synchronized public void setTarget(VideoSink target) {
+        synchronized void setTarget(VideoSink target) {
             this.target = target;
         }
     }
@@ -79,13 +74,10 @@ public class P2PManager {
                 if (signalingParameters.initiator && signalingParameters.offerSdp != null) {
                     signalingParameters.offerSdp = new SessionDescription(signalingParameters.offerSdp.type,
                             ice.addCandidate(signalingParameters.offerSdp.description, candidate.sdp));
-                    //            Log.d("onIceCandidate", signalingParameters.offerSdp.description);
                 } else if (!signalingParameters.initiator && signalingParameters.answerSdp != null) {
                     signalingParameters.answerSdp = new SessionDescription(signalingParameters.answerSdp.type,
                             ice.addCandidate(signalingParameters.answerSdp.description, candidate.sdp));
                 }
-            } else {
-                Log.d("onIceCandidate", candidate.sdp);
             }
         }
 
@@ -111,17 +103,22 @@ public class P2PManager {
 
         @Override
         public void onConnected() {
-            setSwappedFeeds(false);
+            P2PAction.getInstance().onConnectedObserver();
         }
 
         @Override
         public void onDisconnected() {
+            P2PAction.getInstance().onDisconnectedObserver();
+        }
 
+        @Override
+        public void onFailed() {
+            P2PAction.getInstance().onFailedObserver();
         }
 
         @Override
         public void onPeerConnectionClosed() {
-
+            P2PAction.getInstance().onClosedObserver();
         }
 
         @Override
@@ -131,7 +128,7 @@ public class P2PManager {
 
         @Override
         public void onPeerConnectionError(String description) {
-
+            P2PAction.getInstance().onErrorObserver(description);
         }
     };
 
@@ -139,35 +136,28 @@ public class P2PManager {
         eglBase = EglBase.create();
     }
 
-    public void setRenderer(SurfaceViewRenderer fullscreenRenderer, SurfaceViewRenderer pipRenderer) {
+    public void setRenderer(SurfaceViewRenderer fullscreenRenderer) {
         this.fullscreenRenderer = fullscreenRenderer;
-        this.pipRenderer = pipRenderer;
     }
 
     public void initRenderer() {
-        Log.d(APP_NAME, "initRenderer()");
+        Log.d(APP_NAME, "P2PManager - initRenderer()");
         remoteSinks.add(remoteProxyRenderer);
 
         // Create video renderers.
-        if (pipRenderer!=null) {
-            pipRenderer.init(eglBase.getEglBaseContext(), null);
-            pipRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
-            pipRenderer.setZOrderMediaOverlay(true);
-            pipRenderer.setEnableHardwareScaler(true /* enabled */);
-        }
-
         if (fullscreenRenderer!=null) {
             fullscreenRenderer.init(eglBase.getEglBaseContext(), null);
             fullscreenRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
             fullscreenRenderer.setEnableHardwareScaler(false /* enabled */);
+            remoteProxyRenderer.setTarget(fullscreenRenderer);
+            fullscreenRenderer.setMirror(false);
         }
-        // Start with local feed in fullscreen and swap it to the pip when the call is connected.
-        setSwappedFeeds(false /* isSwappedFeeds */);
     }
 
-    public void setParameters(Context context, boolean audio, boolean isVideoCall, boolean videoRecvOnly) {
-        peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
-                audio, isVideoCall, videoRecvOnly,
+    public void setParameters(Context context, boolean audio, boolean isVideoCall) {
+        PeerConnectionClient.PeerConnectionParameters peerConnectionParameters
+                = new PeerConnectionClient.PeerConnectionParameters(
+                audio, isVideoCall,
                 TRACING,
                 VIDEO_MAX_BITRATE, VIDEO_CODEC,
                 VIDEO_CODEC_HW_ACCELERATION,
@@ -220,25 +210,6 @@ public class P2PManager {
         }
     }
 
-    public void setSwappedFeeds(boolean isSwappedFeeds) {
-        if (pipRenderer!=null && fullscreenRenderer!=null) {
-            localProxyVideoSink.setTarget(isSwappedFeeds ? fullscreenRenderer : pipRenderer);
-            remoteProxyRenderer.setTarget(isSwappedFeeds ? pipRenderer : fullscreenRenderer);
-            fullscreenRenderer.setMirror(isSwappedFeeds);
-            pipRenderer.setMirror(!isSwappedFeeds);
-            pipRenderer.setZOrderMediaOverlay(true);
-        } else {
-            if (fullscreenRenderer!=null) {
-                remoteProxyRenderer.setTarget(fullscreenRenderer);
-                fullscreenRenderer.setMirror(isSwappedFeeds);
-            } else if (pipRenderer!=null) {
-                remoteProxyRenderer.setTarget(pipRenderer);
-                pipRenderer.setMirror(!isSwappedFeeds);
-                pipRenderer.setZOrderMediaOverlay(true);
-            }
-        }
-    }
-
     public void setScaleType(RendererCommon.ScalingType scaleType) {
         fullscreenRenderer.setScalingType(scaleType);
     }
@@ -263,10 +234,6 @@ public class P2PManager {
     public void disconnect() {
         remoteProxyRenderer.setTarget(null);
         localProxyVideoSink.setTarget(null);
-        if (pipRenderer != null) {
-            pipRenderer.release();
-            pipRenderer = null;
-        }
         if (fullscreenRenderer != null) {
             fullscreenRenderer.release();
             fullscreenRenderer = null;

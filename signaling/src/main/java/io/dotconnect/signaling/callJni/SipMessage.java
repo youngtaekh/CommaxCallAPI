@@ -34,6 +34,9 @@ public class SipMessage {
 
     SipMessage(String fromId, String sdp, String jsonStr) {
         this.fromId = fromId;
+        if (this.fromId!=null) {
+            Log.d(TAG, "fromId - " + this.fromId);
+        }
         this.sdp = sdp;
         if (this.sdp!=null) {
             Log.d(TAG, "sdp - " + this.sdp);

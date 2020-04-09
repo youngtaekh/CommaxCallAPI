@@ -21,6 +21,10 @@ public class SignalingMessageInfo {
         }
     }
 
+    public String getSenderEmail() {
+        return senderEmail;
+    }
+
     public String getMessage() {
         return message;
     }

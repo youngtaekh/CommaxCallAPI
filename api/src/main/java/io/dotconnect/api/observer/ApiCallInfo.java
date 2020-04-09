@@ -21,6 +21,18 @@ public class ApiCallInfo {
         this.sdp = signalingCallInfo.getSdp();
     }
 
+    public ApiCallInfo makeReject() {
+        setStatusCode(603);
+        setMessage("Reject");
+        return this;
+    }
+
+    public ApiCallInfo makeOK() {
+        setStatusCode(200);
+        setMessage("OK");
+        return this;
+    }
+
     public String getCounterpart() {
         return counterpart;
     }

@@ -24,4 +24,12 @@ public class ConnectObserver {
         void onFailure(ApiCallInfo apiCallInfo);
         void onTerminated(ApiCallInfo apiCallInfo);
     }
+
+    public interface PeerConnectionObserver {
+        void onPeerConnectionConnected();
+        void onPeerConnectionDisconnected();
+        void onPeerConnectionFailed();
+        void onPeerConnectionClosed();
+        void onPeerConnectionError(String description);
+    }
 }
