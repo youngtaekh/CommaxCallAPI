@@ -12,10 +12,8 @@
 /captures
 .externalNativeBuild
 /app/build
+/android_api/build
 /android/build
-/android_api/src/main/jniLibs
 /signaling/build
-/signaling/src/main/jniLibs
 /p2p/build
-/p2p/src/main/jniLibs
 /app/release

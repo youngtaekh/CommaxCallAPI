@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 task copySo(type: Copy) {
-    from '../../corebuild/commax_client'
+    from '../../clientbuild/commax_client'
     into '../android_api/src/main/jniLibs'
     include('**/*.so')
 }
