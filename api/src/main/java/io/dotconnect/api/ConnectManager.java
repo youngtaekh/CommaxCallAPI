@@ -147,7 +147,8 @@ public class ConnectManager {
         return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
     }
 
-    public void requestCctv(Context context, String targetWallPadId, String appId, String deviceId, ConnectView cvFullView) {
+    public void requestCctv(Context context, String targetWallPadId, String appId, String deviceId,
+                            ConnectView cvFullView, String message) {
         String targetEmail = String.format("sip:%s@%s.%s",targetWallPadId, appId, DOMAIN);
         this.deviceId = deviceId;
         Call call;
@@ -159,7 +160,7 @@ public class ConnectManager {
             call.setMessageId(new Message().getMessageId(deviceId));
             initView(cvFullView);
             call.setInit();
-            new Message().sendMessage(targetEmail, "", deviceId, call.getMessageId(), MessageType.cctv, MessageDetail.request);
+            new Message().sendMessage(targetEmail, message, deviceId, call.getMessageId(), MessageType.cctv, MessageDetail.request);
         }
     }
 

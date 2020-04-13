@@ -41,7 +41,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver,
         if (!incoming) {
             tvStatus.text = "CCTV"
             deviceId = intent.getStringExtra("deviceId")
-            ConnectManager.getInstance().requestCctv(this, target, appId, deviceId, cvFullView)
+            ConnectManager.getInstance().requestCctv(this, target, appId, deviceId, cvFullView, "")
         }
 
         tvEnd.setOnClickListener {
