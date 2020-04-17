@@ -137,24 +137,24 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         tvDeviceRegister.setOnClickListener { getFCMToken(accessToken, 0) }
         tvDeviceUnregister.setOnClickListener { getFCMToken(accessToken, 1) }
         tvMessageGroup.setOnClickListener {
-            ConnectManager.getInstance().sendMessageToGroup("100000", appId, "asdf", deviceId)
+            ConnectManager.getInstance().sendMessageToGroup("100000", appId, "asdf", etDeviceId.text.toString())
         }
         tvMessageUser.setOnClickListener {
-            ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", appId, "asdf", deviceId)
+            ConnectManager.getInstance().sendMessageToUserId("ZG90Y29ubW82", appId, "asdf", etDeviceId.text.toString())
         }
         tvMessageDevice.setOnClickListener {
-            ConnectManager.getInstance().sendMessageToDeviceId("666666", appId, "666666", deviceId)
+            ConnectManager.getInstance().sendMessageToDeviceId("666666", appId, "666666", etDeviceId.text.toString())
         }
         tvSendCctv.setOnClickListener {
             val intent = Intent(this, CallActivity::class.java)
             intent.putExtra("video", false)
             intent.putExtra("target", etTarget.text.toString())
             intent.putExtra("appId", appId)
-            intent.putExtra("deviceId", deviceId)
+            intent.putExtra("deviceId", etDeviceId.text.toString())
             startActivity(intent)
         }
         tvSendControl.setOnClickListener {
-            ConnectManager.getInstance().requestControl("wallpadtest", appId, deviceId, "Open the door")
+            ConnectManager.getInstance().requestControl("wallpadtest", appId, etDeviceId.text.toString(), "Open the door")
         }
 
         if (ACTION_INCOMING_CALL == intent.action) {
@@ -210,12 +210,12 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
                 // Get new Instance ID token
                 Log.d(TAG, task.result?.token)
                 when (action) {
-                    0 -> ConnectManager.getInstance().deviceRegistration(deviceId, userId, appId, accessToken, task.result?.token)
-                    1 -> ConnectManager.getInstance().deviceUnRegistration(deviceId, accessToken)
+                    0 -> ConnectManager.getInstance().deviceRegistration(etDeviceId.text.toString(), userId, appId, accessToken, task.result?.token)
+                    1 -> ConnectManager.getInstance().deviceUnRegistration(etDeviceId.text.toString(), accessToken)
                     else -> ConnectManager.getInstance()
                         .startRegistration(
                             mContext,
-                            deviceId,
+                            etDeviceId.text.toString(),
                             etEmail.text.toString(),
                             appId,
                             accessToken,
