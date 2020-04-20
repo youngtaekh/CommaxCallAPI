@@ -147,6 +147,11 @@ public class ConnectManager {
         return new Message().sendMessage(targetEmail, message, deviceId, MessageType.uuid);
     }
 
+    public int requestCctvList(String targetWallPadId, String appId, String deviceId) {
+        String targetEmail = String.format("sip:%s@%s.%s",targetWallPadId, appId, DOMAIN);
+        return new Message().sendMessage(targetEmail, "", deviceId, MessageType.cctv, MessageDetail.requestList);
+    }
+
     public void requestCctv(Context context, String targetWallPadId, String appId, String deviceId,
                             ConnectView cvFullView, String message) {
         String targetEmail = String.format("sip:%s@%s.%s",targetWallPadId, appId, DOMAIN);

@@ -1,7 +1,15 @@
 package io.dotconnect.api.observer;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import io.dotconnect.api.enum_class.MessageDetail;
+
+import static io.dotconnect.api.observer.CctvInfo.DEVICES;
 
 public class ConnectAction implements ConnectPublisher {
     private List<ConnectObserver.RegistrationObserver> registrationObservers;
@@ -126,7 +134,21 @@ public class ConnectAction implements ConnectPublisher {
     @Override
     public void onMessageArrivalObserver(ApiMessageInfo message) {
         for (ConnectObserver.MessageObserver messageObserver : messageObservers) {
-            messageObserver.onMessageArrival(message);
+            if (message.getMessageDetail() == MessageDetail.responseList) {
+                List<CctvInfo> cctvList = new ArrayList<>();
+                try {
+                    JSONObject json = new JSONObject(message.getMessage());
+                    JSONArray array = json.getJSONArray(DEVICES);
+                    for (int i=0;i<array.length();i++) {
+                        cctvList.add(new CctvInfo(array.getJSONObject(i)));
+                    }
+                    messageObserver.onCctvList(cctvList);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                messageObserver.onMessageArrival(message);
+            }
         }
     }
 

@@ -1,17 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-    userOrg = 'voiceloco-official'
-    groupId = 'io.dotconnect'
-    repoName = 'maven'
-    artifactId = 'android_api'
-    publishVersion = '0.3.12'
-    desc = ''
-    website = 'http://gitlab.voiceloco.com/client/android/callapi'
-//    issueTracker = ""
-    repository = "http://gitlab.voiceloco.com/client/android/callapi"
-}
 
 android {
     compileSdkVersion 29
@@ -20,7 +7,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 2
         versionName "0.3.12"
 
@@ -42,6 +29,7 @@ android {
             ]
         }
     }
+
     compileOptions {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
@@ -54,9 +42,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    api 'org.webrtc:google-webrtc:1.0.+'
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    api 'org.webrtc:google-webrtc:1.0.30039'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

@@ -6,7 +6,7 @@ import io.dotconnect.signaling.callJni.CallCore;
 
 import static io.dotconnect.api.util.AuthenticationUtil.getEncryptedHashId;
 
-public class Message {
+class Message {
     String getMessageId(String deviceId) {
         return getEncryptedHashId(deviceId + System.currentTimeMillis());
     }

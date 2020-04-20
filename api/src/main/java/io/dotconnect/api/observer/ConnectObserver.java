@@ -1,5 +1,7 @@
 package io.dotconnect.api.observer;
 
+import java.util.List;
+
 import io.dotconnect.signaling.observer.SignalingCallInfo;
 
 public class ConnectObserver {
@@ -16,6 +18,7 @@ public class ConnectObserver {
         void onMessageSendSuccess(ApiMessageInfo message);
         void onMessageSendFailure(ApiMessageInfo message);
         void onMessageArrival(ApiMessageInfo message);
+        void onCctvList(List<CctvInfo> cctvList);
     }
 
     public interface CallObserver {

@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import io.dotconnect.api.ConnectManager
-import io.dotconnect.api.observer.ApiCallInfo
-import io.dotconnect.api.observer.ApiMessageInfo
-import io.dotconnect.api.observer.ConnectAction
-import io.dotconnect.api.observer.ConnectObserver
+import io.dotconnect.api.observer.*
 import kotlinx.android.synthetic.main.activity_call.*
 import org.webrtc.RendererCommon
 
@@ -37,11 +34,12 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver,
         incoming = intent.getBooleanExtra("incoming", false)
         target = intent.getStringExtra("target")
         appId = intent.getStringExtra("appId")
+        val source = intent.getStringExtra("source")
 
         if (!incoming) {
             tvStatus.text = "CCTV"
             deviceId = intent.getStringExtra("deviceId")
-            ConnectManager.getInstance().requestCctv(this, target, appId, deviceId, cvFullView, "")
+            ConnectManager.getInstance().requestCctv(this, target, appId, deviceId, cvFullView, source)
         }
 
         tvEnd.setOnClickListener {
@@ -100,6 +98,10 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver,
 
     override fun onMessageArrival(apiMessageInfo: ApiMessageInfo?) {
         Log.d("CallActivity", apiMessageInfo.toString())
+    }
+
+    override fun onCctvList(cctvList: MutableList<CctvInfo>?) {
+        Log.d("CallActivity", "onCctvList")
     }
 
     override fun onPeerConnectionFailed() {

@@ -46,8 +46,6 @@
 
     </LinearLayout>
 
-
-
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,6 +60,25 @@
 
         <EditText
                 android:id="@+id/etTarget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="20dp"
+                android:text="cctv source : "/>
+
+        <EditText
+                android:id="@+id/etCctvSource"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
@@ -186,6 +203,17 @@
                     android:padding="10dp"
                     android:textSize="20dp"
                     android:text="Send Control" />
+
+            <TextView
+                    android:id="@+id/tvCctvList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="#cccccc"
+                    android:textColor="#000000"
+                    android:padding="10dp"
+                    android:textSize="20dp"
+                    android:text="CCTV List" />
 
         </LinearLayout>
 

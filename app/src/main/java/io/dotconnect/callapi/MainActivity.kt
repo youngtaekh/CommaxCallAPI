@@ -13,10 +13,8 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.api.ConnectManager
-import io.dotconnect.api.observer.ApiCallInfo
-import io.dotconnect.api.observer.ApiMessageInfo
-import io.dotconnect.api.observer.ConnectAction
-import io.dotconnect.api.observer.ConnectObserver
+import io.dotconnect.api.enum_class.MessageDetail
+import io.dotconnect.api.observer.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
@@ -101,6 +99,19 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         Log.d(TAG, apiMessageInfo.toString())
     }
 
+    override fun onCctvList(cctvList: MutableList<CctvInfo>?) {
+        logAndToast("onCctvList")
+        if (cctvList!!.size != 0) {
+            runOnUiThread { etCctvSource.setText(cctvList[0].key) }
+        }
+        var i=0
+        while (i < cctvList.size) {
+            Log.d(TAG, cctvList[i].key)
+            i++
+        }
+
+    }
+
     override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {
         logAndToast("onIncomingCall")
         val intent = Intent(this, CallActivity::class.java)
@@ -151,10 +162,15 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
             intent.putExtra("target", etTarget.text.toString())
             intent.putExtra("appId", appId)
             intent.putExtra("deviceId", etDeviceId.text.toString())
+            intent.putExtra("source", etCctvSource.text.toString())
             startActivity(intent)
         }
         tvSendControl.setOnClickListener {
-            ConnectManager.getInstance().requestControl("wallpadtest", appId, etDeviceId.text.toString(), "Open the door")
+            ConnectManager.getInstance().requestControl(etTarget.text.toString(), appId, etDeviceId.text.toString(), "Open the door")
+        }
+
+        tvCctvList.setOnClickListener {
+            ConnectManager.getInstance().requestCctvList(etTarget.text.toString(), appId, etDeviceId.text.toString())
         }
 
         if (ACTION_INCOMING_CALL == intent.action) {
@@ -170,6 +186,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     }
 
     override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
         Log.d(TAG, "onNewIntent")
         if (ACTION_INCOMING_CALL == intent.action) {
             Log.d(TAG, "onIncomingCall")
@@ -219,9 +236,9 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
                             etEmail.text.toString(),
                             appId,
                             accessToken,
-                            task.result?.token
-                            , DOMAIN
-                            , OUTBOUND_PROXY
+                            task.result?.token,
+                            DOMAIN,
+                            OUTBOUND_PROXY
                         )
                 }
             })

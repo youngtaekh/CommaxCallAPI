@@ -59,7 +59,7 @@ class Call {
         }
     };
 
-    Call(){
+    Call() {
         this.callId = AuthenticationUtil.getEncryptedHashId(String.valueOf(System.currentTimeMillis()));
         this.callState = CallState.IDLE;
         this.isInit = false;
@@ -199,11 +199,11 @@ class Call {
         isInit = true;
     }
 
-    public String getMessageId() {
+    String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(String messageId) {
+    void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 }

@@ -32,7 +32,7 @@ public class SipMessage {
     private String fromId, reason, message, messageId, messageDetail, method, sdp;
     private MessageType messageType;
 
-    SipMessage(String fromId, String sdp, String jsonStr) {
+    SipMessage(String fromId, String sdp, String message, String jsonStr) {
         this.fromId = fromId;
         if (this.fromId!=null) {
             Log.d(TAG, "fromId - " + this.fromId);
@@ -41,6 +41,7 @@ public class SipMessage {
         if (this.sdp!=null) {
             Log.d(TAG, "sdp - " + this.sdp);
         }
+        this.message = message;
         try {
             Log.d(TAG, jsonStr);
             JSONObject json = new JSONObject(jsonStr);
@@ -56,8 +57,6 @@ public class SipMessage {
                 this.cause = json.getInt(Cause);
             if (json.has(Reason))
                 this.reason = json.getString(Reason);
-            if (json.has(Message))
-                this.message = json.getString(Message);
             if (json.has(KeyMessageType))
                 this.messageType = MessageType.valueOf(json.getString(KeyMessageType));
             if (json.has(MessageId))
