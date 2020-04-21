@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     //Note8
     private val accessToken = "Wkc5MFkyOXViVzgzMjAxOS0xMS0wOCAwNDo1MzowMg=="
     private val userId = "ZG90Y29ubW83"
-    private val deviceId = "777777"
+    private val deviceId = "777773"
     //Note4
 //    private val accessToken = "Wkc5MFkyOXViVzh4MjAxOS0xMS0wOCAwNDozODozOA=="
 //    private val userId = "ZG90Y29ubW8x"

@@ -19,6 +19,7 @@ import java.util.List;
 public class P2PManager {
 
     private AppRTCClient.SignalingParameters signalingParameters = null;
+    private PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = null;
     private PeerConnectionClient peerConnectionClient = null;
 
     private SurfaceViewRenderer fullscreenRenderer = null;
@@ -28,6 +29,7 @@ public class P2PManager {
     private EglBase eglBase;
     private ArrayList<VideoSink> remoteSinks = new ArrayList<>();
 
+    private boolean isSendSdp;
     private Handler handler = null;
     private Runnable runnable = this::sendSdp;
 
@@ -54,6 +56,7 @@ public class P2PManager {
     private PeerConnectionClient.PeerConnectionEvents events = new PeerConnectionClient.PeerConnectionEvents() {
         @Override
         public void onLocalDescription(SessionDescription sdp) {
+            Log.d(APP_NAME, "onLocalDescription");
             if (signalingParameters != null) {
                 if (signalingParameters.initiator) {
                     signalingParameters.offerSdp = sdp;
@@ -62,8 +65,8 @@ public class P2PManager {
                 }
                 if (handler == null) {
                     handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(runnable, 1000);
                 }
+                handler.postDelayed(runnable, 1000);
             }
         }
 
@@ -83,22 +86,26 @@ public class P2PManager {
 
         @Override
         public void onIceCandidatesRemoved(IceCandidate[] candidates) {
-
+            Log.d(APP_NAME, "onIceCandidatesRemoved");
         }
 
         @Override
         public void onIceConnected() {
-
+            Log.d(APP_NAME, "onIceConnected");
         }
 
         @Override
         public void onIceGatheringComplete() {
-
+            Log.d(APP_NAME, "onIceGatheringComplete");
+            if (handler == null) {
+                handler = new Handler(Looper.getMainLooper());
+            }
+            handler.post(runnable);
         }
 
         @Override
         public void onIceDisconnected() {
-
+            Log.d(APP_NAME, "onIceDisconnected");
         }
 
         @Override
@@ -133,6 +140,7 @@ public class P2PManager {
     };
 
     public P2PManager() {
+        isSendSdp = false;
         eglBase = EglBase.create();
     }
 
@@ -155,10 +163,9 @@ public class P2PManager {
     }
 
     public void setParameters(Context context, boolean audio, boolean isVideoCall) {
-        PeerConnectionClient.PeerConnectionParameters peerConnectionParameters
-                = new PeerConnectionClient.PeerConnectionParameters(
+        peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
                 audio, isVideoCall,
-                TRACING,
+                TRACING, VIDEO_WIDTH, VIDEO_HEIGHT, VIDEO_FPS,
                 VIDEO_MAX_BITRATE, VIDEO_CODEC,
                 VIDEO_CODEC_HW_ACCELERATION,
                 VIDEO_FLEXFEC_ENABLED,
@@ -186,8 +193,12 @@ public class P2PManager {
 
         signalingParameters =
                 new AppRTCClient.SignalingParameters(iceServers, isOffer, offerSDP, null);
+        VideoCapturer videoCapturer = null;
+//        if (peerConnectionParameters.videoEnabled) {
+//            videoCapturer = new Camera(context).createVideoCapturer();
+//        }
         peerConnectionClient.createPeerConnection(
-                localProxyVideoSink, remoteSinks, signalingParameters
+                localProxyVideoSink, remoteSinks, videoCapturer, signalingParameters
         );
 
         if (signalingParameters.initiator) {
@@ -220,13 +231,15 @@ public class P2PManager {
     }
 
     private void sendSdp() {
+        if (isSendSdp) {
+            return;
+        }
+        isSendSdp = true;
         if (signalingParameters != null) {
             if (signalingParameters.initiator && signalingParameters.offerSdp != null) {
                 listener.onLocalDescription(signalingParameters.offerSdp.description);
-//                CallCore.getInstance().makeVideoCall(target, teamId, signalingParameters.offerSdp.description);
             } else if(signalingParameters.answerSdp != null) {
                 listener.onLocalDescription(signalingParameters.answerSdp.description);
-//                CallCore.getInstance().acceptCall(signalingParameters.answerSdp.description);
             }
         }
     }
