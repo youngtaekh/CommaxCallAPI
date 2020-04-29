@@ -18,7 +18,7 @@ public class ConnectObserver {
         void onMessageSendSuccess(ApiMessageInfo message);
         void onMessageSendFailure(ApiMessageInfo message);
         void onMessageArrival(ApiMessageInfo message);
-        void onCctvList(List<CctvInfo> cctvList);
+        void onCctvList(String json);
     }
 
     public interface CallObserver {

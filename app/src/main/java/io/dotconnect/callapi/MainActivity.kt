@@ -13,9 +13,15 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import io.dotconnect.api.ConnectManager
-import io.dotconnect.api.enum_class.MessageDetail
-import io.dotconnect.api.observer.*
+import io.dotconnect.api.observer.ApiCallInfo
+import io.dotconnect.api.observer.ApiMessageInfo
+import io.dotconnect.api.observer.ConnectAction
+import io.dotconnect.api.observer.ConnectObserver
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONArray
+import org.json.JSONObject
+import java.lang.NumberFormatException
+
 
 class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     ConnectObserver.MessageObserver, ConnectObserver.CallObserver {
@@ -44,6 +50,8 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     private val callTarget = "wallpadtest"
     //Note4
 //    private val callTarget = "100000"
+
+    private var cctvSource:String? = null
 
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -99,17 +107,33 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         Log.d(TAG, apiMessageInfo.toString())
     }
 
-    override fun onCctvList(cctvList: MutableList<CctvInfo>?) {
+    override fun onCctvList(json: String) {
         logAndToast("onCctvList")
-        if (cctvList!!.size != 0) {
-            runOnUiThread { etCctvSource.setText(cctvList[0].key) }
-        }
+
+        val jsonObject = JSONObject(json)
+        val cctvArray: JSONArray = jsonObject.getJSONArray("cctv")
+        val doorArray: JSONArray = jsonObject.getJSONArray("door")
+        val sum = cctvArray.length() + doorArray.length()
+        val list = mutableListOf<String>()
+
         var i=0
-        while (i < cctvList.size) {
-            Log.d(TAG, cctvList[i].key)
+        while (i < cctvArray.length()) {
+            list.add(cctvArray.getJSONObject(i).getString("key"))
             i++
         }
-
+        i=0
+        while (i < doorArray.length()) {
+            list.add(doorArray.getJSONObject(i).getString("key"))
+            i++
+        }
+        if (list.size != 0) {
+            cctvSource = try {
+                val index = Integer.parseInt(etCctvSource.text.toString())
+                list[index%sum]
+            } catch (e: NumberFormatException) {
+                list[0]
+            }
+        }
     }
 
     override fun onIncomingCall(ApiCallInfo: ApiCallInfo?) {
@@ -142,6 +166,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         etEmail.setText(userId)
         etDeviceId.setText(deviceId)
         etTarget.setText(callTarget)
+        etCctvSource.setText("0")
 
         tvRegister.setOnClickListener { getFCMToken(accessToken, 2) }
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
@@ -157,13 +182,15 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
             ConnectManager.getInstance().sendMessageToDeviceId("666666", appId, "666666", etDeviceId.text.toString())
         }
         tvSendCctv.setOnClickListener {
-            val intent = Intent(this, CallActivity::class.java)
-            intent.putExtra("video", false)
-            intent.putExtra("target", etTarget.text.toString())
-            intent.putExtra("appId", appId)
-            intent.putExtra("deviceId", etDeviceId.text.toString())
-            intent.putExtra("source", etCctvSource.text.toString())
-            startActivity(intent)
+            if (cctvSource!=null) {
+                val intent = Intent(this, CallActivity::class.java)
+                intent.putExtra("video", false)
+                intent.putExtra("target", etTarget.text.toString())
+                intent.putExtra("appId", appId)
+                intent.putExtra("deviceId", etDeviceId.text.toString())
+                intent.putExtra("source", cctvSource)
+                startActivity(intent)
+            }
         }
         tvSendControl.setOnClickListener {
             ConnectManager.getInstance().requestControl(etTarget.text.toString(), appId, etDeviceId.text.toString(), "Open the door")
@@ -225,7 +252,7 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
                 }
 
                 // Get new Instance ID token
-                Log.d(TAG, task.result?.token)
+                Log.d(TAG, task.result?.token!!)
                 when (action) {
                     0 -> ConnectManager.getInstance().deviceRegistration(etDeviceId.text.toString(), userId, appId, accessToken, task.result?.token)
                     1 -> ConnectManager.getInstance().deviceUnRegistration(etDeviceId.text.toString(), accessToken)

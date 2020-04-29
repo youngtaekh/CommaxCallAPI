@@ -100,7 +100,7 @@ class CallActivity : AppCompatActivity(), ConnectObserver.CallObserver,
         Log.d("CallActivity", apiMessageInfo.toString())
     }
 
-    override fun onCctvList(cctvList: MutableList<CctvInfo>?) {
+    override fun onCctvList(json: String?) {
         Log.d("CallActivity", "onCctvList")
     }
 

@@ -125,11 +125,11 @@ public class ConnectManager {
         return Register.getInstance().isRegistered();
     }
 
-    public void networkChange(Context context) {
+//    public void networkChange(Context context) {
 //        String networkType = NetworkUtil.getNetworkType(context);
 //        String ipAddress = NetworkUtil.getIPAddress(networkType);
 //        CallCore.getInstance().applyNetworkChange(networkType, ipAddress, "");
-    }
+//    }
 
     //SignalingMessageInfo
     public int sendMessageToGroup(String targetGroupId, String appId, String message, String deviceId) {
