@@ -229,6 +229,16 @@ public class ConnectManager {
         return false;
     }
 
+    public void endCctv() {
+        if (callManager.size() != 0 && callManager.get().getCallState() == CallState.CCTV) {
+            ApiCallInfo apiCallInfo = new ApiCallInfo();
+            ConnectAction.getInstance().onTerminatedObserver(apiCallInfo.makeOK());
+            callManager.get().end();
+            disconnect();
+            callManager.remove();
+        }
+    }
+
     /**
      * if call state is calling, hangup the call
      * else reject the call
@@ -243,13 +253,6 @@ public class ConnectManager {
             call.setCallState(CallState.REJECT_PENDING);
         } else {
             call = callManager.get();
-            if (call.getCallState() == CallState.CCTV) {
-                ApiCallInfo apiCallInfo = new ApiCallInfo();
-                ConnectAction.getInstance().onTerminatedObserver(apiCallInfo.makeOK());
-                call.end();
-                disconnect();
-                callManager.remove();
-            }
             if (call.getCallState()!=CallState.END_PENDING && call.getCallState()!=CallState.REJECT_PENDING) {
                 if (call.getCallState() == CallState.CONNECTED) {
                     call.setCallState(CallState.END_PENDING);
