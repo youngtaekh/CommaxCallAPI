@@ -32,14 +32,14 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
     val COUNTERPART_ACCOUNT = "counterpartAccount"
 
     val appId = "testappid"
-    private val DOMAIN = "commax.dotconnect-api.io"
-    private val OUTBOUND_PROXY = "commax.dotconnect-api.io"
+    private val DOMAIN = "voiceloco.com"
+    private val OUTBOUND_PROXY = "smartbiz.sejongtelecom.net"
     private var outboundProxyAddress:String? = null
     private var mContext:Context = this
 
     //Note8
     private val accessToken = "Wkc5MFkyOXViVzgzMjAxOS0xMS0wOCAwNDo1MzowMg=="
-    private val userId = "ZG90Y29ubW83"
+    private val userId = "lll"
     private val deviceId = "777738"
     //Note4
 //    private val accessToken = "Wkc5MFkyOXViVzh4MjAxOS0xMS0wOCAwNDozODozOA=="
@@ -158,17 +158,26 @@ class MainActivity : AppCompatActivity(), ConnectObserver.RegistrationObserver,
         ActivityCompat.requestPermissions(
             this,
             arrayOf(
-                Manifest.permission.RECORD_AUDIO
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             ),
             0
         )
+
+        val internalDir = filesDir.path
 
         etEmail.setText(userId)
         etDeviceId.setText(deviceId)
         etTarget.setText(callTarget)
         etCctvSource.setText("0")
 
-        tvRegister.setOnClickListener { getFCMToken(accessToken, 2) }
+        tvRegister.setOnClickListener { ConnectManager.getInstance().startRegistration(this, etDeviceId.text.toString(), etEmail.text.toString(),
+            appId,
+            accessToken,
+            "",
+            DOMAIN,
+            OUTBOUND_PROXY) }
         tvUnregister.setOnClickListener { ConnectManager.getInstance().stopRegistration() }
         tvDeviceRegister.setOnClickListener { getFCMToken(accessToken, 0) }
         tvDeviceUnregister.setOnClickListener { getFCMToken(accessToken, 1) }

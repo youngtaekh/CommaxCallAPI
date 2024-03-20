@@ -104,7 +104,8 @@ public class ConnectManager {
 
     public void startRegistration(Context context, String deviceId, String userId, String appId,
                                   String accessToken, String fcmToken, String domain, String outboundProxy) {
-        Register.getInstance().start(context, deviceId, userId, appId, accessToken, fcmToken, domain, outboundProxy);
+//        Register.getInstance().start(context, deviceId, userId, appId, accessToken, fcmToken, domain, outboundProxy);
+        Register.getInstance().sipStart(context, deviceId, userId, appId, accessToken, domain, outboundProxy);
     }
 
     public void stopRegistration() {

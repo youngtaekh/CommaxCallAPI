@@ -91,6 +91,13 @@ public class CertificationUtil {
             in.close();
             out.close();
 
+            readFile(certificateFile);
+            readFile(certificateFile2);
+            readFile(certificateFile3);
+            readFile(privateKeyFile);
+            readFile(privateKeyFile2);
+            readFile(privateKeyFile3);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -120,5 +127,20 @@ public class CertificationUtil {
             SHA = null;
         }
         return SHA;
+    }
+
+    private static void readFile(File file) {
+        try {
+            FileReader reader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                Log.d("CertificationUtil", line);
+            }
+            bufferedReader.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

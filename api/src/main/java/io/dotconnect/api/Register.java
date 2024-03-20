@@ -15,6 +15,7 @@ import io.dotconnect.signaling.callJni.EventNotifier;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.StringTokenizer;
 
 import static io.dotconnect.api.util.APIConfiguration.*;
@@ -201,14 +202,14 @@ public class Register {
         }
     }
 
-    private void sipStart(Context context, String deviceId, String userId, String appId,
+    void sipStart(Context context, String deviceId, String userId, String appId,
                           String accessToken, String tlsDomain, String outboundProxy) {
         if (appId == null || "".equals(appId)
                 || tlsDomain == null || "".equals(tlsDomain)
                 || outboundProxy == null || "".equals(outboundProxy))
             return;
-        String domain = appId + "." + tlsDomain;
-        generateCertification(context, domain, outboundProxy);
+//        String domain = appId + "." + tlsDomain;
+        generateCertification(context, tlsDomain, outboundProxy);
         EventNotifier eventNotifier = EventNotifier.getInstance();
 
         CallCore callCore = CallCore.getInstance();
@@ -224,10 +225,10 @@ public class Register {
                 registerDuration,
                 deviceId,
                 userId,
-                makeSHA256(userId + appId),
+                userId,
                 accessToken,
-                "",
-                domain,
+                "aaaaaa",
+                tlsDomain,
                 outboundProxy,
                 outboundProxyPort,
                 coreVersion);

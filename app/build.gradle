@@ -9,7 +9,7 @@ task copySo(type: Copy) {
     into '../android_api/src/main/jniLibs'
     include('**/*.so')
 }
-tasks.withType(JavaCompile) { compileTask -> compileTask.dependsOn copySo }
+//tasks.withType(JavaCompile) { compileTask -> compileTask.dependsOn copySo }
 
 android {
     compileSdkVersion 29
